@@ -1,5 +1,5 @@
-Dunjun - Read Me
-================
+Dunjun
+======
 
 
 I will be documenting and demonstrating the development of making a game from scratch (minimal libraries).
@@ -18,6 +18,7 @@ Episode List
 * 001 - Project Setup (Visual Studio)
 * 002 - Creating a Window (GLFW3)
 * 003 - Drawing with OpenGL (GLEW)
+* 004 - ShaderProgram Class
 
 Questions
 ---------

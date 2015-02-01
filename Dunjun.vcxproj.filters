@@ -18,9 +18,15 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\ShaderProgram.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,5 +35,7 @@
     <None Include="ReadMe.md" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <None Include="data\shaders\default.vert.glsl" />
+    <None Include="data\shaders\default.frag.glsl" />
   </ItemGroup>
 </Project>

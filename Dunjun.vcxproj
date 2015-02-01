@@ -71,15 +71,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Common.hpp" />
+    <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <None Include="data\shaders\default.frag.glsl" />
+    <None Include="data\shaders\default.vert.glsl" />
     <None Include="ReadMe.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
