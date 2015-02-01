@@ -19,4 +19,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Dunjun\Common.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".clang-format" />
+    <None Include="ReadMe.md" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+  </ItemGroup>
 </Project>
