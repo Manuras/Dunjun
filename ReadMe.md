@@ -17,6 +17,7 @@ Episode List
 * [000 - Introduction](https://www.youtube.com/watch?v=fRUYl6_5m3o&index=1&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
 * 001 - Project Setup (Visual Studio)
 * 002 - Creating a Window (GLFW3)
+* 003 - Drawing with OpenGL (GLEW)
 
 Questions
 ---------
