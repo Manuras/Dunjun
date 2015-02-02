@@ -15,10 +15,11 @@ Youtube Playlist
 Episode List
 ------------
 * [000 - Introduction](https://www.youtube.com/watch?v=fRUYl6_5m3o&index=1&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
-* 001 - Project Setup (Visual Studio)
-* 002 - Creating a Window (GLFW3)
+* [001 - Project Setup (Visual Studio)](https://www.youtube.com/watch?v=Vzve8VOn8qA&index=2&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
+* [002 - Creating a Window (GLFW3)](https://www.youtube.com/watch?v=LNxpDcRs8Zg&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e&index=3)
 * 003 - Drawing with OpenGL (GLEW)
 * 004 - ShaderProgram Class
+* 005 - Textures (STB)
 
 Questions
 ---------
