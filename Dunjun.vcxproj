@@ -71,12 +71,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Common.hpp" />
+    <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
+    <ClInclude Include="include\Dunjun\Texture.hpp" />
+    <ClInclude Include="include\Dunjun\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

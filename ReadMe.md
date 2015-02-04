@@ -20,7 +20,7 @@ Episode List
 * [003 - Drawing with OpenGL (GLEW)](https://www.youtube.com/watch?v=42x_p1PeecU)
 * [004 - Shader Program Class](https://www.youtube.com/watch?v=fLSLJ66AEOU)
 * 005 - Textures (STB)
-
+* 006 - Image loader
 Questions
 ---------
 

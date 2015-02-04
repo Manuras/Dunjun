@@ -21,12 +21,24 @@
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\Types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\Texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\Image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
