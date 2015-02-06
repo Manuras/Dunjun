@@ -1,8 +1,11 @@
+#include <Dunjun/OpenGL.hpp>
 #include <Dunjun/Common.hpp>
 #include <Dunjun/ShaderProgram.hpp>
 #include <Dunjun/Image.hpp>
+#include <Dunjun/Texture.hpp>
 
-#include <GL/glew.h>
+#include <Dunjun/OpenGL.hpp>
+
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -26,7 +29,6 @@ int main(int argc, char** argv)
 	if (!glfwInit())
 		return EXIT_FAILURE;
 
-
 	glfwHints();
 	window = glfwCreateWindow(g_windowWidth, g_windowHeight, "Dunjun", nullptr,
 	                          nullptr);
@@ -43,13 +45,12 @@ int main(int argc, char** argv)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-
 	float vertices[] = {
-	//      x      y     r     g     b     s     t
-		+0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Vertex 0
-		-0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // Vertex 1
-		+0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,// Vertex 2
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,// Vertex 3
+	    //      x      y     r     g     b     s     t
+	    +0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Vertex 0
+	    -0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Vertex 1
+	    +0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // Vertex 2
+	    -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Vertex 3
 	};
 
 	GLuint vbo; // Vertex Buffer Object
@@ -58,37 +59,20 @@ int main(int argc, char** argv)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	Dunjun::ShaderProgram shaderProgram;
-	shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Vertex, 
-									   "data/shaders/default.vert.glsl");
+	shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Vertex,
+	                                   "data/shaders/default.vert.glsl");
 	shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Fragment,
-									   "data/shaders/default.frag.glsl");
+	                                   "data/shaders/default.frag.glsl");
 	shaderProgram.bindAttribLocation(0, "vertPosition");
 	shaderProgram.bindAttribLocation(1, "vertColor");
 	shaderProgram.bindAttribLocation(2, "vertTexCoord");
 	shaderProgram.link();
 	shaderProgram.use();
 
-	GLuint tex;
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	Dunjun::Image image;
-	image.loadFromFile("data/textures/kitten.jpg");
-
-	// Checkerboard pattern
-	float pixels[] = {
-		0, 0, 1,    1, 0, 0,
-		0, 1, 0,    1, 1, 0,
-	};
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width(), image.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, image.pixelPtr());
-
-	glActiveTexture(GL_TEXTURE0);
+	Dunjun::Texture tex;
+	tex.loadFromFile("data/textures/kitten.jpg");
+	tex.bind(0);
 	shaderProgram.setUniform("uniTex", 0);
-
 
 	bool running = true;
 	bool fullscreen = false;
@@ -109,20 +93,19 @@ int main(int argc, char** argv)
 			glEnableVertexAttribArray(1); // vertColor
 			glEnableVertexAttribArray(2); // vertTexCoord
 
-
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)0);
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(2 * sizeof(float)));
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(5 * sizeof(float)));
-
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float),
+			                      (const GLvoid*)0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float),
+			                      (const GLvoid*)(2 * sizeof(float)));
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float),
+			                      (const GLvoid*)(5 * sizeof(float)));
 
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			glDisableVertexAttribArray(0); // vertPosition
 			glDisableVertexAttribArray(1); // vertColor
 			glDisableVertexAttribArray(2); // vertTexCoord
-
 		}
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

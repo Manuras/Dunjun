@@ -19,8 +19,10 @@ Episode List
 * [002 - Creating a Window (GLFW3)](https://www.youtube.com/watch?v=LNxpDcRs8Zg&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e&index=3)
 * [003 - Drawing with OpenGL (GLEW)](https://www.youtube.com/watch?v=42x_p1PeecU)
 * [004 - Shader Program Class](https://www.youtube.com/watch?v=fLSLJ66AEOU)
-* 005 - Textures (STB)
-* 006 - Image loader
+* 005 - [Textures (STB)](https://www.youtube.com/watch?v=eiz7ZZBtUA0)
+* 006 - [Image Loader](https://www.youtube.com/watch?v=Wl0jh_CBT8w)
+* 007 - Texture Wrapper
+
 Questions
 ---------
 
