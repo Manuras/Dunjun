@@ -1,10 +1,10 @@
 Dunjun
 ======
 
-
 I will be documenting and demonstrating the development of making a game from scratch (minimal libraries).
 
 The game will be a rogue-like dungeon crawler style game.
+
 
 Youtube Playlist
 ----------------
@@ -22,6 +22,8 @@ Episode List
 * [005 - Textures (STB)](https://www.youtube.com/watch?v=eiz7ZZBtUA0)
 * [006 - Image Loader](https://www.youtube.com/watch?v=Wl0jh_CBT8w)
 * 007 - Texture Wrapper
+* 008 - Error Handling & Code Tidying
+
 
 Questions
 ---------
@@ -29,3 +31,4 @@ Questions
 * Youtube Comment
 * Youtube Message
 * Email: dunjun@gingerbill.org
+

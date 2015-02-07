@@ -38,7 +38,8 @@ Texture::Texture(const Image& image, GLint minMagFilter, GLint wrapMode)
 		throw std::runtime_error("Could not create texture from image.");
 }
 
-bool Texture::loadFromFile(const char* filename, GLint minMagFilter,
+bool Texture::loadFromFile(const char* filename,
+                           GLint minMagFilter,
                            GLint wrapMode)
 {
 	Image image;
@@ -49,7 +50,8 @@ bool Texture::loadFromFile(const char* filename, GLint minMagFilter,
 	return loadFromImage(image, minMagFilter, wrapMode);
 }
 
-bool Texture::loadFromImage(const Image& image, GLint minMagFilter,
+bool Texture::loadFromImage(const Image& image,
+                            GLint minMagFilter,
                             GLint wrapMode)
 {
 	if (image.getFormat() <= 0 || image.getFormat() > 4)
@@ -65,10 +67,15 @@ bool Texture::loadFromImage(const Image& image, GLint minMagFilter,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minMagFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minMagFilter);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, getInteralFormat(image.getFormat(), true),
-	             (GLsizei)m_width, (GLsizei)m_height, 0,
-	             getInteralFormat(image.getFormat(), false), GL_UNSIGNED_BYTE,
-	             image.getPixelPtr());
+	glTexImage2D(GL_TEXTURE_2D,
+	             0,
+	             getInteralFormat(image.getFormat(), true),
+	             (GLsizei)m_width,
+	             (GLsizei)m_height,
+	             0,
+	             getInteralFormat(image.getFormat(), false),
+	             GL_UNSIGNED_BYTE,
+	             image.getPixels());
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

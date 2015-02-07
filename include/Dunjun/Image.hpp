@@ -28,12 +28,13 @@ public:
 	inline u32 getWidth() const { return m_width; }
 	inline u32 getHeight() const { return m_height; }
 	inline Format getFormat() const { return m_format; }
-	inline u8* getPixelPtr() const { return m_pixels; }
+	inline u8* getPixels() const { return m_pixels; }
 
 	u8* getPixel(u32 column, u32 row) const;
 	void setPixel(u32 column, u32 row, const u32* pixel);
 
 	void flipVertically();
+	// TODO(bill): Implement these methods
 	// void rotate90CCW();
 
 	// void copyRectFromImage(const Image& src,
