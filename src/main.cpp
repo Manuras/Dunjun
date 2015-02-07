@@ -8,6 +8,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <stb/stb_easy_font.h>
+
 #include <iostream>
 #include <cmath>
 #include <string>
@@ -35,12 +37,12 @@ private:
 class TickCounter
 {
 public:
-	bool update(double frequency)
+	bool update(double period)
 	{
 		bool reset = false;
-		if (m_clock.getElapsedTime() >= frequency)
+		if (m_clock.getElapsedTime() >= period)
 		{
-			m_tickRate = m_tick / frequency;
+			m_tickRate = m_tick * (1.0 / period);
 			m_tick = 0;
 			reset = true;
 			m_clock.restart();
@@ -67,12 +69,8 @@ INTERNAL void glfwHints()
 	glfwWindowHint(GLFW_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_VERSION_MINOR, 1);
 }
-
 INTERNAL void render()
 {
-	glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	glEnableVertexAttribArray(0); // vertPosition
 	glEnableVertexAttribArray(1); // vertColor
 	glEnableVertexAttribArray(2); // vertTexCoord
@@ -98,7 +96,6 @@ INTERNAL void render()
 	glDisableVertexAttribArray(1); // vertColor
 	glDisableVertexAttribArray(2); // vertTexCoord
 }
-
 INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 {
 	if (glfwWindowShouldClose(window) || glfwGetKey(window, GLFW_KEY_ESCAPE))
@@ -134,6 +131,60 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 	    glfwMakeContextCurrent(window);
 	}*/
 }
+
+// TODO(bill): Remove this and implement a true font render
+//             Maybe using stb_truetype.h?
+namespace Debug
+{
+// Color Helper Union
+// NOTE(bill): May implement this into actual project as the Color type
+union Color
+{
+	Dunjun::u8 rgba[4];
+	struct
+	{
+		Dunjun::u8 r, g, b, a;
+	};
+};
+
+struct stb_font_vertex
+{
+	Dunjun::f32 x, y, z;
+	Color color;
+};
+
+INTERNAL void drawString(GLFWwindow* window,
+                         const std::string& text,
+                         float x,
+                         float y,
+                         Color color)
+{
+	LOCAL_PERSIST stb_font_vertex buffer[6000]; // ~500 chars
+	int numQuads = stb_easy_font_print(
+	    x, y, (char*)text.c_str(), nullptr, buffer, sizeof(buffer));
+
+	glPushMatrix();
+	{
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		int width, height;
+		glfwGetWindowSize(window, &width, &height);
+		glOrtho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, -1.0f, 1.0f);
+
+		glColor4ubv(color.rgba);
+		glBegin(GL_QUADS);
+		for (int i = 0; i < numQuads; i++)
+		{
+			glVertex2f(buffer[4 * i + 3].x, buffer[4 * i + 3].y);
+			glVertex2f(buffer[4 * i + 2].x, buffer[4 * i + 2].y);
+			glVertex2f(buffer[4 * i + 1].x, buffer[4 * i + 1].y);
+			glVertex2f(buffer[4 * i + 0].x, buffer[4 * i + 0].y);
+		}
+		glEnd();
+	}
+	glPopMatrix();
+}
+} // namespace Debug
 
 int main(int argc, char** argv)
 {
@@ -194,30 +245,50 @@ int main(int argc, char** argv)
 	bool running = true;
 	bool fullscreen = false;
 
+	std::stringstream titleStream;
+
 	TickCounter tc;
+	Clock frameClock;
 
 	while (running)
 	{
 		// reshape
+		// TODO(bill): only get window size when windows is resized
 		{
 			int width, height;
 			glfwGetWindowSize(window, &width, &height);
 			glViewport(0, 0, width, height);
 		}
 
+		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		shaderProgram.use();
+		render();
+		shaderProgram.stopUsing();
+
 		if (tc.update(0.5))
 		{
-			std::cout << tc.getTickRate() << std::endl;
-			std::stringstream ss;
-			ss << "Dunjun - " << 1000.0 / tc.getTickRate() << " ms";
-			glfwSetWindowTitle(window, ss.str().c_str());
+			titleStream.str("");
+			titleStream.clear();
+			titleStream << "Dunjun - " << 1000.0 / tc.getTickRate() << " ms";
+			glfwSetWindowTitle(window, titleStream.str().c_str());
 		}
-		render();
+
+
+		// Debug
+		Debug::drawString(
+		    window, titleStream.str(), 0, 0, {{255, 255, 255, 255}});
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 		handleInput(window, &running, &fullscreen);
+
+
+		while (frameClock.getElapsedTime() < 1.0 / 240.0)
+			;
+		frameClock.restart();
 	}
 
 	glfwDestroyWindow(window);
