@@ -7,6 +7,7 @@
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
 
+#include <Dunjun/Color.hpp>
 #include <Dunjun/Math.hpp>
 
 #include <GLFW/glfw3.h>
@@ -21,6 +22,14 @@
 
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
+
+struct Vertex
+{
+	Dunjun::Vector2 position;
+	Dunjun::Color color;
+	Dunjun::Vector2 texCoord;
+};
+
 
 INTERNAL void glfwHints()
 {
@@ -39,20 +48,20 @@ INTERNAL void render()
 	                      2,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float), // Stride
+	                      sizeof(Vertex), // Stride
 	                      (const GLvoid*)(0));
 	glVertexAttribPointer(1,
-	                      3,
-	                      GL_FLOAT,
-	                      GL_FALSE,
-	                      7 * sizeof(float), // Stride
-	                      (const GLvoid*)(2 * sizeof(float)));
+	                      4,
+	                      GL_UNSIGNED_BYTE,
+	                      GL_TRUE,
+						  sizeof(Vertex), // Stride
+	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
 	glVertexAttribPointer(2,
 	                      2,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float), // Stride
-	                      (const GLvoid*)(5 * sizeof(float)));
+						  sizeof(Vertex), // Stride
+						  (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -110,7 +119,6 @@ union Color
 		Dunjun::u8 r, g, b, a;
 	};
 };
-
 struct stb_font_vertex
 {
 	Dunjun::f32 x, y, z;
@@ -150,12 +158,6 @@ INTERNAL void drawString(GLFWwindow* window,
 }
 } // namespace Debug
 
-struct Vertex
-{
-	Dunjun::Vector2 position;
-	Dunjun::Vector3 color;
-	Dunjun::Vector2 texCoord;
-};
 
 int main(int argc, char** argv)
 {
@@ -166,7 +168,7 @@ int main(int argc, char** argv)
 
 	glfwHints();
 	window = glfwCreateWindow(
-		g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
+	    g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -182,11 +184,11 @@ int main(int argc, char** argv)
 	glCullFace(GL_BACK);
 
 	Vertex vertices[] = {
-		//  x      y     r     g     b     s     t
-		{{+0.5f, +0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // Vertex 0
-		{{-0.5f, +0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // Vertex 1
-		{{+0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}, // Vertex 2
-		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}}, // Vertex 3
+	    //  x      y     r     g     b     a       s     t
+	    {{+0.5f, +0.5f}, {255, 255, 255, 255}, {1.0f, 0.0f}}, // Vertex 0
+		{{-0.5f, +0.5f}, {255,   0,   0, 255}, {0.0f, 0.0f}}, // Vertex 1
+		{{+0.5f, -0.5f}, {  0, 255,   0, 255}, {1.0f, 1.0f}}, // Vertex 2
+		{{-0.5f, -0.5f}, {  0,   0, 255, 255}, {0.0f, 1.0f}}, // Vertex 3
 	};
 
 	GLuint vbo; // Vertex Buffer Object

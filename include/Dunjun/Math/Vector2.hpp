@@ -105,7 +105,10 @@ struct Vector2
 	};
 };
 
-inline Vector2 operator*(f32 scalar, const Vector2& vector) { return vector * scalar; }
+inline Vector2 operator*(f32 scalar, const Vector2& vector)
+{
+	return vector * scalar;
+}
 
 inline f32 dot(const Vector2& a, const Vector2& b)
 {
@@ -117,20 +120,11 @@ inline f32 cross(const Vector2& a, const Vector2& b)
 	return a.x * b.y - b.x * a.y;
 }
 
-inline f32 lengthSquared(const Vector2& a)
-{
-	return dot(a, a);
-}
+inline f32 lengthSquared(const Vector2& a) { return dot(a, a); }
 
-inline f32 length(const Vector2& a)
-{
-	return std::sqrtf(lengthSquared(a));
-}
+inline f32 length(const Vector2& a) { return std::sqrtf(lengthSquared(a)); }
 
-inline Vector2 normalized(const Vector2& a)
-{
-	return a  * (1.0f / length(a));
-}
+inline Vector2 normalized(const Vector2& a) { return a * (1.0f / length(a)); }
 
 } // namespace Dunjun
 
