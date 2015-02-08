@@ -77,12 +77,18 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Dunjun\Clock.hpp" />
     <ClInclude Include="include\Dunjun\Common.hpp" />
     <ClInclude Include="include\Dunjun\Image.hpp" />
+    <ClInclude Include="include\Dunjun\Math.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Vector2.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Vector3.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Vector4.hpp" />
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
     <ClInclude Include="include\Dunjun\Texture.hpp" />
+    <ClInclude Include="include\Dunjun\TickCounter.hpp" />
     <ClInclude Include="include\Dunjun\Types.hpp" />
   </ItemGroup>
   <ItemGroup>

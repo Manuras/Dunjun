@@ -4,7 +4,10 @@
 #include <Dunjun/Image.hpp>
 #include <Dunjun/Texture.hpp>
 
-#include <Dunjun/OpenGL.hpp>
+#include <Dunjun/Clock.hpp>
+#include <Dunjun/TickCounter.hpp>
+
+#include <Dunjun/Math.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -15,51 +18,6 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-
-class Clock
-{
-public:
-	inline double getElapsedTime() const { return glfwGetTime() - m_startTime; }
-
-	double restart()
-	{
-		double now = glfwGetTime();
-		double elapsed = now - m_startTime;
-		m_startTime = now;
-
-		return elapsed;
-	}
-
-private:
-	double m_startTime = glfwGetTime();
-};
-
-class TickCounter
-{
-public:
-	bool update(double period)
-	{
-		bool reset = false;
-		if (m_clock.getElapsedTime() >= period)
-		{
-			m_tickRate = m_tick * (1.0 / period);
-			m_tick = 0;
-			reset = true;
-			m_clock.restart();
-		}
-
-		m_tick++;
-
-		return reset;
-	}
-
-	inline std::size_t getTickRate() const { return m_tickRate; }
-
-private:
-	std::size_t m_tick = 0;
-	std::size_t m_tickRate = 0;
-	Clock m_clock;
-};
 
 GLOBAL const int g_windowWidth = 854;
 GLOBAL const int g_windowHeight = 480;
@@ -192,6 +150,13 @@ INTERNAL void drawString(GLFWwindow* window,
 }
 } // namespace Debug
 
+struct Vertex
+{
+	Dunjun::Vector2 position;
+	Dunjun::Vector3 color;
+	Dunjun::Vector2 texCoord;
+};
+
 int main(int argc, char** argv)
 {
 	GLFWwindow* window;
@@ -201,7 +166,7 @@ int main(int argc, char** argv)
 
 	glfwHints();
 	window = glfwCreateWindow(
-	    g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
+		g_windowWidth, g_windowHeight, "Dunjun", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -216,12 +181,12 @@ int main(int argc, char** argv)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	float vertices[] = {
-	    //  x      y     r     g     b     s     t
-	    +0.5f, +0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Vertex 0
-	    -0.5f, +0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // Vertex 1
-	    +0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // Vertex 2
-	    -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // Vertex 3
+	Vertex vertices[] = {
+		//  x      y     r     g     b     s     t
+		{{+0.5f, +0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}}, // Vertex 0
+		{{-0.5f, +0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // Vertex 1
+		{{+0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}}, // Vertex 2
+		{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}}, // Vertex 3
 	};
 
 	GLuint vbo; // Vertex Buffer Object
@@ -254,8 +219,8 @@ int main(int argc, char** argv)
 
 	std::stringstream titleStream;
 
-	TickCounter tc;
-	Clock frameClock;
+	Dunjun::TickCounter tc;
+	Dunjun::Clock frameClock;
 
 	while (running)
 	{
