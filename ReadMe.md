@@ -197,6 +197,6 @@ Example:
 
 ```c++
 // TODO(bill): This is some example text for a todo. That
-               spans multiple lines.
+//             spans multiple lines.
 
 ```

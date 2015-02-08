@@ -84,7 +84,7 @@ bool Texture::loadFromImage(const Image& image,
 
 Texture::~Texture() { glDeleteTextures(1, &m_object); }
 
-void Texture::bind(GLuint position)
+void Texture::bind(GLuint position) const
 {
 	if (position > 31)
 	{

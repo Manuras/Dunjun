@@ -66,8 +66,10 @@ GLOBAL const int g_windowHeight = 480;
 
 INTERNAL void glfwHints()
 {
+	glfwDefaultWindowHints();
 	glfwWindowHint(GLFW_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 }
 INTERNAL void render()
 {
@@ -75,19 +77,23 @@ INTERNAL void render()
 	glEnableVertexAttribArray(1); // vertColor
 	glEnableVertexAttribArray(2); // vertTexCoord
 
-	glVertexAttribPointer(
-	    0, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (const GLvoid*)(0));
+	glVertexAttribPointer(0,
+	                      2,
+	                      GL_FLOAT,
+	                      GL_FALSE,
+	                      7 * sizeof(float), // Stride
+	                      (const GLvoid*)(0));
 	glVertexAttribPointer(1,
 	                      3,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float),
+	                      7 * sizeof(float), // Stride
 	                      (const GLvoid*)(2 * sizeof(float)));
 	glVertexAttribPointer(2,
 	                      2,
 	                      GL_FLOAT,
 	                      GL_FALSE,
-	                      7 * sizeof(float),
+	                      7 * sizeof(float), // Stride
 	                      (const GLvoid*)(5 * sizeof(float)));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -203,6 +209,7 @@ int main(int argc, char** argv)
 	}
 
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
 
 	glewInit();
 
@@ -275,7 +282,6 @@ int main(int argc, char** argv)
 			glfwSetWindowTitle(window, titleStream.str().c_str());
 		}
 
-
 		// Debug
 		Debug::drawString(
 		    window, titleStream.str(), 0, 0, {{255, 255, 255, 255}});
@@ -284,7 +290,6 @@ int main(int argc, char** argv)
 		glfwPollEvents();
 
 		handleInput(window, &running, &fullscreen);
-
 
 		while (frameClock.getElapsedTime() < 1.0 / 240.0)
 			;
