@@ -83,9 +83,11 @@
     <ClInclude Include="include\Dunjun\Common.hpp" />
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Math.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Angle.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions\Matrix.hpp" />
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Unit.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector2.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector3.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector4.hpp" />

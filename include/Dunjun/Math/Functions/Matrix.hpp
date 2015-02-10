@@ -4,14 +4,27 @@
 #include <Dunjun/Math/Vector3.hpp>
 #include <Dunjun/Math/Matrix4.hpp>
 
+#include <Dunjun/Math/Angle.hpp>
+
 #include <cmath>
 
 namespace Dunjun
 {
 Matrix4 translate(const Vector3& v);
+// TODO(bill): Use an specific Radian type for angles not f32
 // Angle in Radians
-Matrix4 rotate(f32 angle, const Vector3& v);
+Matrix4 rotate(const Radian& angle, const Vector3& v);
 Matrix4 scale(const Vector3& v);
+
+Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top);
+Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 zNear, f32 zFar);
+
+// Angle in Radians
+Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar);
+Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear);
+
+Matrix4 lookAt(const Vector3& eye, const Vector3& center, const Vector3& up);
+
 } // namespace Dunjun
 
 #endif

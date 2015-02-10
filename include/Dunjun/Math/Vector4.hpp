@@ -188,7 +188,7 @@ inline f32 lengthSquared(const Vector4& a) { return dot(a, a); }
 
 inline f32 length(const Vector4& a) { return std::sqrtf(lengthSquared(a)); }
 
-inline Vector4 normalized(const Vector4& a) { return a * (1.0f / length(a)); }
+inline Vector4 normalize(const Vector4& a) { return a * (1.0f / length(a)); }
 
 inline std::ostream& operator<<(std::ostream& os, const Vector4& v)
 {
