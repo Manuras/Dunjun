@@ -48,6 +48,22 @@ struct Vector3
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 
+	bool operator==(const Vector3& other) const
+	{
+		for (usize i = 0; i < 3; i++)
+		{
+			if (data[i] != other.data[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	bool operator!=(const Vector3& other) const
+	{
+		return !operator==(other);
+	}
+
 	Vector3 operator+(const Vector3& other) const
 	{
 		return Vector3(x + other.x, y + other.y, z + other.z);
@@ -66,6 +82,15 @@ struct Vector3
 	Vector3 operator/(f32 scalar) const
 	{
 		return Vector3(x / scalar, y / scalar, z / scalar);
+	}
+
+	// Hadamard Product
+	Vector3 operator*(const Vector3& other) const
+	{
+		Vector3 result;
+		for (usize i = 0; i < 3; i++)
+			result[i] = data[i] * other.data[i];
+		return result;
 	}
 
 	Vector3& operator+=(const Vector3& other)
@@ -145,6 +170,11 @@ inline f32 lengthSquared(const Vector3& a) { return dot(a, a); }
 inline f32 length(const Vector3& a) { return std::sqrtf(lengthSquared(a)); }
 
 inline Vector3 normalized(const Vector3& a) { return a * (1.0f / length(a)); }
+
+inline std::ostream& operator<<(std::ostream& os, const Vector3& v)
+{
+	return os << "Vector3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
+}
 
 } // namespace Dunjun
 

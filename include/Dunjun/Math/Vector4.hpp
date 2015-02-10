@@ -69,6 +69,22 @@ struct Vector4
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 
+	bool operator==(const Vector4& other) const
+	{
+		for (usize i = 0; i < 4; i++)
+		{
+			if (data[i] != other.data[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	bool operator!=(const Vector4& other) const
+	{
+		return !operator==(other);
+	}
+
 	Vector4 operator+(const Vector4& other) const
 	{
 		return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);
@@ -82,6 +98,15 @@ struct Vector4
 	Vector4 operator*(f32 scalar) const
 	{
 		return Vector4(scalar * x, scalar * y, scalar * z, scalar * w);
+	}
+
+	// Hadamard Product
+	Vector4 operator*(const Vector4& other) const
+	{
+		Vector4 result;
+		for (usize i = 0; i < 4; i++)
+			result[i] = data[i] * other.data[i];
+		return result;
 	}
 
 	Vector4 operator/(f32 scalar) const
@@ -162,6 +187,11 @@ inline f32 lengthSquared(const Vector4& a) { return dot(a, a); }
 inline f32 length(const Vector4& a) { return std::sqrtf(lengthSquared(a)); }
 
 inline Vector4 normalized(const Vector4& a) { return a * (1.0f / length(a)); }
+
+inline std::ostream& operator<<(std::ostream& os, const Vector4& v)
+{
+	return os << "Vector4(" << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3] << ")";
+}
 
 } // namespace Dunjun
 

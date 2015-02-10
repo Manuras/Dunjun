@@ -2,6 +2,7 @@
 #define DUNJUN_MATH_VECTOR2_HPP
 
 #include <Dunjun/Types.hpp>
+#include <iostream>
 #include <cmath>
 
 namespace Dunjun
@@ -35,6 +36,22 @@ struct Vector2
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 
+	bool operator==(const Vector2& other) const
+	{
+		for (usize i = 0; i < 2; i++)
+		{
+			if (data[i] != other.data[i])
+				return false;
+		}
+
+		return true;
+	}
+
+	bool operator!=(const Vector2& other) const
+	{
+		return !operator==(other);
+	}
+
 	Vector2 operator+(const Vector2& other) const
 	{
 		return Vector2(x + other.x, y + other.y);
@@ -53,6 +70,15 @@ struct Vector2
 	Vector2 operator/(f32 scalar) const
 	{
 		return Vector2(x / scalar, y / scalar);
+	}
+
+	// Hadamard Product
+	Vector2 operator*(const Vector2& other) const
+	{
+		Vector2 result;
+		for (usize i = 0; i < 2; i++)
+			result[i] = data[i] * other.data[i];
+		return result;
 	}
 
 	Vector2& operator+=(const Vector2& other)
@@ -125,6 +151,11 @@ inline f32 lengthSquared(const Vector2& a) { return dot(a, a); }
 inline f32 length(const Vector2& a) { return std::sqrtf(lengthSquared(a)); }
 
 inline Vector2 normalized(const Vector2& a) { return a * (1.0f / length(a)); }
+
+inline std::ostream& operator<<(std::ostream& os, const Vector2& v)
+{
+	return os << "Vector2(" << v[0] << ", " << v[1] << ")";
+}
 
 } // namespace Dunjun
 
