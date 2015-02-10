@@ -33,6 +33,8 @@ struct Vector2
 	{
 	}
 
+	Vector2(const Vector2& other) = default;
+
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 

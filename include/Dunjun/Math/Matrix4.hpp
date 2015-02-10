@@ -34,6 +34,8 @@ public:
 	{
 	}
 
+	//Matrix4(const Matrix4& other) = default;
+
 	Vector4& operator[](usize index) { return data[index]; }
 	const Vector4& operator[](usize index) const { return data[index]; }
 
@@ -263,12 +265,9 @@ public:
 	std::array<Vector4, 4> data;
 };
 
-Matrix4 operator*(f32 scalar, const Matrix4& m)
+inline Matrix4 operator*(f32 scalar, const Matrix4& m)
 {
-	Matrix4 mat;
-	for (usize i = 0; i < 4; i++)
-		mat[i] = m[i] * scalar;
-	return mat;
+	return m * scalar;
 }
 
 inline Matrix4 transpose(const Matrix4& m)

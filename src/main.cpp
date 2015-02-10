@@ -30,7 +30,6 @@ struct Vertex
 	Dunjun::Vector2 texCoord;
 };
 
-
 INTERNAL void glfwHints()
 {
 	glfwDefaultWindowHints();
@@ -54,14 +53,15 @@ INTERNAL void render()
 	                      4,
 	                      GL_UNSIGNED_BYTE,
 	                      GL_TRUE,
-						  sizeof(Vertex), // Stride
+	                      sizeof(Vertex), // Stride
 	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
-	glVertexAttribPointer(2,
-	                      2,
-	                      GL_FLOAT,
-	                      GL_FALSE,
-						  sizeof(Vertex), // Stride
-						  (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
+	glVertexAttribPointer(
+	    2,
+	    2,
+	    GL_FLOAT,
+	    GL_FALSE,
+	    sizeof(Vertex), // Stride
+	    (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -158,7 +158,6 @@ INTERNAL void drawString(GLFWwindow* window,
 }
 } // namespace Debug
 
-
 int main(int argc, char** argv)
 {
 	GLFWwindow* window;
@@ -185,10 +184,10 @@ int main(int argc, char** argv)
 
 	Vertex vertices[] = {
 	    //  x      y     r     g     b     a       s     t
-	    {{+0.5f, +0.5f}, {255, 255, 255, 255}, {1.0f, 0.0f}}, // Vertex 0
-		{{-0.5f, +0.5f}, {255,   0,   0, 255}, {0.0f, 0.0f}}, // Vertex 1
-		{{+0.5f, -0.5f}, {  0, 255,   0, 255}, {1.0f, 1.0f}}, // Vertex 2
-		{{-0.5f, -0.5f}, {  0,   0, 255, 255}, {0.0f, 1.0f}}, // Vertex 3
+	    {{+0.5f, +0.5f}, {{255, 255, 255, 255}}, {1.0f, 0.0f}}, // Vertex 0
+	    {{-0.5f, +0.5f}, {{255, 0, 0, 255}}, {0.0f, 0.0f}},     // Vertex 1
+	    {{+0.5f, -0.5f}, {{0, 255, 0, 255}}, {1.0f, 1.0f}},     // Vertex 2
+	    {{-0.5f, -0.5f}, {{0, 0, 255, 255}}, {0.0f, 1.0f}},     // Vertex 3
 	};
 
 	GLuint vbo; // Vertex Buffer Object
@@ -238,6 +237,11 @@ int main(int argc, char** argv)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.use();
+		Dunjun::Matrix4 mat = Dunjun::translate({0.5f, 0.5f, 0.0f}) *
+		                      Dunjun::rotate(3.14f / 3.0f, {0, 0, 1});
+
+		shaderProgram.setUniform("uniModel", mat);
+
 		render();
 		shaderProgram.stopUsing();
 

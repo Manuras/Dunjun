@@ -66,6 +66,8 @@ struct Vector4
 	{
 	}
 
+	Vector4(const Vector4& other) = default;
+
 	f32& operator[](usize index) { return data[index]; }
 	const f32& operator[](usize index) const { return data[index]; }
 

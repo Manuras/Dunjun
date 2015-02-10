@@ -22,8 +22,10 @@ The game will be a rogue-like dungeon crawler style game.
 * [007 - Texture Wrapper](https://www.youtube.com/watch?v=2i2jX4yb8sI)
 * [008 - Error Handling & Code Tidying](https://www.youtube.com/watch?v=jUUGEFV7rk0)
 * [009 - Introduction to Transformations with Matrices](https://www.youtube.com/watch?v=imjaU0gO1vY)
-* 010 - Implement Basic Vector Types
+* [010 - Implement Basic Vector Types](https://www.youtube.com/watch?v=MSHeE7kAqbA)
 * 011 - Vector Functions
+* 012 - Matrix4 Type
+* 013 - Matrix Transform Functions
 
 ## Contact ##
 
