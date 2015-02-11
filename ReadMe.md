@@ -27,6 +27,7 @@ The game will be a rogue-like dungeon crawler style game.
 * 012 - Matrix4 Type
 * 013 - Matrix Transform Functions
 * 014 - View & Projection Matrices & Angles
+* 015 - Constants, Cleanup & GLSL Convention
 
 ## Contact ##
 
