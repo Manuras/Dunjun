@@ -13,7 +13,7 @@ class Unit
 	friend class Unit;
 
 public:
-	typedef T Type;
+	using Type = T;
 
 	Unit()
 	: m_value(T(0))

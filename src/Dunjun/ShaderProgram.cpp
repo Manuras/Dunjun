@@ -158,95 +158,139 @@ bool ShaderProgram::isLinked() { return m_linked; }
 void ShaderProgram::bindAttribLocation(GLuint location, const GLchar* name)
 {
 	glBindAttribLocation(m_object, location, name);
+	m_attribLocations[name] = location;
 }
 
 GLint ShaderProgram::getAttribLocation(const GLchar* name)
 {
-	return glGetAttribLocation(m_object, name);
+	auto found = m_attribLocations.find(name);
+	if (found != m_attribLocations.end())
+		return found->second;
+
+	GLint loc = glGetAttribLocation(m_object, name);
+	m_attribLocations[name] = loc;
+	return loc;
 }
 
 GLint ShaderProgram::getUniformLocation(const GLchar* name)
 {
-	return glGetUniformLocation(m_object, name);
+	auto found = m_uniformLocations.find(name);
+	if (found != m_uniformLocations.end())
+		return found->second;
+
+	GLint loc = glGetUniformLocation(m_object, name);
+	m_uniformLocations[name] = loc;
+	return loc;
 }
 
 void ShaderProgram::setUniform(const GLchar* name, f32 x)
 {
 	if (!isInUse())
 		use();
-	glUniform1f(getUniformLocation(name), x);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform1f(loc, x);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, f32 x, f32 y)
 {
 	if (!isInUse())
 		use();
-	glUniform2f(getUniformLocation(name), x, y);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform2f(loc, x, y);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, f32 x, f32 y, f32 z)
 {
 	if (!isInUse())
 		use();
-	glUniform3f(getUniformLocation(name), x, y, z);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform3f(loc, x, y, z);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, f32 x, f32 y, f32 z, f32 w)
 {
 	if (!isInUse())
 		use();
-	glUniform4f(getUniformLocation(name), x, y, z, w);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform4f(loc, x, y, z, w);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, u32 x)
 {
 	if (!isInUse())
 		use();
-	glUniform1ui(getUniformLocation(name), x);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform1ui(loc, x);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, i32 x)
 {
 	if (!isInUse())
 		use();
-	glUniform1i(getUniformLocation(name), x);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform1i(loc, x);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, bool x)
 {
 	if (!isInUse())
 		use();
-	glUniform1i(getUniformLocation(name), (int)x);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform1i(loc, (int)x);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Vector2& v)
 {
 	if (!isInUse())
 		use();
-	glUniform2fv(getUniformLocation(name), 1, v.data);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform2fv(loc, 1, v.data);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Vector3& v)
 {
 	if (!isInUse())
 		use();
-	glUniform3fv(getUniformLocation(name), 1, v.data);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform3fv(loc, 1, v.data);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Vector4& v)
 {
 	if (!isInUse())
 		use();
-	glUniform4fv(getUniformLocation(name), 1, v.data);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform4fv(loc, 1, v.data);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Matrix4& m)
 {
 	if (!isInUse())
 		use();
-	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, m[0].data);
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniformMatrix4fv(loc, 1, GL_FALSE, m[0].data);
 }
-
-
 
 } // namespace Dunjun

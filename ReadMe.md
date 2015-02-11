@@ -135,8 +135,8 @@ Example:
 class Bar
 {
 public:
-	typedef std::unique_ptr<Bar> UPtr;
-	typedef std::shared_ptr<Bar> SPtr;
+	using UPtr = std::unique_ptr<Bar>;
+	using SPtr = std::shared_ptr<Bar>;
 	...
 };
 ```

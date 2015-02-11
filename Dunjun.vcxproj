@@ -84,6 +84,7 @@
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Math.hpp" />
     <ClInclude Include="include\Dunjun\Math\Angle.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Constants.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions\Matrix.hpp" />
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
