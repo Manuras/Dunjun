@@ -4,6 +4,9 @@
 
 namespace Dunjun
 {
+// TODO(bill): Customize to be specific for shader files
+//             #include <> & #include ""
+//             // comments
 INTERNAL std::string stringFromFile(const std::string& filename)
 {
 	std::ifstream file;
@@ -64,6 +67,8 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 		shader = glCreateShader(GL_VERTEX_SHADER);
 	else if (type == ShaderType::Fragment)
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
+	else
+		throw std::runtime_error("Shader type unknown. How did you get here?");
 
 	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);
@@ -128,7 +133,7 @@ bool ShaderProgram::link()
 		glGetProgramiv(m_object, GL_LINK_STATUS, &status);
 		if (status == GL_FALSE)
 		{
-			std::string msg("Program linking failure: \n");
+			std::string msg("ShaderProgram linking failure: \n");
 
 			GLint infoLogLength;
 			glGetProgramiv(m_object, GL_INFO_LOG_LENGTH, &infoLogLength);
@@ -260,7 +265,7 @@ void ShaderProgram::setUniform(const GLchar* name, const Vector2& v)
 	GLint loc = getUniformLocation(name);
 	if (loc == -1)
 		return;
-	glUniform2fv(loc, 1, v.data);
+	glUniform2fv(loc, 1, &v[0]);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Vector3& v)
@@ -270,7 +275,7 @@ void ShaderProgram::setUniform(const GLchar* name, const Vector3& v)
 	GLint loc = getUniformLocation(name);
 	if (loc == -1)
 		return;
-	glUniform3fv(loc, 1, v.data);
+	glUniform3fv(loc, 1, &v[0]);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Vector4& v)
@@ -280,7 +285,7 @@ void ShaderProgram::setUniform(const GLchar* name, const Vector4& v)
 	GLint loc = getUniformLocation(name);
 	if (loc == -1)
 		return;
-	glUniform4fv(loc, 1, v.data);
+	glUniform4fv(loc, 1, &v[0]);
 }
 
 void ShaderProgram::setUniform(const GLchar* name, const Matrix4& m)
@@ -290,7 +295,6 @@ void ShaderProgram::setUniform(const GLchar* name, const Matrix4& m)
 	GLint loc = getUniformLocation(name);
 	if (loc == -1)
 		return;
-	glUniformMatrix4fv(loc, 1, GL_FALSE, m[0].data);
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
 }
-
 } // namespace Dunjun

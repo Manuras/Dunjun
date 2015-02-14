@@ -11,7 +11,7 @@ class Clock
 public:
 	inline f64 getElapsedTime() const { return glfwGetTime() - m_startTime; }
 
-	f64 restart()
+	inline f64 restart()
 	{
 		f64 now = glfwGetTime();
 		f64 elapsed = now - m_startTime;

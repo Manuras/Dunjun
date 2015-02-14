@@ -8,9 +8,9 @@ namespace Dunjun
 class TickCounter
 {
 public:
-	b8 update(f64 period)
+	bool update(f64 period)
 	{
-		b8 reset = false;
+		bool reset = false;
 		if (m_clock.getElapsedTime() >= period)
 		{
 			m_tickRate = m_tick * (1.0 / period);

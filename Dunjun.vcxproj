@@ -72,7 +72,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Dunjun\Image.cpp" />
+    <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
     <ClCompile Include="src\Dunjun\Math\Functions\Matrix.cpp" />
+    <ClCompile Include="src\Dunjun\Math\Matrix4.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\Dunjun\Texture.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -106,6 +108,7 @@
     <None Include="data\shaders\default.frag.glsl" />
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="ReadMe.md" />
+    <None Include="todo_check.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

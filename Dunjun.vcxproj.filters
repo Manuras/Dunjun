@@ -30,6 +30,12 @@
     <ClCompile Include="src\Dunjun\Math\Functions\Matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\Math\Constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dunjun\Math\Matrix4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Common.hpp">
@@ -100,5 +106,8 @@
     <None Include=".gitignore" />
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="data\shaders\default.frag.glsl" />
+    <None Include="todo_check.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

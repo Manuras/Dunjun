@@ -67,13 +67,13 @@ namespace Impl
 
 	template <class T>
 	Degree<T>::Degree(Unit<Radian, T> value)
-	    : Unit<Dunjun::Impl::Degree, T>(T(360) * T(value) / Constants<T>::tau())
+	    : Unit<Dunjun::Impl::Degree, T>(T(360) * T(value) / Constants::TAU)
 	{
 	}
 
 	template <class T>
 	Radian<T>::Radian(Unit<Degree, T> value)
-		: Unit<Dunjun::Impl::Radian, T>(T(value) * Constants<T>::tau() / T(360))
+		: Unit<Dunjun::Impl::Radian, T>(T(value) * Constants::TAU / T(360))
 	{
 	}
 } // namespace Impl

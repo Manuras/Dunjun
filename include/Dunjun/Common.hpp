@@ -3,16 +3,16 @@
 
 #include <Dunjun/Types.hpp>
 
+#include <functional>
 #include <fstream>
 #include <iostream>
-#include <stdexcept>
 #include <memory>
-#include <functional>
 #include <stack>
+#include <stdexcept>
 
-#define GLOBAL static
-#define INTERNAL static
-#define LOCAL_PERSIST static
+#define GLOBAL static        // global variables
+#define INTERNAL static      // internal linkage
+#define LOCAL_PERSIST static // local persisting variables
 
 namespace Dunjun
 {
@@ -37,7 +37,7 @@ namespace
 	}
 } // namespace
 
-// NOTE(bill): Used has std::make_unique is not available in C++11, only C++14
+// NOTE(bill): Used as std::make_unique is not available in C++11, only C++14
 //             MSVC does support std::make_unique but use this function instead
 template <class T, class... Args>
 std::unique_ptr<T> make_unique(Args&&... args)

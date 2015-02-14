@@ -14,14 +14,15 @@
 
 #include <stb/stb_easy_font.h>
 
-#include <iostream>
 #include <cmath>
-#include <string>
 #include <fstream>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 
-GLOBAL const int g_windowWidth = 854;
-GLOBAL const int g_windowHeight = 480;
+GLOBAL int g_windowWidth = 854;
+GLOBAL int g_windowHeight = 480;
 
 struct Vertex
 {
@@ -30,6 +31,29 @@ struct Vertex
 	Dunjun::Vector2 texCoord;
 };
 
+struct ModelAsset
+{
+	Dunjun::ShaderProgram* shaders;
+	Dunjun::Texture* texture;
+
+	GLuint vbo;
+	GLuint ibo;
+
+	GLenum drawType;
+	GLint drawCount;
+};
+
+struct ModelInstance
+{
+	ModelAsset* asset;
+	Dunjun::Matrix4 transform;
+};
+
+GLOBAL Dunjun::ShaderProgram* g_defaultShader;
+GLOBAL ModelAsset g_sprite;
+GLOBAL std::vector<ModelInstance> g_instances;
+GLOBAL Dunjun::Matrix4 g_cameraMatrix;
+
 INTERNAL void glfwHints()
 {
 	glfwDefaultWindowHints();
@@ -37,43 +61,14 @@ INTERNAL void glfwHints()
 	glfwWindowHint(GLFW_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 }
-INTERNAL void render()
-{
-	glEnableVertexAttribArray(0); // vertPosition
-	glEnableVertexAttribArray(1); // vertColor
-	glEnableVertexAttribArray(2); // vertTexCoord
 
-	glVertexAttribPointer(0,
-	                      2,
-	                      GL_FLOAT,
-	                      GL_FALSE,
-	                      sizeof(Vertex), // Stride
-	                      (const GLvoid*)(0));
-	glVertexAttribPointer(1,
-	                      4,
-	                      GL_UNSIGNED_BYTE,
-	                      GL_TRUE,
-	                      sizeof(Vertex), // Stride
-	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
-	glVertexAttribPointer(
-	    2,
-	    2,
-	    GL_FLOAT,
-	    GL_FALSE,
-	    sizeof(Vertex), // Stride
-	    (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
-
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	glDisableVertexAttribArray(0); // vertPosition
-	glDisableVertexAttribArray(1); // vertColor
-	glDisableVertexAttribArray(2); // vertTexCoord
-}
 INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 {
 	if (glfwWindowShouldClose(window) || glfwGetKey(window, GLFW_KEY_ESCAPE))
 		*running = false;
 
+	// TODO(bill): Keep context when recreating display
+	//             !Fullscreen toggle!
 	/*if (glfwGetKey(window, GLFW_KEY_F11))
 	{
 	    *fullscreen = !(*fullscreen);
@@ -105,31 +100,151 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 	}*/
 }
 
+INTERNAL void loadShaders()
+{
+	g_defaultShader = new Dunjun::ShaderProgram();
+	if (!g_defaultShader->attachShaderFromFile(
+	        Dunjun::ShaderType::Vertex, "data/shaders/default.vert.glsl"))
+		throw std::runtime_error(g_defaultShader->getErrorLog());
+
+	if (!g_defaultShader->attachShaderFromFile(
+	        Dunjun::ShaderType::Fragment, "data/shaders/default.frag.glsl"))
+		throw std::runtime_error(g_defaultShader->getErrorLog());
+	g_defaultShader->bindAttribLocation(0, "a_position");
+	g_defaultShader->bindAttribLocation(1, "a_color");
+	g_defaultShader->bindAttribLocation(2, "a_texCoord");
+	if (!g_defaultShader->link())
+		throw std::runtime_error(g_defaultShader->getErrorLog());
+}
+
+INTERNAL void loadSpriteAsset()
+{
+	using namespace Dunjun;
+
+	Vertex vertices[] = {
+	    //    x      y        r     g     b     a        s     t
+	    {{-0.5f, -0.5f}, {{0x00, 0x00, 0xFF, 0xFF}}, {0.0f, 0.0f}}, // Vertex 0
+	    {{+0.5f, -0.5f}, {{0x00, 0xFF, 0x00, 0xFF}}, {1.0f, 0.0f}}, // Vertex 1
+	    {{+0.5f, +0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {1.0f, 1.0f}}, // Vertex 2
+	    {{-0.5f, +0.5f}, {{0xFF, 0x00, 0x00, 0xFF}}, {0.0f, 1.0f}}, // Vertex 3
+	};
+
+	glGenBuffers(1, &g_sprite.vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, g_sprite.vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	u32 indices[] = {0, 1, 2, 2, 3, 0};
+
+	glGenBuffers(1, &g_sprite.ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_sprite.ibo);
+	glBufferData(
+	    GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	g_sprite.shaders = g_defaultShader;
+	g_sprite.texture = new Texture();
+	g_sprite.texture->loadFromFile("data/textures/kitten.jpg");
+
+	g_sprite.drawType = GL_TRIANGLES;
+	g_sprite.drawCount = 6;
+}
+
+INTERNAL void loadInstances()
+{
+	using namespace Dunjun;
+
+	ModelInstance a;
+	a.asset = &g_sprite;
+	a.transform = translate({0, 0, 0});
+	g_instances.push_back(a);
+
+	ModelInstance b;
+	b.asset = &g_sprite;
+	b.transform = translate({2, 0, 0});
+	g_instances.push_back(b);
+
+	ModelInstance c;
+	c.asset = &g_sprite;
+	c.transform = translate({0, 0, 1});
+	g_instances.push_back(c);
+}
+
+INTERNAL void renderInstance(const ModelInstance& inst)
+{
+	ModelAsset* asset = inst.asset;
+	Dunjun::ShaderProgram* shaders = asset->shaders;
+
+	shaders->setUniform("u_camera", g_cameraMatrix);
+	shaders->setUniform("u_model", inst.transform);
+	shaders->setUniform("u_tex", 0);
+
+	asset->texture->bind(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, g_sprite.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_sprite.ibo);
+	glEnableVertexAttribArray(0); // vertPosition
+	glEnableVertexAttribArray(1); // vertColor
+	glEnableVertexAttribArray(2); // vertTexCoord
+
+	glVertexAttribPointer(0,
+	                      2,
+	                      GL_FLOAT,
+	                      GL_FALSE,
+	                      sizeof(Vertex), // Stride
+	                      (const GLvoid*)(0));
+	glVertexAttribPointer(1,
+	                      4,
+	                      GL_UNSIGNED_BYTE,
+	                      GL_TRUE,
+	                      sizeof(Vertex), // Stride
+	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
+	glVertexAttribPointer(
+	    2,
+	    2,
+	    GL_FLOAT,
+	    GL_FALSE,
+	    sizeof(Vertex), // Stride
+	    (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
+
+	glDrawElements(asset->drawType, asset->drawCount, GL_UNSIGNED_INT, nullptr);
+
+	glDisableVertexAttribArray(0); // vertPosition
+	glDisableVertexAttribArray(1); // vertColor
+	glDisableVertexAttribArray(2); // vertTexCoord
+}
+
+INTERNAL void render()
+{
+	Dunjun::ShaderProgram* currentShaders = nullptr;
+
+	for (const auto& inst : g_instances)
+	{
+		if (inst.asset->shaders != currentShaders)
+		{
+			currentShaders = inst.asset->shaders;
+			currentShaders->use();
+		}
+		renderInstance(inst);
+	}
+
+	if (currentShaders)
+		currentShaders->stopUsing();
+}
+
 // TODO(bill): Remove this and implement a true font render
 //             Maybe using stb_truetype.h?
 namespace Debug
 {
-// Color Helper Union
-// NOTE(bill): May implement this into actual project as the Color type
-union Color
-{
-	Dunjun::u8 rgba[4];
-	struct
-	{
-		Dunjun::u8 r, g, b, a;
-	};
-};
 struct stb_font_vertex
 {
 	Dunjun::f32 x, y, z;
-	Color color;
+	Dunjun::Color color;
 };
 
 INTERNAL void drawString(GLFWwindow* window,
                          const std::string& text,
                          float x,
                          float y,
-                         Color color)
+                         Dunjun::Color color)
 {
 	LOCAL_PERSIST stb_font_vertex buffer[6000]; // ~500 chars
 	int numQuads = stb_easy_font_print(
@@ -143,7 +258,7 @@ INTERNAL void drawString(GLFWwindow* window,
 		glfwGetWindowSize(window, &width, &height);
 		glOrtho(0.0f, (GLfloat)width, (GLfloat)height, 0.0f, -1.0f, 1.0f);
 
-		glColor4ubv(color.rgba);
+		glColor4ubv(color.data);
 		glBegin(GL_QUADS);
 		for (int i = 0; i < numQuads; i++)
 		{
@@ -182,38 +297,9 @@ int main(int argc, char** argv)
 	// glEnable(GL_CULL_FACE);
 	// glCullFace(GL_BACK);
 
-	Vertex vertices[] = {
-	    //  x      y     r     g     b     a       s     t
-	    {{+0.5f, +0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {1.0f, 1.0f}}, // Vertex 0
-	    {{-0.5f, +0.5f}, {{0xFF, 0x00, 0x00, 0xFF}}, {0.0f, 1.0f}}, // Vertex 1
-	    {{+0.5f, -0.5f}, {{0x00, 0xFF, 0x00, 0xFF}}, {1.0f, 0.0f}}, // Vertex 2
-	    {{-0.5f, -0.5f}, {{0x00, 0x00, 0xFF, 0xFF}}, {0.0f, 0.0f}}, // Vertex 3
-	};
-
-	GLuint vbo; // Vertex Buffer Object
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	Dunjun::ShaderProgram shaderProgram;
-	if (!shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Vertex,
-	                                        "data/shaders/default.vert.glsl"))
-		throw std::runtime_error(shaderProgram.getErrorLog());
-
-	if (!shaderProgram.attachShaderFromFile(Dunjun::ShaderType::Fragment,
-	                                        "data/shaders/default.frag.glsl"))
-		throw std::runtime_error(shaderProgram.getErrorLog());
-	shaderProgram.bindAttribLocation(0, "a_position");
-	shaderProgram.bindAttribLocation(1, "a_color");
-	shaderProgram.bindAttribLocation(2, "a_texCoord");
-	if (!shaderProgram.link())
-		throw std::runtime_error(shaderProgram.getErrorLog());
-	shaderProgram.use();
-
-	Dunjun::Texture tex;
-	tex.loadFromFile("data/textures/kitten.jpg");
-	tex.bind(0);
-	shaderProgram.setUniform("u_tex", 0);
+	loadShaders();
+	loadSpriteAsset();
+	loadInstances();
 
 	bool running = true;
 	bool fullscreen = false;
@@ -225,32 +311,30 @@ int main(int argc, char** argv)
 
 	while (running)
 	{
-		// reshape
 		// TODO(bill): only get window size when windows is resized
 
+		// reshape
 		int width, height;
 		glfwGetWindowSize(window, &width, &height);
 		glViewport(0, 0, width, height);
+		g_windowWidth = width;
+		g_windowHeight = height;
+
+		{
+			using namespace Dunjun;
+
+			Matrix4 model = rotate(Degree(glfwGetTime() * 60.0f), {0, 1, 0});
+			Matrix4 view = lookAt({1.0f, 2.0f, 4.0f}, {0.0f, 0.0f, 0.0f}, {0, 1, 0});
+			Matrix4 proj = perspective(
+				Degree(50.0f), (f32)g_windowWidth / (f32)g_windowHeight, 0.1f, 100.0f);
+
+			g_cameraMatrix = proj * view;
+		}
 
 		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		shaderProgram.use();
-		{
-			using namespace Dunjun;
-			Matrix4 model = rotate(Degree(glfwGetTime() * 60.0f), {0, 1, 0});
-			Matrix4 view =
-			    lookAt({1.0f, 2.0f, 4.0f}, {0.0f, 0.0f, 0.0f}, {0, 1, 0});
-			Matrix4 proj = perspective(
-			    Degree(50.0f), (f32)width / (f32)height, 0.1f, 100.0f);
-
-			Matrix4 camera = proj * view;
-
-			shaderProgram.setUniform("u_camera", camera);
-			shaderProgram.setUniform("u_model", model);
-		}
 		render();
-		shaderProgram.stopUsing();
 
 		if (tc.update(0.5))
 		{
@@ -262,7 +346,7 @@ int main(int argc, char** argv)
 
 		// Debug
 		Debug::drawString(
-		    window, titleStream.str(), 0, 0, {{255, 255, 255, 255}});
+		    window, titleStream.str(), 0, 0, {{0XFF, 0XFF, 0XFF, 0XFF}});
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

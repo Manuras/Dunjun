@@ -35,10 +35,10 @@ struct Vector2
 
 	Vector2(const Vector2& other) = default;
 
-	f32& operator[](usize index) { return data[index]; }
-	const f32& operator[](usize index) const { return data[index]; }
+	inline f32& operator[](usize index) { return data[index]; }
+	inline const f32& operator[](usize index) const { return data[index]; }
 
-	bool operator==(const Vector2& other) const
+	inline bool operator==(const Vector2& other) const
 	{
 		for (usize i = 0; i < 2; i++)
 		{
@@ -49,33 +49,32 @@ struct Vector2
 		return true;
 	}
 
-	bool operator!=(const Vector2& other) const
-	{
-		return !operator==(other);
-	}
+	inline bool operator!=(const Vector2& other) const { return !operator==(other); }
 
-	Vector2 operator+(const Vector2& other) const
+	inline Vector2 operator-() const { return {-x, -y}; }
+
+	inline Vector2 operator+(const Vector2& other) const
 	{
 		return Vector2(x + other.x, y + other.y);
 	}
 
-	Vector2 operator-(const Vector2& other) const
+	inline Vector2 operator-(const Vector2& other) const
 	{
 		return Vector2(x - other.x, y - other.y);
 	}
 
-	Vector2 operator*(f32 scalar) const
+	inline Vector2 operator*(f32 scalar) const
 	{
 		return Vector2(scalar * x, scalar * y);
 	}
 
-	Vector2 operator/(f32 scalar) const
+	inline Vector2 operator/(f32 scalar) const
 	{
 		return Vector2(x / scalar, y / scalar);
 	}
 
 	// Hadamard Product
-	Vector2 operator*(const Vector2& other) const
+	inline Vector2 operator*(const Vector2& other) const
 	{
 		Vector2 result;
 		for (usize i = 0; i < 2; i++)
@@ -83,7 +82,7 @@ struct Vector2
 		return result;
 	}
 
-	Vector2& operator+=(const Vector2& other)
+	inline Vector2& operator+=(const Vector2& other)
 	{
 		x += other.x;
 		y += other.y;
@@ -91,7 +90,7 @@ struct Vector2
 		return *this;
 	}
 
-	Vector2& operator-=(const Vector2& other)
+	inline Vector2& operator-=(const Vector2& other)
 	{
 		x -= other.x;
 		y -= other.y;
@@ -99,7 +98,7 @@ struct Vector2
 		return *this;
 	}
 
-	Vector2& operator*=(f32 scalar)
+	inline Vector2& operator*=(f32 scalar)
 	{
 		x *= scalar;
 		y *= scalar;
@@ -107,7 +106,7 @@ struct Vector2
 		return *this;
 	}
 
-	Vector2& operator/=(f32 scalar)
+	inline Vector2& operator/=(f32 scalar)
 	{
 		x /= scalar;
 		y /= scalar;
@@ -150,7 +149,7 @@ inline f32 cross(const Vector2& a, const Vector2& b)
 
 inline f32 lengthSquared(const Vector2& a) { return dot(a, a); }
 
-inline f32 length(const Vector2& a) { return std::sqrtf(lengthSquared(a)); }
+inline f32 length(const Vector2& a) { return std::sqrt(lengthSquared(a)); }
 
 inline Vector2 normalize(const Vector2& a) { return a * (1.0f / length(a)); }
 
