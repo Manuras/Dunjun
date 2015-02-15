@@ -41,13 +41,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>bin</OutDir>
     <IntDir>bin</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>external/glew-1.12.0/include;external/glfw-3.1.bin.WIN32/include;external/stb-master/include;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/external/glew-1.12.0/include;$(ProjectDir)/external/glfw-3.1.bin.WIN32/include;$(ProjectDir)/external/stb-master/include;$(ProjectDir)/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

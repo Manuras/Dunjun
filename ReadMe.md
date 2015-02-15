@@ -27,7 +27,7 @@ The game will be a rogue-like dungeon crawler style game.
 * [012 - Matrix4 Type](https://www.youtube.com/watch?v=fcHEk02Hasg)
 * [013 - Matrix Transform Functions](https://www.youtube.com/watch?v=WEpA4NbN-xQ)
 * [014 - View & Projection Matrices & Angles](https://www.youtube.com/watch?v=QAIbGN_oXdo)
-* [015 - Constants, Cleanup & GLSL Convention]()
+* [015 - Constants, Cleanup & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
 * 016 - ModelAssets & ModelInstances
 
 ## Contact ##

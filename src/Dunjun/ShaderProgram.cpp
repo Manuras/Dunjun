@@ -238,7 +238,7 @@ void ShaderProgram::setUniform(const GLchar* name, u32 x)
 	glUniform1ui(loc, x);
 }
 
-void ShaderProgram::setUniform(const GLchar* name, i32 x)
+void ShaderProgram::setUniform(const GLchar* name, s32 x)
 {
 	if (!isInUse())
 		use();

@@ -24,6 +24,7 @@
 GLOBAL int g_windowWidth = 854;
 GLOBAL int g_windowHeight = 480;
 
+// TODO(bill): Place into its own file and add other data
 struct Vertex
 {
 	Dunjun::Vector2 position;
@@ -170,17 +171,20 @@ INTERNAL void loadInstances()
 
 INTERNAL void renderInstance(const ModelInstance& inst)
 {
+	using namespace Dunjun;
+
 	ModelAsset* asset = inst.asset;
 	Dunjun::ShaderProgram* shaders = asset->shaders;
 
 	shaders->setUniform("u_camera", g_cameraMatrix);
 	shaders->setUniform("u_model", inst.transform);
-	shaders->setUniform("u_tex", 0);
+	shaders->setUniform("u_tex", (Dunjun::u32)0);
 
 	asset->texture->bind(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, g_sprite.vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_sprite.ibo);
+
 	glEnableVertexAttribArray(0); // vertPosition
 	glEnableVertexAttribArray(1); // vertColor
 	glEnableVertexAttribArray(2); // vertTexCoord
@@ -193,17 +197,16 @@ INTERNAL void renderInstance(const ModelInstance& inst)
 	                      (const GLvoid*)(0));
 	glVertexAttribPointer(1,
 	                      4,
-	                      GL_UNSIGNED_BYTE,
+	                      GL_UNSIGNED_BYTE, // 0-255 => 0-1
 	                      GL_TRUE,
 	                      sizeof(Vertex), // Stride
-	                      (const GLvoid*)(sizeof(Dunjun::Vector2)));
-	glVertexAttribPointer(
-	    2,
-	    2,
-	    GL_FLOAT,
-	    GL_FALSE,
-	    sizeof(Vertex), // Stride
-	    (const GLvoid*)(sizeof(Dunjun::Vector2) + sizeof(Dunjun::Color)));
+	                      (const GLvoid*)(sizeof(Vector2)));
+	glVertexAttribPointer(2,
+	                      2,
+	                      GL_FLOAT,
+	                      GL_FALSE,
+	                      sizeof(Vertex), // Stride
+	                      (const GLvoid*)(sizeof(Vector2) + sizeof(Color)));
 
 	glDrawElements(asset->drawType, asset->drawCount, GL_UNSIGNED_INT, nullptr);
 
@@ -220,6 +223,8 @@ INTERNAL void render()
 	{
 		if (inst.asset->shaders != currentShaders)
 		{
+			if (currentShaders)
+				currentShaders->stopUsing();
 			currentShaders = inst.asset->shaders;
 			currentShaders->use();
 		}
@@ -324,15 +329,22 @@ int main(int argc, char** argv)
 			using namespace Dunjun;
 
 			Matrix4 model = rotate(Degree(glfwGetTime() * 60.0f), {0, 1, 0});
-			Matrix4 view = lookAt({1.0f, 2.0f, 4.0f}, {0.0f, 0.0f, 0.0f}, {0, 1, 0});
+			Matrix4 view = lookAt({1.0f, 2.0f, 4.0f}, // eye
+			                      {0.0f, 0.0f, 0.0f}, // center
+			                      {0, 1, 0}           // up
+			                      );
 			Matrix4 proj = perspective(
-				Degree(50.0f), (f32)g_windowWidth / (f32)g_windowHeight, 0.1f, 100.0f);
+			    Degree(50.0f),                            // fovY
+			    (f32)g_windowWidth / (f32)g_windowHeight, // expect ratio
+			    0.1f,                                     // zNear
+			    100.0f                                    // zFar
+			    );
 
 			g_cameraMatrix = proj * view;
 		}
 
 		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		render();
 

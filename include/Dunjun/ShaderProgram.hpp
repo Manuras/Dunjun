@@ -46,7 +46,7 @@ public:
 	void setUniform(const GLchar* name, f32 x, f32 y, f32 z);
 	void setUniform(const GLchar* name, f32 x, f32 y, f32 z, f32 w);
 	void setUniform(const GLchar* name, u32 x);
-	void setUniform(const GLchar* name, i32 x);
+	void setUniform(const GLchar* name, s32 x);
 	void setUniform(const GLchar* name, bool x);
 	void setUniform(const GLchar* name, const Vector2& v);
 	void setUniform(const GLchar* name, const Vector3& v);
