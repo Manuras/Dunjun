@@ -29,6 +29,9 @@ The game will be a rogue-like dungeon crawler style game.
 * [014 - View & Projection Matrices & Angles](https://www.youtube.com/watch?v=QAIbGN_oXdo)
 * [015 - Constants, Cleanup & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
 * 016 - ModelAssets & ModelInstances
+* 017 - Introduction to Complex Numbers
+* 018 - Introduction to Quaternions
+* 019 - Quaternion Interpolation
 
 ## Contact ##
 
