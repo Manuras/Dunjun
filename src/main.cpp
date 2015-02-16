@@ -280,6 +280,24 @@ INTERNAL void drawString(GLFWwindow* window,
 
 int main(int argc, char** argv)
 {
+	{
+		using namespace Dunjun;
+
+		Quaternion q;
+		Vector3 p;
+
+		q = angleAxis(Degree(45), Vector3(0, 0, 1));
+		p = {2, 0, 0};
+
+		std::cout << q << std::endl;
+		std::cout << p << std::endl;
+
+		std::cout << (q * Quaternion(p, 0) * conjugate(q)).xyz << std::endl;
+		std::cout << q * p << std::endl;
+
+	}
+
+
 	GLFWwindow* window;
 
 	if (!glfwInit())

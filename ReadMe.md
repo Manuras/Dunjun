@@ -32,6 +32,7 @@ The game will be a rogue-like dungeon crawler style game.
 * 017 - Introduction to Complex Numbers
 * 018 - Introduction to Quaternions
 * 019 - Quaternion Interpolation
+* 020 - Implement Quaternion
 
 ## Contact ##
 
