@@ -1,9 +1,8 @@
 # Dunjun #
+This project will be documenting and demonstrating the development of making a game from scratch (using minimal libraries).
+Every step of the game development process and every line of code will be explained thoroughly.
 
-I will be documenting and demonstrating the development of making a game from scratch (minimal libraries).
-
-The game will be a rogue-like dungeon crawler style game.
-
+The game will be a 3D rogue-like*-like* dungeon crawler style game.
 
 ## Youtube Playlist ##
 
@@ -27,14 +26,39 @@ The game will be a rogue-like dungeon crawler style game.
 * [012 - Matrix4 Type](https://www.youtube.com/watch?v=fcHEk02Hasg)
 * [013 - Matrix Transform Functions](https://www.youtube.com/watch?v=WEpA4NbN-xQ)
 * [014 - View & Projection Matrices & Angles](https://www.youtube.com/watch?v=QAIbGN_oXdo)
-* [015 - Constants, Cleanup & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
-* 016 - ModelAssets & ModelInstances
-* 017 - Introduction to Complex Numbers
-* 018 - Introduction to Quaternions
-* 019 - Quaternion Interpolation
-* 020 - Implement Quaternion
+* [015 - Constants, Code Tidying & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
+* [016 - ModelAssets & ModelInstances](https://www.youtube.com/watch?v=oDwALlxMa4k)
+* [017 - Introduction to Complex Numbers](https://www.youtube.com/watch?v=NpkoqTOWn4E)
+* [018 - Introduction to Quaternions](https://www.youtube.com/watch?v=Vhtw7EvLuQQ)
+* [019 - Quaternion Interpolation](https://www.youtube.com/watch?v=GFnWLM_HcKw)
+* [020 - Implement Quaternions](https://www.youtube.com/watch?v=7rZWS_62rXY)
+* 021 - Quaternion Functions
+* 022 - Transform Type
+* 023 - Fixed Time Step & Code Tidying
 
 ## Contact ##
+
+* Youtube: [GingerGames](https://youtube.com/c/GingerGames)
+* Email: dunjun@gingerbill.org
+* GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
+
+## FAQ ##
+
+### Will this be a simple game, for teaching purposes? ###
+
+No! In fact, the game design has been made to require *complex concepts* which exist in more than most game designs.
+
+### Are the accompanying videos just recordings of someone programming? ###
+
+No! Although 99%* of the programming for the game is recorded in the videos, every step of the game development process and every line of code will be explained thoroughly.
+
+### What platforms will this game support? ###
+
+This game will support Windows, Mac OS X, and Linux.
+
+### I have a problem with X... ###
+
+Please feel free to contact with any problem:
 
 * Youtube: [GingerGames](https://youtube.com/c/GingerGames)
 * Email: dunjun@gingerbill.org
@@ -59,16 +83,16 @@ Platforms:
 ## Dependencies ##
 
 ### Tools ###
-* C++ compiler with C++11 support
+
+* C++ compiler with decent C++11 support
+	- If Visual Studio, please use *at least* MSVC 12.
 
 ### Libraries ###
-* OpenGL
-* GLFW 3.1
+
+* OpenGL (Rendering)
+* GLFW 3.1 (Window, Input and, Context Handling)
 * GLEW (OpenGL Extension Wrangler Library)
-* STB Libraries
-
-## TODO ##
-
+* STB Libraries (Image and Font Loading)
 
 ## Conventions ##
 
@@ -80,12 +104,15 @@ Platforms:
 * TODO!
 
 ### Classes ###
-PascalCase (e.g. ShaderProgram)
 
-### Functions and Methods ###
+PascalCase (Upper CamelCase) (e.g. ShaderProgram)
+
+### Functions, Methods, and Variables ###
+
 camelCase (e.g. loadFromFile)
 
 ### Namespaces ###
+
 PascalCase (e.g. Dunjun::)
 
 The end of a namespace must appended by `namespace` then its name.
@@ -97,13 +124,14 @@ namespace Dunjun
 {
 namespace Inner
 {
-
+...
 } // namespace Inner
 } // namespace Dunjun
 ```
 
 
 ### Using and Typedef ###
+
 In C++11, `using` is a superset of `typedef`. `using` is preferred in this style guide.
 
 ```c++
@@ -114,9 +142,11 @@ typedef std::pair<Foo, Bar> FooBar;
 ```
 
 ### Comments ###
+
 C++ style comments `//` are preferred but C-style comments `/**/` can be used. The reasoning is that C-style comments cannot be nested and most IDEs/Editors can comments whole blocks in the C++ style which can allow for uncommenting a single line easily.
 
 ### Arrays and Vectors ###
+
 When an collection of data is needed, use a `std::vector` unless it is fixed at runtime. If it is fixed at runtime use a classic C array or `std::array`. `std::array` is preferred as it is more C++ but they are exactly the same as it is just a class version of the classic C array.
 
 The vector's elements are guaranteed to be contiguous, so you can pass `&v[0]` to any function expecting a pointer to an array; e.g., C library routines, OpenGL. Also, `std::vector<char> buffer(2048);` is a brilliant way to allocate a local buffer.
@@ -124,6 +154,7 @@ The vector's elements are guaranteed to be contiguous, so you can pass `&v[0]` t
 Use `std::vector` **unless** the profiler says that there is a problem **and** the array is tiny.
 
 ### Pointers ###
+
 Raw pointers (e.g. Bar*) can be used, but if a smart pointer can be used, please do so.
 
 Shorthand for smart pointers (`std::unique_ptr`, `std::shared_ptr`, `std::weak_ptr`) of classes can be declared with using.
@@ -150,11 +181,13 @@ public:
 If a class/etc. does not need a certain smart pointer, do not give a shorthand.
 
 ### Variables ###
+
 camelCase (e.g. temp, m_world, s_time)
 
 ### Variable Prefixes ###
+
 * m_ for protected/private member variables
-* s_ for static variables
+* s_ for static variables (non const)
 * g_ for global variables (*should* never be used! (except on a few rare occasions but if done so, place them within a namespace, at least!))
 
 
@@ -174,6 +207,7 @@ private:
 
 
 ### Defines ###
+
 In `Dunjun/Common.hpp`, there are some defines for static:
 
 ```c++

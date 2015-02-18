@@ -38,9 +38,8 @@ struct Quaternion
 	{
 	}
 
-	f32 operator[](usize index) const { return data[index]; }
-
-	f32& operator[](usize index) { return data[index]; }
+	inline const f32& operator[](usize index) const { return data[index]; }
+	inline f32& operator[](usize index) { return data[index]; }
 
 	Quaternion operator-() const
 	{

@@ -30,8 +30,6 @@ void main()
 
 	// v' = proj * view * transform * v;
 	vec3 pos = vec3(a_position, 0.0);
-	//pos = u_transform.scale * pos;
-	// pos = quaternionRotate(u_transform.orientation, pos);
-	pos = u_transform.position + pos;
+	pos = u_transform.position + quaternionRotate(u_transform.orientation, u_transform.scale * pos);
 	gl_Position = u_camera * vec4(pos, 1.0);
 }

@@ -1,7 +1,6 @@
 #ifndef DUNJUN_SHADERPROGRAM_HPP
 #define DUNJUN_SHADERPROGRAM_HPP
 
-
 #include <Dunjun/OpenGL.hpp>
 #include <Dunjun/NonCopyable.hpp>
 
@@ -33,28 +32,29 @@ public:
 	void use() const;
 	bool isInUse() const;
 	void stopUsing() const;
+	void checkInUse() const; // if not in use, will throw a std::runtime_error
 
 	bool link();
 	bool isLinked();
 
-	void bindAttribLocation(GLuint location, const GLchar* name);
+	void bindAttribLocation(GLuint location, const std::string& name);
 
-	GLint getAttribLocation(const GLchar* name);
-	GLint getUniformLocation(const GLchar* name);
+	GLint getAttribLocation(const std::string& name);
+	GLint getUniformLocation(const std::string& name);
 
-	void setUniform(const GLchar* name, f32 x);
-	void setUniform(const GLchar* name, f32 x, f32 y);
-	void setUniform(const GLchar* name, f32 x, f32 y, f32 z);
-	void setUniform(const GLchar* name, f32 x, f32 y, f32 z, f32 w);
-	void setUniform(const GLchar* name, u32 x);
-	void setUniform(const GLchar* name, s32 x);
-	void setUniform(const GLchar* name, bool x);
-	void setUniform(const GLchar* name, const Vector2& v);
-	void setUniform(const GLchar* name, const Vector3& v);
-	void setUniform(const GLchar* name, const Vector4& v);
-	void setUniform(const GLchar* name, const Matrix4& m);
-	void setUniform(const GLchar* name, const Quaternion& t);
-	void setUniform(const GLchar* name, const Transform& t);
+	void setUniform(const std::string& name, f32 x);
+	void setUniform(const std::string& name, f32 x, f32 y);
+	void setUniform(const std::string& name, f32 x, f32 y, f32 z);
+	void setUniform(const std::string& name, f32 x, f32 y, f32 z, f32 w);
+	void setUniform(const std::string& name, u32 x);
+	void setUniform(const std::string& name, s32 x);
+	void setUniform(const std::string& name, bool x);
+	void setUniform(const std::string& name, const Vector2& v);
+	void setUniform(const std::string& name, const Vector3& v);
+	void setUniform(const std::string& name, const Vector4& v);
+	void setUniform(const std::string& name, const Matrix4& m);
+	void setUniform(const std::string& name, const Quaternion& t);
+	void setUniform(const std::string& name, const Transform& t);
 
 	inline GLuint getObject() const { return m_object; }
 	inline const std::string& getErrorLog() const { return m_errorLog; }
@@ -64,9 +64,8 @@ private:
 	bool m_linked;
 	std::string m_errorLog;
 
-	std::map<const GLchar*, GLint> m_attribLocations;
-	std::map<const GLchar*, GLint> m_uniformLocations;
-
+	std::map<std::string, GLint> m_attribLocations;
+	std::map<std::string, GLint> m_uniformLocations;
 };
 } // namespace Dunjun
 

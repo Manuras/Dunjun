@@ -104,6 +104,7 @@
     <ClInclude Include="include\Dunjun\TickCounter.hpp" />
     <ClInclude Include="include\Dunjun\Transform.hpp" />
     <ClInclude Include="include\Dunjun\Types.hpp" />
+    <ClInclude Include="include\Dunjun\Vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
