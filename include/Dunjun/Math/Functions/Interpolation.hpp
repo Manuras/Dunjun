@@ -18,6 +18,8 @@ inline f32 lerp(const T& x, const T& y, f32 t)
 
 inline Quaternion slerp(const Quaternion& x, const Quaternion& y, f32 t)
 {
+	assert(t >= 0.0f && t <= 1.0f);
+
 	Quaternion z = y;
 
 	f32 cosTheta = dot(x, y);
