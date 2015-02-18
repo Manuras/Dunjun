@@ -7,7 +7,8 @@
 
 #include <Dunjun/Common.hpp>
 
-#include <Dunjun/Math/Matrix4.hpp>
+#include <Dunjun/Math.hpp>
+#include <Dunjun/Transform.hpp>
 
 #include <map>
 #include <string>
@@ -52,7 +53,8 @@ public:
 	void setUniform(const GLchar* name, const Vector3& v);
 	void setUniform(const GLchar* name, const Vector4& v);
 	void setUniform(const GLchar* name, const Matrix4& m);
-
+	void setUniform(const GLchar* name, const Quaternion& t);
+	void setUniform(const GLchar* name, const Transform& t);
 
 	inline GLuint getObject() const { return m_object; }
 	inline const std::string& getErrorLog() const { return m_errorLog; }

@@ -185,9 +185,10 @@ inline Quaternion inverse(const Quaternion& q)
 	return c;
 }
 
-Vector3 operator*(const Quaternion& q, const Vector3& v)
+inline Vector3 operator*(const Quaternion& q, const Vector3& v)
 {
 	// return q * Quaternion(v, 0) * conjugate(q); // More Expensive
+	// TODO(bill): Remove cross product in turn for expanded form
 	Vector3 t = 2.0f * cross(q.vector(), v);
 	return (v + q.w * t + cross(q.vector(), t));
 }

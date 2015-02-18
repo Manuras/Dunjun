@@ -9,6 +9,7 @@
 
 #include <Dunjun/Color.hpp>
 #include <Dunjun/Math.hpp>
+#include <Dunjun/Transform.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -47,7 +48,7 @@ struct ModelAsset
 struct ModelInstance
 {
 	ModelAsset* asset;
-	Dunjun::Matrix4 transform;
+	Dunjun::Transform transform;
 };
 
 GLOBAL Dunjun::ShaderProgram* g_defaultShader;
@@ -155,17 +156,18 @@ INTERNAL void loadInstances()
 
 	ModelInstance a;
 	a.asset = &g_sprite;
-	a.transform = translate({0, 0, 0});
+	a.transform.position = {0, 0, 0};
+	//a.transform.orientation = angleAxis(Degree(45), {0, 0, 0});
 	g_instances.push_back(a);
 
 	ModelInstance b;
 	b.asset = &g_sprite;
-	b.transform = translate({2, 0, 0});
+	b.transform.position = {2, 0, 0};
 	g_instances.push_back(b);
 
 	ModelInstance c;
 	c.asset = &g_sprite;
-	c.transform = translate({0, 0, 1});
+	c.transform.position = {0, 0, 1};
 	g_instances.push_back(c);
 }
 
@@ -177,7 +179,12 @@ INTERNAL void renderInstance(const ModelInstance& inst)
 	Dunjun::ShaderProgram* shaders = asset->shaders;
 
 	shaders->setUniform("u_camera", g_cameraMatrix);
-	shaders->setUniform("u_model", inst.transform);
+
+	Matrix4 mat = translate(inst.transform.position) *
+	              quaternionToMatrix4(inst.transform.orientation) *
+	              scale(inst.transform.scale);
+
+	shaders->setUniform("u_transform", inst.transform);
 	shaders->setUniform("u_tex", (Dunjun::u32)0);
 
 	asset->texture->bind(0);
@@ -292,11 +299,10 @@ int main(int argc, char** argv)
 		std::cout << q << std::endl;
 		std::cout << p << std::endl;
 
-		std::cout << (q * Quaternion(p, 0) * conjugate(q)).vector() << std::endl;
-		std::cout << q * p << std::endl;
-
+		std::cout << (q * Quaternion(p, 0) * conjugate(q)).vector()
+		          << std::endl;
+		std::cout << q* p << std::endl;
 	}
-
 
 	GLFWwindow* window;
 

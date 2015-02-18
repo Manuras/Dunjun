@@ -82,6 +82,15 @@ struct Vector2
 		return result;
 	}
 
+	// Hadamard Product
+	inline Vector2 operator/(const Vector2& other) const
+	{
+		Vector2 result;
+		for (usize i = 0; i < 2; i++)
+			result[i] = data[i] / other.data[i];
+		return result;
+	}
+
 	inline Vector2& operator+=(const Vector2& other)
 	{
 		x += other.x;

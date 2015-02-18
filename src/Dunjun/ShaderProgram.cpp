@@ -297,4 +297,59 @@ void ShaderProgram::setUniform(const GLchar* name, const Matrix4& m)
 		return;
 	glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
 }
+
+void ShaderProgram::setUniform(const GLchar* name, const Quaternion& t)
+{
+	if (!isInUse())
+		use();
+	GLint loc = getUniformLocation(name);
+	if (loc == -1)
+		return;
+	glUniform4fv(loc, 1, &t.data[0]);
+}
+
+// TODO(bill):
+// FIXME(bill): Location of transform elements sometimes not found
+void ShaderProgram::setUniform(const GLchar* name, const Transform& t)
+{
+	std::string namePosition = name;
+	namePosition += ".position";
+	std::string nameOrientation = name;
+	nameOrientation += ".orientation";
+	std::string nameScale = name;
+	nameScale += ".scale";
+
+	if (!isInUse())
+		use();
+
+	{
+		GLint loc = getUniformLocation(namePosition.c_str());
+		if (loc == -1)
+		{
+
+			return;
+		}
+		glUniform3fv(loc, 1, &t.position[0]);
+	}
+
+	{
+		GLint loc = getUniformLocation(nameOrientation.c_str());
+		if (loc == -1)
+		{
+
+			return;
+		}
+		glUniform4fv(loc, 1, &t.orientation.data[0]);
+	}
+	{
+		GLint loc = getUniformLocation(nameScale.c_str());
+		if (loc == -1)
+		{
+
+			return;
+		}
+		glUniform3fv(loc, 1, &t.scale[0]);
+	}
+}
+
 } // namespace Dunjun
