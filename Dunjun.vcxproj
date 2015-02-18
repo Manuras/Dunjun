@@ -109,7 +109,9 @@
     <None Include=".gitignore" />
     <None Include="data\shaders\default.frag.glsl" />
     <None Include="data\shaders\default.vert.glsl" />
+    <None Include="cloc.bat" />
     <None Include="ReadMe.md" />
+    <None Include="static_check.bat" />
     <None Include="todo_check.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

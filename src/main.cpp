@@ -292,7 +292,7 @@ int main(int argc, char** argv)
 		std::cout << q << std::endl;
 		std::cout << p << std::endl;
 
-		std::cout << (q * Quaternion(p, 0) * conjugate(q)).xyz << std::endl;
+		std::cout << (q * Quaternion(p, 0) * conjugate(q)).vector() << std::endl;
 		std::cout << q * p << std::endl;
 
 	}

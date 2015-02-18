@@ -3,6 +3,7 @@
 
 #include <Dunjun/Types.hpp>
 
+#include <cassert>
 #include <functional>
 #include <fstream>
 #include <iostream>

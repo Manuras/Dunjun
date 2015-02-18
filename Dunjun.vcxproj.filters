@@ -112,5 +112,11 @@
     <None Include="todo_check.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="static_check.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="cloc.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
