@@ -110,16 +110,16 @@ INTERNAL void loadShaders()
 	g_defaultShader = new ShaderProgram();
 	if (!g_defaultShader->attachShaderFromFile(
 	        ShaderType::Vertex, "data/shaders/default.vert.glsl"))
-		throw std::runtime_error(g_defaultShader->getErrorLog());
+		throw std::runtime_error(g_defaultShader->errorLog);
 
 	if (!g_defaultShader->attachShaderFromFile(
 	        ShaderType::Fragment, "data/shaders/default.frag.glsl"))
-		throw std::runtime_error(g_defaultShader->getErrorLog());
+		throw std::runtime_error(g_defaultShader->errorLog);
 	g_defaultShader->bindAttribLocation(0, "a_position");
 	g_defaultShader->bindAttribLocation(1, "a_color");
 	g_defaultShader->bindAttribLocation(2, "a_texCoord");
 	if (!g_defaultShader->link())
-		throw std::runtime_error(g_defaultShader->getErrorLog());
+		throw std::runtime_error(g_defaultShader->errorLog);
 }
 
 INTERNAL void loadSpriteAsset()
@@ -184,15 +184,15 @@ INTERNAL void update(float dt)
 	{
 		Matrix4 model = rotate(Degree(glfwGetTime() * 60.0f), {0, 1, 0});
 		Matrix4 view = lookAt({1.0f, 2.0f, 4.0f}, // eye
-		{0.0f, 0.0f, 0.0f}, // center
-		{0, 1, 0}           // up
-		);
+		                      {0.0f, 0.0f, 0.0f}, // center
+		                      {0, 1, 0}           // up
+		                      );
 		Matrix4 proj = perspective(
-			Degree(50.0f),                            // fovY
-			(f32)g_windowWidth / (f32)g_windowHeight, // expect ratio
-			0.1f,                                     // zNear
-			100.0f                                    // zFar
-			);
+		    Degree(50.0f),                            // fovY
+		    (f32)g_windowWidth / (f32)g_windowHeight, // expect ratio
+		    0.1f,                                     // zNear
+		    100.0f                                    // zFar
+		    );
 
 		g_cameraMatrix = proj * view;
 	}
@@ -268,7 +268,6 @@ INTERNAL void render(GLFWwindow* window)
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
-
 }
 
 // TODO(bill): Remove this and implement a true font render

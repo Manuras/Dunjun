@@ -34,17 +34,17 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 }
 
 ShaderProgram::ShaderProgram()
-: m_object(0)
-, m_linked(false)
-, m_errorLog()
+: object(0)
+, isLinked(false)
+, errorLog()
 {
-	m_object = glCreateProgram();
+	object = glCreateProgram();
 }
 
 ShaderProgram::~ShaderProgram()
 {
-	if (m_object)
-		glDeleteProgram(m_object);
+	if (object)
+		glDeleteProgram(object);
 }
 
 bool ShaderProgram::attachShaderFromFile(ShaderType type,
@@ -57,8 +57,8 @@ bool ShaderProgram::attachShaderFromFile(ShaderType type,
 bool ShaderProgram::attachShaderFromMemory(ShaderType type,
                                            const std::string& source)
 {
-	if (!m_object)
-		m_object = glCreateProgram();
+	if (!object)
+		object = glCreateProgram();
 
 	const char* shaderSource = source.c_str();
 
@@ -88,14 +88,14 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 
 		msg.append("\n");
 
-		m_errorLog.append(msg);
+		errorLog.data.append(msg);
 
 		glDeleteShader(shader);
 
 		return false;
 	}
 
-	glAttachShader(m_object, shader);
+	glAttachShader(object, shader);
 
 	return true;
 }
@@ -103,7 +103,7 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 void ShaderProgram::use() const
 {
 	if (!isInUse())
-		glUseProgram(m_object);
+		glUseProgram(object);
 }
 
 bool ShaderProgram::isInUse() const
@@ -111,7 +111,7 @@ bool ShaderProgram::isInUse() const
 	GLint currentProgram = 0;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
-	return (currentProgram == (GLint)m_object);
+	return (currentProgram == (GLint)object);
 }
 
 void ShaderProgram::stopUsing() const
@@ -128,47 +128,45 @@ void ShaderProgram::checkInUse() const
 
 bool ShaderProgram::link()
 {
-	if (!m_object)
-		m_object = glCreateProgram();
+	if (!object)
+		object = glCreateProgram();
 
-	if (!isLinked())
+	if (!isLinked)
 	{
-		glLinkProgram(m_object);
+		glLinkProgram(object);
 
 		GLint status;
-		glGetProgramiv(m_object, GL_LINK_STATUS, &status);
+		glGetProgramiv(object, GL_LINK_STATUS, &status);
 		if (status == GL_FALSE)
 		{
 			std::string msg("ShaderProgram linking failure: \n");
 
 			GLint infoLogLength;
-			glGetProgramiv(m_object, GL_INFO_LOG_LENGTH, &infoLogLength);
+			glGetProgramiv(object, GL_INFO_LOG_LENGTH, &infoLogLength);
 			char* strInfoLog = new char[infoLogLength + 1];
-			glGetProgramInfoLog(m_object, infoLogLength, NULL, strInfoLog);
+			glGetProgramInfoLog(object, infoLogLength, nullptr, strInfoLog);
 			msg.append(strInfoLog);
 			delete[] strInfoLog;
 
 			msg.append("\n");
-			m_errorLog.append(msg);
+			errorLog.data.append(msg);
 
-			glDeleteProgram(m_object);
-			m_object = 0;
+			glDeleteProgram(object);
+			object = 0;
 
-			m_linked = false;
-			return m_linked;
+			isLinked = false;
+			return isLinked;
 		}
 
-		m_linked = true;
+		isLinked = true;
 	}
 
-	return m_linked;
+	return isLinked;
 }
-
-bool ShaderProgram::isLinked() { return m_linked; }
 
 void ShaderProgram::bindAttribLocation(GLuint location, const std::string& name)
 {
-	glBindAttribLocation(m_object, location, name.c_str());
+	glBindAttribLocation(object, location, name.c_str());
 	m_attribLocations[name] = location;
 }
 
@@ -178,7 +176,7 @@ GLint ShaderProgram::getAttribLocation(const std::string& name)
 	if (found != m_attribLocations.end())
 		return found->second;
 
-	GLint loc = glGetAttribLocation(m_object, name.c_str());
+	GLint loc = glGetAttribLocation(object, name.c_str());
 	m_attribLocations[name] = loc;
 	return loc;
 }
@@ -189,7 +187,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name)
 	if (found != m_uniformLocations.end())
 		return found->second;
 
-	GLint loc = glGetUniformLocation(m_object, name.c_str());
+	GLint loc = glGetUniformLocation(object, name.c_str());
 	m_uniformLocations[name] = loc;
 	return loc;
 }

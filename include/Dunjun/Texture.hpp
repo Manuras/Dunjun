@@ -7,7 +7,7 @@
 
 namespace Dunjun
 {
-class Texture : public NonCopyable
+class Texture : private NonCopyable
 {
 public:
 	Texture();
@@ -26,14 +26,9 @@ public:
 
 	void bind(GLuint position) const;
 
-	inline GLuint getObject() const { return m_object; }
-	inline GLfloat getWidth() const { return m_width; }
-	inline GLfloat getHeight() const { return m_height; }
-
-private:
-	GLuint m_object;
-	GLfloat m_width;
-	GLfloat m_height;
+	ReadOnly<GLuint, Texture> object;
+	ReadOnly<GLsizei, Texture> width;
+	ReadOnly<GLsizei, Texture> height;
 };
 } // namespace Dunjun
 

@@ -10,126 +10,126 @@
 namespace Dunjun
 {
 Image::Image()
-: m_format(ImageFormat::None)
-, m_width(0)
-, m_height(0)
-, m_pixels(nullptr)
+: format(ImageFormat::None)
+, width(0)
+, height(0)
+, pixels(nullptr)
 {
 }
 
-Image::Image(u32 width, u32 height, ImageFormat format, const u8* pixels)
-: m_format(ImageFormat::None)
-, m_width(0)
-, m_height(0)
-, m_pixels(nullptr)
+Image::Image(u32 w, u32 h, ImageFormat f, const u8* p)
+: format(ImageFormat::None)
+, width(0)
+, height(0)
+, pixels(nullptr)
 {
-	loadFromMemory(width, height, format, pixels);
+	loadFromMemory(w, h, f, p);
 }
 
 Image::Image(const Image& other)
-: m_format(ImageFormat::None)
-, m_width(0)
-, m_height(0)
-, m_pixels(nullptr)
+: format(ImageFormat::None)
+, width(0)
+, height(0)
+, pixels(nullptr)
 {
 	loadFromMemory(
-	    other.m_width, other.m_height, other.m_format, other.m_pixels);
+	    other.width, other.height, other.format, other.pixels);
 }
 
 Image& Image::operator=(const Image& other)
 {
 	loadFromMemory(
-	    other.m_width, other.m_height, other.m_format, other.m_pixels);
+	    other.width, other.height, other.format, other.pixels);
 	return *this;
 }
 
 Image::~Image()
 {
-	if (m_pixels)
-		delete[] m_pixels;
+	if (pixels)
+		delete[] pixels;
 }
 
 bool Image::loadFromFile(const char* filename)
 {
-	int width, height, format;
-	u8* pixels = stbi_load(filename, &width, &height, &format, 0);
+	int w, h, f;
+	u8* p = stbi_load(filename, &w, &h, &f, 0);
 
-	if (!pixels)
+	if (!p)
 	{
 		std::cerr << stbi_failure_reason() << std::endl;
 		return false;
 	}
 
-	loadFromMemory(width, height, (ImageFormat)format, pixels);
+	loadFromMemory(w, h, (ImageFormat)f, p);
 
-	stbi_image_free(pixels);
+	stbi_image_free(p);
 
-	if (m_pixels)
+	if (pixels)
 		return true;
 	return false;
 }
 
-bool Image::loadFromMemory(u32 width,
-                           u32 height,
-                           ImageFormat format,
-                           const u8* pixels)
+bool Image::loadFromMemory(u32 w,
+                           u32 h,
+                           ImageFormat f,
+                           const u8* p)
 {
-	if (width == 0)
+	if (w == 0)
 	{
 		std::cerr << "Zero width image." << std::endl;
 		return false;
 	}
-	if (height == 0)
+	if (h == 0)
 	{
 		std::cerr << "Zero height image." << std::endl;
 		return false;
 	}
 
-	m_width = width;
-	m_height = height;
-	m_format = format;
+	width = w;
+	height = h;
+	format = f;
 
-	std::size_t imageSize = width * height * (usize)format;
+	usize imageSize = width * height * (usize)f;
 
-	if (m_pixels)
-		delete[] m_pixels;
+	if (pixels)
+		delete[] pixels;
 
-	m_pixels = new u8[imageSize];
+	pixels = new u8[imageSize];
 
-	if (pixels != nullptr)
-		std::memcpy(m_pixels, pixels, imageSize);
+	if (p != nullptr)
+		std::memcpy(pixels, p, imageSize);
 
 	return true;
 }
 
 u8* Image::getPixel(u32 column, u32 row) const
 {
-	if (column >= m_width || row >= m_height)
+	if (column >= width || row >= height)
 		return nullptr;
 
-	return m_pixels + (row * m_width + column) * (usize)m_format;
+	return pixels + (row * width + column) * (usize)format.data;
 }
 
 void Image::setPixel(u32 column, u32 row, const u32* pixel)
 {
-	if (column >= m_width || row >= m_height)
+	if (column >= width || row >= height)
 		return;
 
 	u8* p = getPixel(column, row);
-	std::memcpy(p, pixel, (usize)m_format);
+	std::memcpy(p, pixel, (usize)format.data);
 }
 
 void Image::flipVertically()
 {
-	std::size_t pitch = m_width * (usize)m_format;
-	u32 halfRows = m_height / 2;
+	usize pitch = width * (usize)format.data;
+	u32 halfRows = height / 2;
 	u8* rowBuffer = new u8[pitch];
 
 	for (u32 i = 0; i < halfRows; i++)
 	{
-		u8* row = m_pixels + (i * m_width) * (usize)m_format;
+		u8* row = pixels + (i * width) * (usize)format.data;
 		u8* oppositeRow =
-		    m_pixels + ((m_height - i - 1) * m_width) * (usize)m_format;
+		    pixels + ((height - i - 1) * width) * (usize)format.data;
 
 		std::memcpy(rowBuffer, row, pitch);
 		std::memcpy(row, oppositeRow, pitch);

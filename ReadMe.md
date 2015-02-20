@@ -2,16 +2,21 @@
 This project will be documenting and demonstrating the development of making a game from scratch (using minimal libraries).
 Every step of the game development process and every line of code will be explained thoroughly.
 
-The game will be a 3D rogue-like*-like* dungeon crawler style game.
+The game will be a 3D rogue-like*-like* dungeon crawler style game. More will be revealed as the project goes on.
 
-## Youtube Playlist ##
+## YouTube Playlist ##
 
 [Dunjun Playlist](https://www.youtube.com/playlist?list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
 
 
 ## Episode List ##
 
+### Introduction ###
+
 * [000 - Introduction](https://www.youtube.com/watch?v=fRUYl6_5m3o&index=1&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
+
+### Bare Bones ###
+
 * [001 - Project Setup (Visual Studio)](https://www.youtube.com/watch?v=Vzve8VOn8qA&index=2&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
 * [002 - Creating a Window (GLFW3)](https://www.youtube.com/watch?v=LNxpDcRs8Zg&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e&index=3)
 * [003 - Drawing with OpenGL (GLEW)](https://www.youtube.com/watch?v=42x_p1PeecU)
@@ -20,6 +25,9 @@ The game will be a 3D rogue-like*-like* dungeon crawler style game.
 * [006 - Image Loader](https://www.youtube.com/watch?v=Wl0jh_CBT8w)
 * [007 - Texture Wrapper](https://www.youtube.com/watch?v=2i2jX4yb8sI)
 * [008 - Error Handling & Code Tidying](https://www.youtube.com/watch?v=jUUGEFV7rk0)
+
+### Vectors and Matrices ###
+
 * [009 - Introduction to Transformations with Matrices](https://www.youtube.com/watch?v=imjaU0gO1vY)
 * [010 - Implement Basic Vector Types](https://www.youtube.com/watch?v=MSHeE7kAqbA)
 * [011 - Vector Functions](https://www.youtube.com/watch?v=sX_1BSVp-ok)
@@ -27,19 +35,29 @@ The game will be a 3D rogue-like*-like* dungeon crawler style game.
 * [013 - Matrix Transform Functions](https://www.youtube.com/watch?v=WEpA4NbN-xQ)
 * [014 - View & Projection Matrices & Angles](https://www.youtube.com/watch?v=QAIbGN_oXdo)
 * [015 - Constants, Code Tidying & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
+
+### Model Assets and Model Instances ###
+
 * [016 - ModelAssets & ModelInstances](https://www.youtube.com/watch?v=oDwALlxMa4k)
+
+### Quaternions and Rotations in 3D ###
+
 * [017 - Introduction to Complex Numbers](https://www.youtube.com/watch?v=NpkoqTOWn4E)
 * [018 - Introduction to Quaternions](https://www.youtube.com/watch?v=Vhtw7EvLuQQ)
 * [019 - Quaternion Interpolation](https://www.youtube.com/watch?v=GFnWLM_HcKw)
 * [020 - Implement Quaternions](https://www.youtube.com/watch?v=7rZWS_62rXY)
 * 021 - Quaternion Functions
 * 022 - Transform Type
+
+### ... ###
+
 * 023 - Fixed Time Step & Code Tidying
+* 024 - ReadOnly Types & Camera Type
 
 ## Contact ##
 
-* Youtube: [GingerGames](https://youtube.com/c/GingerGames)
-* Email: dunjun@gingerbill.org
+* YouTube: [GingerGames](https://youtube.com/c/GingerGames)
+* Email: dunjun@gingerBill.org
 * GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 ## FAQ ##
@@ -50,7 +68,9 @@ No! In fact, the game design has been made to require *complex concepts* which e
 
 ### Are the accompanying videos just recordings of someone programming? ###
 
-No! Although 99%* of the programming for the game is recorded in the videos, every step of the game development process and every line of code will be explained thoroughly.
+No! 99%* of the programming for the game is recorded in the videos; every step of the game development process and every line of code will be explained thoroughly.
+
+**Some of the code will not programmed in the videos but this will mostly be bug fixes or minor changes to the code that can be explained quickly.*
 
 ### What platforms will this game support? ###
 
@@ -60,13 +80,15 @@ This game will support Windows, Mac OS X, and Linux.
 
 Please feel free to contact with any problem:
 
-* Youtube: [GingerGames](https://youtube.com/c/GingerGames)
-* Email: dunjun@gingerbill.org
+* YouTube: [GingerGames](https://youtube.com/c/GingerGames)
+* Email: dunjun@gingerBill.org
 * GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 ## Building ##
 
-At the moment, only Windows is supported through the visual studio solution. Mac OS X and Linux will implemented later when needed/wanted.
+At the moment, only Windows is supported through the Visual Studio solution. Mac OS X and Linux will implemented later when needed/wanted.
+
+Most of the code should compile on Mac OS X and Linux with probably only a few minor changes.
 
 ## Supported Platforms ##
 
@@ -101,7 +123,7 @@ Platforms:
 * CamelCase
 * Tabs for indentation
 * Spaces for alignment
-* TODO!
+* More below!
 
 ### Classes ###
 
@@ -182,12 +204,12 @@ If a class/etc. does not need a certain smart pointer, do not give a shorthand.
 
 ### Variables ###
 
-camelCase (e.g. temp, m_world, s_time)
+camelCase (e.g. temp, m\_world, s\_time)
 
 ### Variable Prefixes ###
 
 * m_ for protected/private member variables
-* s_ for static variables (non const)
+* s_ for static variables
 * g_ for global variables (*should* never be used! (except on a few rare occasions but if done so, place them within a namespace, at least!))
 
 
@@ -233,15 +255,17 @@ INTERNAL void doSomething()
 
 ### Annotations ###
 
-* HACK  - don't use in production
-* FIXME - fix as soon as possible
+* HACK  - don't use in production (similar to FIXME but still works)
+* FIXME - fix as soon as possible (does not work as intended)
 * TODO  - todo
-* NOTE  - note to reader
+* NOTE  - note to reader (can be used in conjunction with TODO)
 
 Example:
 
 ```c++
 // TODO(bill): This is some example text for a todo. That
 //             spans multiple lines.
+//             This annotation was written by bill as
+//             indicated next to the annotation
 
 ```

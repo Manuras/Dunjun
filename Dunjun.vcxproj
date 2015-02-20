@@ -99,6 +99,7 @@
     <ClInclude Include="include\Dunjun\Math\Vector4.hpp" />
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
+    <ClInclude Include="include\Dunjun\ReadOnly.hpp" />
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
     <ClInclude Include="include\Dunjun\Texture.hpp" />
     <ClInclude Include="include\Dunjun\TickCounter.hpp" />
