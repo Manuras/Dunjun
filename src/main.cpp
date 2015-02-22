@@ -73,6 +73,12 @@ INTERNAL void handleInput(GLFWwindow* window, bool* running, bool* fullscreen)
 	if (glfwWindowShouldClose(window) || glfwGetKey(window, GLFW_KEY_ESCAPE))
 		*running = false;
 
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+	{
+		LOCAL_PERSIST int h = 0;
+		printf("H: %i\n", h++);
+	}
+
 	// TODO(bill): Keep context when recreating display
 	//             !Fullscreen toggle!
 	/*if (glfwGetKey(window, GLFW_KEY_F11))
@@ -173,24 +179,74 @@ INTERNAL void loadInstances()
 	c.transform.position = {0, 0, 1};
 	c.transform.orientation = angleAxis(Degree(45), {0, 1, 0});
 	g_instances.push_back(c);
+
+	// Init Camera
+	g_camera.transform.position = {2, 0, 7};
+
+	g_camera.lookAt({0, 0, 0});
+	g_camera.projectionType = ProjectionType::Perspective;
+	g_camera.fieldOfView = Degree(50.0f);
 }
 
-INTERNAL void update(f32 dt)
+INTERNAL void update(GLFWwindow* window, f32 dt)
 {
 	//g_instances[0].transform.orientation =
 	//    angleAxis(Degree(120) * dt, {0, 1, 0}) *
 	//    g_instances[0].transform.orientation;
 
 	{
+		f64 curX, curY;
+		glfwGetCursorPos(window, &curX, &curY);
+
+		const f32 mouseSensitivity = 0.05f;
+
+		g_camera.offsetOrientation(mouseSensitivity * Radian(curX * dt),
+								   mouseSensitivity * Radian(curY * dt));
+
+		glfwSetCursorPos(window, 0, 0);
+
+
+
 		Vector3& camPos = g_camera.transform.position;
 		
-		camPos.x = 7.0f * std::cos(glfwGetTime());
-		camPos.y = 5.0f;
-		camPos.z = 7.0f * std::sin(glfwGetTime());
+		f32 camVel = 3.0f;
+		Vector3 velDir = {0, 0, 0};
 
-		g_camera.lookAt({0, 0, 0});
-		g_camera.projectionType = ProjectionType::Perspective;
-		g_camera.fieldOfView = Degree(50.0f);
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			Vector3 f = g_camera.forward();
+			f.y = 0;
+			f = normalize(f);
+			velDir += f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			Vector3 b = g_camera.backward();
+			b.y = 0;
+			b = normalize(b);
+			velDir += b;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+			velDir += g_camera.left();
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			velDir += g_camera.right();
+
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+			velDir += {0, +1, 0};
+		if (glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS)
+			velDir += {0, -1, 0};
+
+		if (length(velDir) > 0)
+			velDir = normalize(velDir);
+
+		camPos += camVel * velDir * dt;
+
+
+
+
+		
 		g_camera.viewportAspectRatio = (f32)g_windowWidth / (f32)g_windowHeight;
 	}
 }
@@ -342,6 +398,9 @@ int main(int argc, char** argv)
 	loadSpriteAsset();
 	loadInstances();
 
+	glfwSetCursorPos(window, 0, 0);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	bool running = true;
 	bool fullscreen = false;
 
@@ -360,12 +419,12 @@ int main(int argc, char** argv)
 		prevTime = currentTime;
 		accumulator += dt;
 
-		handleInput(window, &running, &fullscreen);
 
 		while (accumulator >= TIME_STEP)
 		{
 			accumulator -= TIME_STEP;
-			update(TIME_STEP);
+			handleInput(window, &running, &fullscreen);
+			update(window, TIME_STEP);
 		}
 
 		if (tc.update(0.5))
