@@ -50,7 +50,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [018 - Introduction to Quaternions](https://www.youtube.com/watch?v=Vhtw7EvLuQQ)
 * [019 - Quaternion Interpolation](https://www.youtube.com/watch?v=GFnWLM_HcKw)
 * [020 - Implement Quaternions](https://www.youtube.com/watch?v=7rZWS_62rXY)
-* 021 - Quaternion Functions
+* [021 - Quaternion Functions](https://www.youtube.com/watch?v=8pUqEspcS8w)
 * [022 - Transform Type](https://www.youtube.com/watch?v=XVkJkczl6tM)
 
 ### Camera and Input ###
@@ -60,6 +60,8 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * 025 - Complete Camera & Depth Testing
 * 026 - Basic First Person Camera Input
 * 027 - Game Separation and Input Wrapper
+* 028 - XInput Gamepads
+
 
 ## Contact ##
 

@@ -7,6 +7,7 @@
 #include <Dunjun/Texture.hpp>
 
 #include <Dunjun/Input.hpp>
+#include <Dunjun/Gamepad.hpp>
 
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
@@ -57,6 +58,7 @@ GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
 GLOBAL std::vector<ModelInstance> g_instances;
 GLOBAL Camera g_camera;
+GLOBAL Gamepad* g_gamepad;
 
 namespace Game
 {
@@ -192,9 +194,24 @@ namespace Game
 
 	INTERNAL void update(f32 dt)
 	{
-		// g_instances[0].transform.orientation =
-		//    angleAxis(Degree(120) * dt, {0, 1, 0}) *
-		//    g_instances[0].transform.orientation;
+		{
+			if (!g_gamepad)
+				g_gamepad = new Gamepad(0);
+		
+			g_gamepad->update();
+			if (g_gamepad->isConnected())
+			{
+				printf("Gamepad Connected\n");
+
+				g_gamepad->setVibration(0.5f, 0.5f);
+
+			}
+
+		}
+
+
+
+
 
 		{
 			Vector2 curPos = Input::getCursorPosition();
@@ -377,6 +394,7 @@ namespace Game
 			{
 				accumulator -= TIME_STEP;
 				handleInput(&running, &fullscreen);
+				g_gamepad->update();
 				update(TIME_STEP);
 			}
 
