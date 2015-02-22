@@ -53,12 +53,13 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * 021 - Quaternion Functions
 * [022 - Transform Type](https://www.youtube.com/watch?v=XVkJkczl6tM)
 
-### ... ###
+### Camera and Input ###
 
 * [023 - Fixed Time Step & Code Tidying](https://www.youtube.com/watch?v=t5mZi9bJX3A)
 * [024 - ReadOnly Types & Camera Type](https://www.youtube.com/watch?v=l-DFRShm5wE)
 * 025 - Complete Camera & Depth Testing
 * 026 - Basic First Person Camera Input
+* 027 - Game Separation and Input Wrapper
 
 ## Contact ##
 
