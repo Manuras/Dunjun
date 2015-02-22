@@ -9,7 +9,7 @@
 namespace Dunjun
 {
 template <class T>
-inline f32 lerp(const T& x, const T& y, f32 t)
+inline T lerp(const T& x, const T& y, f32 t)
 {
 	assert(t >= 0.0f && t <= 1.0f);
 

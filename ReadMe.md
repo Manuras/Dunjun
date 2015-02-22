@@ -1,13 +1,17 @@
 # Dunjun #
-This project will be documenting and demonstrating the development of making a game from scratch (using minimal libraries).
-Every step of the game development process and every line of code will be explained thoroughly.
+This project will be documenting and demonstrating the development of making a game from scratch*! Every step of the game development process and every line of code will be explained thoroughly.
 
-The game will be a 3D rogue-like*-like* dungeon crawler style game. More will be revealed as the project goes on.
+The game will be a 3D rogue-like-*like* dungeon crawler style game. More will be revealed about the game as the project persists.
+
+YouTube Channel: [GingerGames](https://youtube.com/c/GingerGames)
+
+GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
+
+**With minimal libraries such as GLFW, GLEW, and the STB libraries.*
 
 ## YouTube Playlist ##
 
 [Dunjun Playlist](https://www.youtube.com/playlist?list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
-
 
 ## Episode List ##
 
@@ -47,12 +51,13 @@ The game will be a 3D rogue-like*-like* dungeon crawler style game. More will be
 * [019 - Quaternion Interpolation](https://www.youtube.com/watch?v=GFnWLM_HcKw)
 * [020 - Implement Quaternions](https://www.youtube.com/watch?v=7rZWS_62rXY)
 * 021 - Quaternion Functions
-* 022 - Transform Type
+* [022 - Transform Type](https://www.youtube.com/watch?v=XVkJkczl6tM)
 
 ### ... ###
 
-* 023 - Fixed Time Step & Code Tidying
-* 024 - ReadOnly Types & Camera Type
+* [023 - Fixed Time Step & Code Tidying](https://www.youtube.com/watch?v=t5mZi9bJX3A)
+* [024 - ReadOnly Types & Camera Type](https://www.youtube.com/watch?v=l-DFRShm5wE)
+* 025 - Complete Camera & Depth Testing
 
 ## Contact ##
 
@@ -83,6 +88,19 @@ Please feel free to contact with any problem:
 * YouTube: [GingerGames](https://youtube.com/c/GingerGames)
 * Email: dunjun@gingerBill.org
 * GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
+
+## Prerequisites ##
+
+Before we can begin, you need to make sure you have all the things you will need.
+
+* A reasonable amount of experience with C++
+	- C++11 experience will help
+* Graphics card compatible with OpenGL 2.1
+	- DirectX 9 Equivalent Cards
+* Text Editor and C++11 Compiler, or IDE (MSVC 12 compiler capabilities at least)
+* The initial libraries:
+	- GLFW - For creating the context, window, and handling input
+	- GLEW - To use new OpenGL functions
 
 ## Building ##
 

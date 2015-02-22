@@ -303,7 +303,81 @@ inline Matrix4 quaternionToMatrix4(const Quaternion& q)
 	return mat;
 }
 
-// TODO(bill): matrix4ToQuaternion
+// NOTE(bill): Assumes matrix is only a rotational matrix and has no skew
+//             applied
+inline Quaternion matrix4ToQuaternion(const Matrix4& m)
+{
+	f32 fourXSquaredMinus1 = m[0][0] - m[1][1] - m[2][2];
+	f32 fourYSquaredMinus1 = m[1][1] - m[0][0] - m[2][2];
+	f32 fourZSquaredMinus1 = m[2][2] - m[0][0] - m[1][1];
+	f32 fourWSquaredMinus1 = m[0][0] + m[1][1] + m[2][2];
+
+	int biggestIndex = 0;
+	f32 fourBiggestSquaredMinus1 = fourWSquaredMinus1;
+	if (fourXSquaredMinus1 > fourBiggestSquaredMinus1)
+	{
+		fourBiggestSquaredMinus1 = fourXSquaredMinus1;
+		biggestIndex = 1;
+	}
+	if (fourYSquaredMinus1 > fourBiggestSquaredMinus1)
+	{
+		fourBiggestSquaredMinus1 = fourYSquaredMinus1;
+		biggestIndex = 2;
+	}
+	if (fourZSquaredMinus1 > fourBiggestSquaredMinus1)
+	{
+		fourBiggestSquaredMinus1 = fourZSquaredMinus1;
+		biggestIndex = 3;
+	}
+
+	f32 biggestVal = std::sqrt(fourBiggestSquaredMinus1 + 1.0f) * 0.5f;
+	f32 mult = 0.25f / biggestVal;
+
+	Quaternion q;
+
+	switch (biggestIndex)
+	{
+	case 0:
+	{
+		q.w = biggestVal;
+		q.x = (m[1][2] - m[2][1]) * mult;
+		q.y = (m[2][0] - m[0][2]) * mult;
+		q.z = (m[0][1] - m[1][0]) * mult;
+	}
+	break;
+	case 1:
+	{
+		q.w = (m[1][2] - m[2][1]) * mult;
+		q.x = biggestVal;
+		q.y = (m[0][1] + m[1][0]) * mult;
+		q.z = (m[2][0] + m[0][2]) * mult;
+	}
+	break;
+	case 2:
+	{
+		q.w = (m[2][0] - m[0][2]) * mult;
+		q.x = (m[0][1] + m[1][0]) * mult;
+		q.y = biggestVal;
+		q.z = (m[1][2] + m[2][1]) * mult;
+	}
+	break;
+	case 3:
+	{
+		q.w = (m[0][1] - m[1][0]) * mult;
+		q.x = (m[2][0] + m[0][2]) * mult;
+		q.y = (m[1][2] + m[2][1]) * mult;
+		q.z = biggestVal;
+	}
+	break;
+	default: // Should never actually get here. Just for sanities sake.
+	{
+		assert(false);
+	}
+	break;
+	}
+
+	return q;
+}
 
 } // namespace Dunjun
 

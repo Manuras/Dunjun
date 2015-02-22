@@ -17,7 +17,7 @@ struct Camera
 	Camera();
 	Camera(const Camera& other) = default;
 
-	void lookAt(const Vector3& position);
+	void lookAt(const Vector3& position, const Vector3& up = {0, 1, 0});
 
 	// TODO(bill): offsetOrientation
 	void offsetOrientation(const Radian& yaw, const Radian& pitch);
@@ -39,6 +39,7 @@ struct Camera
 
 	Transform transform;
 	Radian fieldOfView;
+	f32 orthoScale;
 	f32 nearPlane;
 	f32 farPlane;
 	f32 viewportAspectRatio;
