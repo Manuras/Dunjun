@@ -14,30 +14,51 @@ namespace Dunjun
 {
 namespace Input
 {
-	// Input Mode
 
-	void setInputMode(InputMode mode, int value)
+	GLOBAL f64 g_scrollX = 0;
+	GLOBAL f64 g_scrollY = 0;
+
+	void scrollCallback(GLFWwindow* window, double offsetX, double offsetY)
 	{
-		int m = 0;
-		if (mode == InputMode::Cursor)
-			m = GLFW_CURSOR;
-		if (mode == InputMode::StickyKeys)
-			m = GLFW_STICKY_KEYS;
-		if (mode == InputMode::StickyMouseButtons)
-			m = GLFW_STICKY_MOUSE_BUTTONS;
+		g_scrollX = offsetX;
+		g_scrollY = offsetY;
+	}
 
-		glfwSetInputMode(Game::getGlfwWindow(), m, value);
+	void setup()
+	{
+		glfwSetScrollCallback(Game::getGlfwWindow(), scrollCallback);
+	}
+
+
+	void setCursorMode(CursorMode mode)
+	{
+		if (mode == CursorMode::Normal)
+			glfwSetInputMode(Game::getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		if (mode == CursorMode::Hidden)
+			glfwSetInputMode(Game::getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		if (mode == CursorMode::Disabled)
+			glfwSetInputMode(Game::getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
+	void setStickyKeys(bool sticky)
+	{
+		glfwSetInputMode(Game::getGlfwWindow(), GLFW_STICKY_KEYS, sticky);
+	}
+
+	void setStickyMouseButtons(bool sticky)
+	{
+		glfwSetInputMode(Game::getGlfwWindow(), GLFW_STICKY_MOUSE_BUTTONS, sticky);
 	}
 
 
 	// Keyboard
 
-	KeyState getKey(Key key)
+	State getKey(Key key)
 	{
-		return static_cast<KeyState>(glfwGetKey(Game::getGlfwWindow(), key));
+		return static_cast<State>(glfwGetKey(Game::getGlfwWindow(), key));
 	}
 
-	// Cursor
+	// Mouse & Cursor
 
 	Vector2 getCursorPosition()
 	{
@@ -54,6 +75,17 @@ namespace Input
 		                 static_cast<f64>(pos.y));
 	}
 
+	State getMouseButton(MouseButton button)
+	{
+		return static_cast<State>(glfwGetMouseButton(Game::getGlfwWindow(), (int)button));
+	}
+
+	Vector2 getScrollOffset()
+	{
+		return Vector2(g_scrollX, g_scrollY);
+	}
+
+
 	// Time
 
 	f64 getTime() { return glfwGetTime(); }
@@ -62,17 +94,17 @@ namespace Input
 
 	// Gamepads
 
-	GLOBAL std::array<XINPUT_STATE, Gamepad_maxCount> g_gamepadStates;
+	GLOBAL std::array<XINPUT_STATE, Gamepad_MaxCount> g_gamepadStates;
 
 	void updateGamepads()
 	{
-		for (usize i = 0; i < Gamepad_maxCount; i++)
+		for (usize i = 0; i < Gamepad_MaxCount; i++)
 			isGamepadPresent((GamepadId)i);
 	}
 
 	bool isGamepadPresent(GamepadId gamepadId)
 	{
-		if (gamepadId < Gamepad_maxCount)
+		if (gamepadId < Gamepad_MaxCount)
 			return XInputGetState(gamepadId, &g_gamepadStates[gamepadId]) == 0;
 		return false;
 	}

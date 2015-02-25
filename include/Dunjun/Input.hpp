@@ -16,19 +16,30 @@ namespace Dunjun
 namespace Input
 {
 	using Key = int;
-	using MouseButton = int;
+	
+	enum MouseButton
+	{
+		MouseButton_1 = 0,
+		MouseButton_2 = 1,
+		MouseButton_3 = 2,
+		MouseButton_4 = 3,
+		MouseButton_5 = 4,
+		MouseButton_6 = 5,
+		MouseButton_7 = 6,
+		MouseButton_8 = 7,
 
-	enum KeyState : u32
+		MouseButton_Last = MouseButton_8,
+
+		MouseButton_Left = MouseButton_1,
+		MouseButton_Right = MouseButton_2,
+		MouseButton_Middle = MouseButton_3,
+	};
+
+
+	enum State
 	{
 		Release = 0,
 		Press = 1,
-	};
-
-	enum class InputMode : u32
-	{
-		Cursor,
-		StickyKeys,
-		StickyMouseButtons,
 	};
 
 	struct GamepadAxes
@@ -70,26 +81,43 @@ namespace Input
 		Gamepad_3 = 2,
 		Gamepad_4 = 3,
 
-		Gamepad_maxCount = 4,
+		Gamepad_MaxCount = 4,
 	};
-
 
 	using GamepadButtons = std::vector<b8>;
 
-	// TODO(bill): create enum for value;
-	void setInputMode(InputMode mode, int value);
+	enum class CursorMode
+	{
+		Normal,
+		Hidden,
+		Disabled,
+	};
+
+	void setup();
+
+	void setCursorMode(CursorMode mode);
+	void setStickyKeys(bool sticky);
+	void setStickyMouseButtons(bool sticky);
 
 	// TODO(bill): Enums for Keys
-	KeyState getKey(Key key);
-
+	State getKey(Key key);
 
 	Vector2 getCursorPosition();
 	void setCursorPosition(const Vector2& pos);
 
+	State getMouseButton(MouseButton button);
+	
+	Vector2 getScrollOffset();
+
+
 	f64 getTime();
 	void setTime(f64 time);
+	
 
-	// TODO(bill): Handle Gamepad
+
+
+	// TODO(bill) IMPORTANT(bill): Handle other platforms rather than just
+	//                             Windows. I.e. not XInput
 	void updateGamepads();
 
 	bool isGamepadPresent(GamepadId gamepadId);

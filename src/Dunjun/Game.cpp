@@ -76,8 +76,7 @@ namespace Game
 
 	INTERNAL void handleInput(bool* running, bool* fullscreen)
 	{
-		if (glfwWindowShouldClose(window) ||
-		    Input::getKey(GLFW_KEY_ESCAPE))
+		if (glfwWindowShouldClose(window) || Input::getKey(GLFW_KEY_ESCAPE))
 			*running = false;
 
 		// TODO(bill): Keep context when recreating display
@@ -192,66 +191,58 @@ namespace Game
 
 	INTERNAL void update(f32 dt)
 	{
-	/*	{
-			if (!g_gamepad)
-				g_gamepad = new Gamepad(0);
-		
-			g_gamepad->update();
-			if (g_gamepad->isConnected())
-			{
-				printf("Gamepad Connected\n");
-
-				g_gamepad->setVibration(0.5f, 0.5f);
-
-			}
-
-		}*/
 		f32 camVel = 3.0f;
 
 		{
 			if (Input::isGamepadPresent(Input::Gamepad_1))
 			{
-				Input::GamepadAxes axes = Input::getGamepadAxes(Input::Gamepad_1);
+				Input::GamepadAxes axes =
+				    Input::getGamepadAxes(Input::Gamepad_1);
 
-				const f32 lookSensitivity = 3.0f;
+				const f32 lookSensitivity = 2.0f;
+				const f32 deadZone = 0.21f;
 
 				Vector2 rts = axes.rightThumbstick;
+				if (abs(rts.x) < deadZone)
+					rts.x = 0;
+				if (abs(rts.y) < deadZone)
+					rts.y = 0;
 
 				g_camera.offsetOrientation(lookSensitivity * Radian(rts.x * dt),
-										   lookSensitivity * Radian(-rts.y * dt));
-
-
+				                           lookSensitivity *
+				                               Radian(-rts.y * dt));
 
 				Vector2 lts = axes.leftThumbstick;
+
+				std::cout << lts << std::endl;
+
+				if (abs(lts.x) < deadZone)
+					lts.x = 0;
+				if (abs(lts.y) < deadZone)
+					lts.y = 0;
 
 				if (length(lts) > 1.0f)
 					lts = normalize(lts);
 
+				lts.y = -lts.y;
+
 				Vector3 velDir = {0, 0, 0};
 
+				velDir += conjugate(g_camera.transform.orientation) *
+				          Vector3(lts.x, 0, lts.y);
 
-				velDir.x += camVel * lts.x * dt;
-				velDir.z -= camVel * lts.y * dt;
+				Input::GamepadButtons buttons =
+				    Input::getGamepadButtons(Input::Gamepad_1);
 
-
-				/*Input::GamepadButtons buttons = Input::getGamepadButtons(Input::Gamepad_1);
-
-				for (usize i = 0; i < buttons.size(); i++)
-					std::cout << i << ": " << buttons[i] << std::endl;
-
-				std::cout << "---------------------" << std::endl;
-
-				if (buttons[(usize)Input::XboxButton::RightShoulder]);
-					velDir += {0, +1, 0};
+				if (buttons[(usize)Input::XboxButton::RightShoulder])
+					velDir.y += 1;
 				if (buttons[(usize)Input::XboxButton::LeftShoulder])
-					velDir += {0, -1, 0};*/
-
+					velDir.y -= 1;
 
 				if (length(velDir) > 1.0f)
 					velDir = normalize(velDir);
 
-				g_camera.transform.position += velDir * dt;
-
+				g_camera.transform.position += camVel * velDir * dt;
 			}
 		}
 
@@ -261,13 +252,13 @@ namespace Game
 			const f32 mouseSensitivity = 0.05f;
 
 			g_camera.offsetOrientation(mouseSensitivity * Radian(curPos.x * dt),
-			                           mouseSensitivity * Radian(curPos.y * dt));
+			                           mouseSensitivity *
+			                               Radian(curPos.y * dt));
 
 			Input::setCursorPosition({0, 0});
 
 			Vector3& camPos = g_camera.transform.position;
 
-			
 			Vector3 velDir = {0, 0, 0};
 
 			if (Input::getKey(GLFW_KEY_UP))
@@ -302,6 +293,12 @@ namespace Game
 
 			g_camera.viewportAspectRatio =
 			    getWindowSize().x / getWindowSize().y;
+
+		/*	std::cout << Input::getScrollOffset() << std::endl;
+
+			g_camera.fieldOfView =
+			    Radian(static_cast<f32>(g_camera.fieldOfView) +
+			           Input::getScrollOffset().y);*/
 		}
 	}
 
@@ -399,6 +396,11 @@ namespace Game
 
 		glewInit();
 
+		Input::setup();
+
+		Input::setCursorPosition({0, 0});
+		Input::setCursorMode(Input::CursorMode::Disabled);
+
 		// glEnable(GL_CULL_FACE);
 		// glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
@@ -407,9 +409,6 @@ namespace Game
 		loadShaders();
 		loadSpriteAsset();
 		loadInstances();
-
-		Input::setCursorPosition({0, 0});
-		Input::setInputMode(Input::InputMode::Cursor, GLFW_CURSOR_DISABLED);
 	}
 
 	void run()
@@ -423,11 +422,11 @@ namespace Game
 		Clock frameClock;
 
 		f64 accumulator = 0;
-		f64 prevTime = glfwGetTime();
+		f64 prevTime = Input::getTime();
 
 		while (running)
 		{
-			f64 currentTime = glfwGetTime();
+			f64 currentTime = Input::getTime();
 			f64 dt = currentTime - prevTime;
 			prevTime = currentTime;
 			accumulator += dt;
