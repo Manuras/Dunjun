@@ -9,9 +9,14 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 **With minimal libraries such as GLFW, GLEW, and the STB libraries.*
 
-## YouTube Playlist ##
+## YouTube Playlists ##
 
-[Dunjun Playlist](https://www.youtube.com/playlist?list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
+* [Dunjun Playlist](https://www.youtube.com/playlist?list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
+* [Bare Bones](https://www.youtube.com/playlist?list=PL93bFkoCMJsnFFCfFZ8iwzwnobALHoarE)
+* [Vectors and Matrices](https://www.youtube.com/playlist?list=PL93bFkoCMJskms6yv5FXx61C7Tai7amrT)
+* [Model Assets and Model Instances](https://www.youtube.com/playlist?list=PL93bFkoCMJsksaZto9IK1jbjhWw0glUDs)
+* [Quaternions and Rotations in 3D](https://www.youtube.com/playlist?list=PL93bFkoCMJsmLfAhNyeXzhH-POMvBAn6y)
+* [Camera and Input](https://www.youtube.com/playlist?list=PL93bFkoCMJslgYPipJ-6k7jwRxlO6fyha)
 
 ## Episode List ##
 
@@ -19,7 +24,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 * [000 - Introduction](https://www.youtube.com/watch?v=fRUYl6_5m3o&index=1&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
 
-### Bare Bones ###
+### [Bare Bones](https://www.youtube.com/playlist?list=PL93bFkoCMJsnFFCfFZ8iwzwnobALHoarE) ###
 
 * [001 - Project Setup (Visual Studio)](https://www.youtube.com/watch?v=Vzve8VOn8qA&index=2&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e)
 * [002 - Creating a Window (GLFW3)](https://www.youtube.com/watch?v=LNxpDcRs8Zg&list=PL93bFkoCMJslJJb15oQddnmABNUl6iz8e&index=3)
@@ -30,7 +35,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [007 - Texture Wrapper](https://www.youtube.com/watch?v=2i2jX4yb8sI)
 * [008 - Error Handling & Code Tidying](https://www.youtube.com/watch?v=jUUGEFV7rk0)
 
-### Vectors and Matrices ###
+### [Vectors and Matrices](https://www.youtube.com/playlist?list=PL93bFkoCMJskms6yv5FXx61C7Tai7amrT) ###
 
 * [009 - Introduction to Transformations with Matrices](https://www.youtube.com/watch?v=imjaU0gO1vY)
 * [010 - Implement Basic Vector Types](https://www.youtube.com/watch?v=MSHeE7kAqbA)
@@ -40,11 +45,11 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [014 - View & Projection Matrices & Angles](https://www.youtube.com/watch?v=QAIbGN_oXdo)
 * [015 - Constants, Code Tidying & GLSL Convention](https://www.youtube.com/watch?v=hQw7_DWjQtg)
 
-### Model Assets and Model Instances ###
+### [Model Assets and Model Instances](https://www.youtube.com/playlist?list=PL93bFkoCMJsksaZto9IK1jbjhWw0glUDs) ###
 
 * [016 - ModelAssets & ModelInstances](https://www.youtube.com/watch?v=oDwALlxMa4k)
 
-### Quaternions and Rotations in 3D ###
+### [Quaternions and Rotations in 3D](https://www.youtube.com/playlist?list=PL93bFkoCMJsmLfAhNyeXzhH-POMvBAn6y) ###
 
 * [017 - Introduction to Complex Numbers](https://www.youtube.com/watch?v=NpkoqTOWn4E)
 * [018 - Introduction to Quaternions](https://www.youtube.com/watch?v=Vhtw7EvLuQQ)
@@ -53,7 +58,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [021 - Quaternion Functions](https://www.youtube.com/watch?v=8pUqEspcS8w)
 * [022 - Transform Type](https://www.youtube.com/watch?v=XVkJkczl6tM)
 
-### Camera and Input ###
+### [Camera and Input](https://www.youtube.com/playlist?list=PL93bFkoCMJslgYPipJ-6k7jwRxlO6fyha) ###
 
 * [023 - Fixed Time Step & Code Tidying](https://www.youtube.com/watch?v=t5mZi9bJX3A)
 * [024 - ReadOnly Types & Camera Type](https://www.youtube.com/watch?v=l-DFRShm5wE)
@@ -251,8 +256,48 @@ private:
 };
 ```
 
+### Enums ###
 
-### Defines ###
+All enum items should use PascalCase (e.g. `CursorMode`).
+
+If a strong enum is preferred, please use one (e.g. `enum class`).
+
+Example:
+
+```c++
+enum class CursorMode
+{
+	Normal,
+	Hidden,
+	Disabled,
+};
+```
+
+If a weak enum is needed, please prefix the item with the name of the enum then an underscore.
+
+Example:
+
+```c++
+enum MouseButton
+{
+	MouseButton_1 = 0,
+	MouseButton_2 = 1,
+	MouseButton_3 = 2,
+	MouseButton_4 = 3,
+	MouseButton_5 = 4,
+	MouseButton_6 = 5,
+	MouseButton_7 = 6,
+	MouseButton_8 = 7,
+
+	MouseButton_Last = MouseButton_8,
+
+	MouseButton_Left = MouseButton_1,
+	MouseButton_Right = MouseButton_2,
+	MouseButton_Middle = MouseButton_3,
+};
+```
+
+### Static Defines ###
 
 In `Dunjun/Common.hpp`, there are some defines for static:
 
@@ -279,17 +324,18 @@ INTERNAL void doSomething()
 
 ### Annotations ###
 
-* HACK  - don't use in production (similar to FIXME but still works)
-* FIXME - fix as soon as possible (does not work as intended)
-* TODO  - todo
-* NOTE  - note to reader (can be used in conjunction with TODO)
+* TODO      - todo
+* NOTE      - note to reader (can be used in conjunction with TODO)
+* IMPORTANT - important (can be used in conjunction with TODO or NOTE)
+* FIXME     - fix as soon as possible (does not work as intended)
+* HACK      - don't use in production (similar to FIXME but still works)
 
 Example:
 
 ```c++
-// TODO(bill): This is some example text for a todo. That
-//             spans multiple lines.
-//             This annotation was written by bill as
-//             indicated next to the annotation
+// TODO(fred) IMPORTANT(fred): This is some example text for a todo that is
+//                             important. It also spans multiple lines.
+//                             This annotation was written by `fred` as
+//                             indicated next to the annotation
 
 ```
