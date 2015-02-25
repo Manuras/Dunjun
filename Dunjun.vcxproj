@@ -74,7 +74,6 @@
   <ItemGroup>
     <ClCompile Include="src\Dunjun\Camera.cpp" />
     <ClCompile Include="src\Dunjun\Game.cpp" />
-    <ClCompile Include="src\Dunjun\Gamepad.cpp" />
     <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\Input.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
@@ -90,7 +89,6 @@
     <ClInclude Include="include\Dunjun\Color.hpp" />
     <ClInclude Include="include\Dunjun\Common.hpp" />
     <ClInclude Include="include\Dunjun\Game.hpp" />
-    <ClInclude Include="include\Dunjun\Gamepad.hpp" />
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Input.hpp" />
     <ClInclude Include="include\Dunjun\Math.hpp" />

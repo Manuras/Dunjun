@@ -7,7 +7,6 @@
 #include <Dunjun/Texture.hpp>
 
 #include <Dunjun/Input.hpp>
-#include <Dunjun/Gamepad.hpp>
 
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
@@ -58,7 +57,6 @@ GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
 GLOBAL std::vector<ModelInstance> g_instances;
 GLOBAL Camera g_camera;
-GLOBAL Gamepad* g_gamepad;
 
 namespace Game
 {
@@ -194,7 +192,7 @@ namespace Game
 
 	INTERNAL void update(f32 dt)
 	{
-		{
+	/*	{
 			if (!g_gamepad)
 				g_gamepad = new Gamepad(0);
 		
@@ -207,11 +205,55 @@ namespace Game
 
 			}
 
+		}*/
+		f32 camVel = 3.0f;
+
+		{
+			if (Input::isGamepadPresent(Input::Gamepad_1))
+			{
+				Input::GamepadAxes axes = Input::getGamepadAxes(Input::Gamepad_1);
+
+				const f32 lookSensitivity = 3.0f;
+
+				Vector2 rts = axes.rightThumbstick;
+
+				g_camera.offsetOrientation(lookSensitivity * Radian(rts.x * dt),
+										   lookSensitivity * Radian(-rts.y * dt));
+
+
+
+				Vector2 lts = axes.leftThumbstick;
+
+				if (length(lts) > 1.0f)
+					lts = normalize(lts);
+
+				Vector3 velDir = {0, 0, 0};
+
+
+				velDir.x += camVel * lts.x * dt;
+				velDir.z -= camVel * lts.y * dt;
+
+
+				/*Input::GamepadButtons buttons = Input::getGamepadButtons(Input::Gamepad_1);
+
+				for (usize i = 0; i < buttons.size(); i++)
+					std::cout << i << ": " << buttons[i] << std::endl;
+
+				std::cout << "---------------------" << std::endl;
+
+				if (buttons[(usize)Input::XboxButton::RightShoulder]);
+					velDir += {0, +1, 0};
+				if (buttons[(usize)Input::XboxButton::LeftShoulder])
+					velDir += {0, -1, 0};*/
+
+
+				if (length(velDir) > 1.0f)
+					velDir = normalize(velDir);
+
+				g_camera.transform.position += velDir * dt;
+
+			}
 		}
-
-
-
-
 
 		{
 			Vector2 curPos = Input::getCursorPosition();
@@ -225,7 +267,7 @@ namespace Game
 
 			Vector3& camPos = g_camera.transform.position;
 
-			f32 camVel = 3.0f;
+			
 			Vector3 velDir = {0, 0, 0};
 
 			if (Input::getKey(GLFW_KEY_UP))
@@ -394,7 +436,7 @@ namespace Game
 			{
 				accumulator -= TIME_STEP;
 				handleInput(&running, &fullscreen);
-				g_gamepad->update();
+				Input::updateGamepads();
 				update(TIME_STEP);
 			}
 

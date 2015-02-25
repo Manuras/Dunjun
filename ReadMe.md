@@ -57,11 +57,11 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 * [023 - Fixed Time Step & Code Tidying](https://www.youtube.com/watch?v=t5mZi9bJX3A)
 * [024 - ReadOnly Types & Camera Type](https://www.youtube.com/watch?v=l-DFRShm5wE)
-* 025 - Complete Camera & Depth Testing
-* 026 - Basic First Person Camera Input
-* 027 - Game Separation and Input Wrapper
-* 028 - XInput Gamepads
-
+* [025 - Complete Camera & Depth Testing](https://www.youtube.com/watch?v=30QORMjrpKA)
+* [026 - Basic First Person Camera Input](https://www.youtube.com/watch?v=dkYK0e0m_H0)
+* [027 - Game Separation and Input Wrapper](https://www.youtube.com/watch?v=9bpZjQYPXqg)
+* [028 - XInput Gamepads](https://www.youtube.com/watch?v=NAVaHMDNPjQ)
+* 029 - Gamepad Camera Control
 
 ## Contact ##
 
