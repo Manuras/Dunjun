@@ -62,6 +62,8 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [027 - Game Separation and Input Wrapper](https://www.youtube.com/watch?v=9bpZjQYPXqg)
 * [028 - XInput Gamepads](https://www.youtube.com/watch?v=NAVaHMDNPjQ)
 * 029 - Gamepad Camera Control
+* 030 - Mouse Buttons and Scroll Input
+
 
 ## Contact ##
 

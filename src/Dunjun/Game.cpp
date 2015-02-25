@@ -224,12 +224,13 @@ namespace Game
 				if (length(lts) > 1.0f)
 					lts = normalize(lts);
 
-				lts.y = -lts.y;
-
 				Vector3 velDir = {0, 0, 0};
 
-				velDir += conjugate(g_camera.transform.orientation) *
-				          Vector3(lts.x, 0, lts.y);
+				Vector3 forward = g_camera.forward();
+				forward.y = 0;
+				forward = normalize(forward);
+				velDir += lts.x * g_camera.right();
+				velDir += lts.y * forward;
 
 				Input::GamepadButtons buttons =
 				    Input::getGamepadButtons(Input::Gamepad_1);
