@@ -68,6 +68,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [028 - XInput Gamepads](https://www.youtube.com/watch?v=NAVaHMDNPjQ)
 * 029 - Gamepad Camera Control
 * 030 - Mouse Buttons and Scroll Input
+* 030.5 - Input Enums & Camera Transform Fix
 
 
 ## Contact ##

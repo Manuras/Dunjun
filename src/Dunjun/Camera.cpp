@@ -13,62 +13,58 @@ Camera::Camera()
 {
 }
 
-// TODO(bill): Implement entirely as Quaternions rather than Matrix4s
-void Camera::lookAt(const Vector3& position, const Vector3& up)
+void Camera::lookAt(const Vector3& position, const Vector3& forward)
 {
-	const Vector3& pos = transform.position;
+	const f32 similar = 0.001f;
 
-	if (length(pos - position) < 0.001f)
-		return; // ignore as you cannot look at where you are!
+	if (length(position - transform.position) < similar)
+		return; // You cannot look at where you are!
 
-	if (fabs(dot(pos, up) - 1.0f) < 0.001f)
-	{
-		std::cerr
-		    << "Camera::lookAt - viewDirection and Up vector are colinear.\n";
-		return;
-	}
+	// Forward Vector
+	Vector3 f = normalize(position - transform.position);
+	f32 cosTheta = dot(forward, f);
 
-	Matrix4 mat = Dunjun::lookAt(pos, position, up);
-
-	transform.orientation = matrix4ToQuaternion(mat);
+	Radian angle(std::acos(cosTheta));
+	Vector3 axis = cross(forward, f);
+	transform.orientation = angleAxis(angle, axis);
 }
 
 void Camera::offsetOrientation(const Radian& yaw, const Radian& pitch)
 {
-	Quaternion yawRot = angleAxis(yaw, {0, 1, 0}); // absolute up
-	Quaternion pitchRot = angleAxis(pitch, right()); // relative right
+	const Quaternion yawRot = angleAxis(yaw, {0, 1, 0}); // absolute up
+	const Quaternion pitchRot = angleAxis(pitch, right()); // relative right
 
-	transform.orientation = transform.orientation * pitchRot * yawRot;
+	transform.orientation = yawRot * pitchRot *  transform.orientation;
 }
 
 Vector3 Camera::forward() const
 {
-	return conjugate(transform.orientation) * Vector3(0, 0, -1);
+	return transform.orientation * Vector3(0, 0, -1);
 }
 
 Vector3 Camera::backward() const
 {
-	return conjugate(transform.orientation) * Vector3(0, 0, +1);
+	return transform.orientation * Vector3(0, 0, +1);
 }
 
 Vector3 Camera::right() const
 {
-	return conjugate(transform.orientation) * Vector3(+1, 0, 0);
+	return transform.orientation * Vector3(+1, 0, 0);
 }
 
 Vector3 Camera::left() const
 {
-	return conjugate(transform.orientation) * Vector3(-1, 0, 0);
+	return transform.orientation * Vector3(-1, 0, 0);
 }
 
 Vector3 Camera::up() const
 {
-	return conjugate(transform.orientation) * Vector3(0, +1, 0);
+	return transform.orientation * Vector3(0, +1, 0);
 }
 
 Vector3 Camera::down() const
 {
-	return conjugate(transform.orientation) * Vector3(0, -1, 0);
+	return transform.orientation * Vector3(0, -1, 0);
 }
 
 Matrix4 Camera::getMatrix() const
@@ -99,7 +95,7 @@ Matrix4 Camera::getView() const
 {
 	Matrix4 view;
 
-	view = scale(Vector3(1) / transform.scale) * quaternionToMatrix4(transform.orientation) * translate(-transform.position);
+	view = scale(Vector3(1) / transform.scale) * quaternionToMatrix4(conjugate(transform.orientation)) * translate(-transform.position);
 
 	return view;
 }

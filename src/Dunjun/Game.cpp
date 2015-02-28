@@ -76,7 +76,7 @@ namespace Game
 
 	INTERNAL void handleInput(bool* running, bool* fullscreen)
 	{
-		if (glfwWindowShouldClose(window) || Input::getKey(GLFW_KEY_ESCAPE))
+		if (glfwWindowShouldClose(window) || Input::isKeyPressed(Input::Key::Escape))
 			*running = false;
 
 		// TODO(bill): Keep context when recreating display
@@ -203,22 +203,19 @@ namespace Game
 				const f32 deadZone = 0.21f;
 
 				Vector2 rts = axes.rightThumbstick;
-				if (abs(rts.x) < deadZone)
+				if (std::abs(rts.x) < deadZone)
 					rts.x = 0;
-				if (abs(rts.y) < deadZone)
+				if (std::abs(rts.y) < deadZone)
 					rts.y = 0;
 
-				g_camera.offsetOrientation(lookSensitivity * Radian(rts.x * dt),
-				                           lookSensitivity *
-				                               Radian(-rts.y * dt));
+				g_camera.offsetOrientation(-lookSensitivity * Radian(rts.x * dt),
+				                            lookSensitivity * Radian(rts.y * dt));
 
 				Vector2 lts = axes.leftThumbstick;
 
-				std::cout << lts << std::endl;
-
-				if (abs(lts.x) < deadZone)
+				if (std::abs(lts.x) < deadZone)
 					lts.x = 0;
-				if (abs(lts.y) < deadZone)
+				if (std::abs(lts.y) < deadZone)
 					lts.y = 0;
 
 				if (length(lts) > 1.0f)
@@ -240,10 +237,54 @@ namespace Game
 				if (buttons[(usize)Input::XboxButton::LeftShoulder])
 					velDir.y -= 1;
 
+
+				if (buttons[(usize)Input::XboxButton::DpadUp])
+				{
+					Vector3 f = g_camera.forward();
+					f.y = 0;
+					f = normalize(f);
+					velDir += f;
+				}
+				if (buttons[(usize)Input::XboxButton::DpadDown])
+				{
+					Vector3 b = g_camera.backward();
+					b.y = 0;
+					b = normalize(b);
+					velDir += b;
+				}
+
+
+				if (buttons[(usize)Input::XboxButton::DpadLeft])
+				{
+					Vector3 l = g_camera.left();
+					l.y = 0;
+					l = normalize(l);
+					velDir += l;
+				}
+				if (buttons[(usize)Input::XboxButton::DpadRight])
+				{
+					Vector3 r = g_camera.right();
+					r.y = 0;
+					r = normalize(r);
+					velDir += r;
+				}
+
+
 				if (length(velDir) > 1.0f)
 					velDir = normalize(velDir);
 
 				g_camera.transform.position += camVel * velDir * dt;
+
+				// Vibrate
+				if (Input::isGamepadButtonPressed(Input::Gamepad_1, Input::XboxButton::A))
+				{
+					Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
+				}
+				else
+				{
+					Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
+				}
+
 			}
 		}
 
@@ -252,9 +293,8 @@ namespace Game
 
 			const f32 mouseSensitivity = 0.05f;
 
-			g_camera.offsetOrientation(mouseSensitivity * Radian(curPos.x * dt),
-			                           mouseSensitivity *
-			                               Radian(curPos.y * dt));
+			g_camera.offsetOrientation(-mouseSensitivity * Radian(curPos.x * dt),
+			                           -mouseSensitivity * Radian(curPos.y * dt));
 
 			Input::setCursorPosition({0, 0});
 
@@ -262,14 +302,14 @@ namespace Game
 
 			Vector3 velDir = {0, 0, 0};
 
-			if (Input::getKey(GLFW_KEY_UP))
+			if (Input::isKeyPressed(Input::Key::Up))
 			{
 				Vector3 f = g_camera.forward();
 				f.y = 0;
 				f = normalize(f);
 				velDir += f;
 			}
-			if (Input::getKey(GLFW_KEY_DOWN))
+			if (Input::isKeyPressed(Input::Key::Down))
 			{
 				Vector3 b = g_camera.backward();
 				b.y = 0;
@@ -277,14 +317,14 @@ namespace Game
 				velDir += b;
 			}
 
-			if (Input::getKey(GLFW_KEY_LEFT))
+			if (Input::isKeyPressed(Input::Key::Left))
 				velDir += g_camera.left();
-			if (Input::getKey(GLFW_KEY_RIGHT))
+			if (Input::isKeyPressed(Input::Key::Right))
 				velDir += g_camera.right();
 
-			if (Input::getKey(GLFW_KEY_RIGHT_SHIFT))
+			if (Input::isKeyPressed(Input::Key::RShift))
 				velDir += {0, +1, 0};
-			if (Input::getKey(GLFW_KEY_RIGHT_CONTROL))
+			if (Input::isKeyPressed(Input::Key::RControl))
 				velDir += {0, -1, 0};
 
 			if (length(velDir) > 0)
@@ -301,6 +341,9 @@ namespace Game
 			    Radian(static_cast<f32>(g_camera.fieldOfView) +
 			           Input::getScrollOffset().y);*/
 		}
+
+
+		//g_camera.lookAt({0, 0, 0});
 	}
 
 	INTERNAL void renderInstance(const ModelInstance& inst)
@@ -460,6 +503,7 @@ namespace Game
 
 	void cleanup()
 	{
+		Input::cleanup();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
