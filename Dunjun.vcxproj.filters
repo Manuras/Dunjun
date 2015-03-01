@@ -139,13 +139,21 @@
     <None Include=".gitignore" />
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="data\shaders\default.frag.glsl" />
-    <None Include="todo_check.bat">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="static_check.bat">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="cloc.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="License.md" />
+    <None Include="misc\Iridis Blue.vssettings" />
+    <None Include="misc\shell.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="misc\st.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="misc\static_check.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="misc\todo_check.bat">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

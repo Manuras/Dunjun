@@ -202,8 +202,8 @@ namespace Input
 
 // #endif
 // 		}
-// 		break;
- 		}
+			// 		break;
+		}
 
 		if (code == 0)
 			return false;
@@ -230,7 +230,8 @@ namespace Input
 	// Mouse
 	bool isMouseButtonPressed(Mouse button)
 	{
-		return static_cast<bool>(glfwGetMouseButton(Game::getGlfwWindow(), (int)button));
+		return static_cast<bool>(
+		    glfwGetMouseButton(Game::getGlfwWindow(), (int)button));
 	}
 
 	// Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
@@ -281,51 +282,51 @@ namespace Input
 		GamepadButtons buttons((usize)XboxButton::Count);
 
 		buttons[(int)XboxButton::DpadUp] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_DPAD_UP) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_DPAD_UP) != 0;
 		buttons[(int)XboxButton::DpadDown] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_DPAD_DOWN) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_DPAD_DOWN) != 0;
 		buttons[(int)XboxButton::DpadLeft] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_DPAD_LEFT) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_DPAD_LEFT) != 0;
 		buttons[(int)XboxButton::DpadRight] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
 
 		buttons[(int)XboxButton::Start] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_START) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_START) != 0;
 		buttons[(int)XboxButton::Back] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_BACK) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_BACK) != 0;
 
 		buttons[(int)XboxButton::LeftThumb] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_LEFT_THUMB) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_LEFT_THUMB) != 0;
 		buttons[(int)XboxButton::RightThumb] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
 
 		buttons[(int)XboxButton::LeftShoulder] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
 		buttons[(int)XboxButton::RightShoulder] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons &
-			 XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons &
+		     XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
 
 		buttons[(int)XboxButton::A] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_A) !=
-			0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_A) !=
+		    0;
 		buttons[(int)XboxButton::B] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_B) !=
-			0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_B) !=
+		    0;
 		buttons[(int)XboxButton::X] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_X) !=
-			0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_X) !=
+		    0;
 		buttons[(int)XboxButton::Y] =
-			(g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_Y) !=
-			0;
+		    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_Y) !=
+		    0;
 
 		return buttons;
 	}
@@ -360,7 +361,6 @@ namespace Input
 	{
 		glfwSetClipboardString(Game::getGlfwWindow(), str.c_str());
 	}
-
 
 } // namespace Input
 } // namespace Dunjun
