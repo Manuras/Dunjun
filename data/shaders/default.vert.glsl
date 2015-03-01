@@ -14,11 +14,11 @@ vec3 quaternionRotate(vec4 q, vec3 v)
 }
 
 attribute vec3 a_position;
-attribute vec3 a_color;
 attribute vec2 a_texCoord;
+attribute vec3 a_color;
 
-varying vec3 v_color;
 varying vec2 v_texCoord;
+varying vec3 v_color;
 
 uniform mat4 u_camera;
 uniform Transform u_transform = {vec3(0), vec4(0, 0, 0, 1), vec3(1)};

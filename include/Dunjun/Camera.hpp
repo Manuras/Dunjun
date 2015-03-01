@@ -9,6 +9,7 @@ namespace Dunjun
 enum class ProjectionType
 {
 	Perspective,
+	InfinitePerspective,
 	Orthographic,
 };
 

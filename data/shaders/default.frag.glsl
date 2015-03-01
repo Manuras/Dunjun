@@ -2,8 +2,8 @@
 
 uniform sampler2D u_tex;
 
-varying vec3 v_color;
 varying vec2 v_texCoord;
+varying vec3 v_color;
 
 void main()
 {

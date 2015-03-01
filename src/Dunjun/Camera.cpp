@@ -66,6 +66,11 @@ Matrix4 Camera::getProjection() const
 		proj =
 		    perspective(fieldOfView, viewportAspectRatio, nearPlane, farPlane);
 	}
+	else if (projectionType == ProjectionType::InfinitePerspective)
+	{
+		proj =
+			infinitePerspective(fieldOfView, viewportAspectRatio, nearPlane);
+	}
 	else if (projectionType == ProjectionType::Orthographic)
 	{
 		f32 distance = 0.5f * (farPlane - nearPlane);
