@@ -1,4 +1,4 @@
-#include <Dunjun/Math/Functions/Matrix.hpp>
+#include <Dunjun/Math/Functions/Transform.hpp>
 
 #include <cassert>
 #include <cmath>
@@ -110,7 +110,7 @@ Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear)
 	return result;
 }
 
-Matrix4 lookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
+Matrix4 matrixLookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
 {
 	const Vector3 f(normalize(center - eye));
 	const Vector3 s(normalize(cross(f, up)));
@@ -135,4 +135,21 @@ Matrix4 lookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
 
 	return result;
 }
+
+Quaternion quaternionLookAt(const Vector3& eye, const Vector3& center, const Vector3& forward)
+{
+	const f32 similar = 0.001f;
+
+	if (length(center - eye) < similar)
+		return Quaternion(); // You cannot look at where you are!
+
+	// Forward Vector
+	Vector3 f = normalize(center - eye);
+	f32 cosTheta = dot(forward, f);
+
+	Radian angle(std::acos(cosTheta));
+	Vector3 axis = cross(forward, f);
+	return angleAxis(angle, axis);
+}
+
 } // namespace Dunjun

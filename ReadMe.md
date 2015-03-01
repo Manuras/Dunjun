@@ -69,7 +69,8 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * 029 - Gamepad Camera Control
 * 030 - Mouse Buttons and Scroll Input
 * 030.5 - Input Enums & Camera Transform Fix
-
+* 031 - Plans for Game
+* 032 - Basic Level and Billboards
 
 ## Contact ##
 

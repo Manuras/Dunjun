@@ -55,6 +55,8 @@ namespace
 
 GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
+GLOBAL ModelAsset g_floor;
+GLOBAL ModelAsset g_wall;
 GLOBAL std::vector<ModelInstance> g_instances;
 GLOBAL Camera g_camera;
 
@@ -159,6 +161,38 @@ namespace Game
 		g_sprite.drawCount = 6;
 	}
 
+	INTERNAL void loadFloorAsset()
+	{
+		Vertex vertices[] = {
+		    //    x     y      z        r     g     b     a        s     t
+		    {{-0.5f, 0.0f, -0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {0.0f, 0.0f}},
+		    {{+0.5f, 0.0f, -0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {1.0f, 0.0f}},
+		    {{+0.5f, 0.0f, +0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {1.0f, 1.0f}},
+		    {{-0.5f, 0.0f, +0.5f}, {{0xFF, 0xFF, 0xFF, 0xFF}}, {0.0f, 1.0f}},
+		};
+
+		glGenBuffers(1, &g_floor.vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, g_floor.vbo);
+		glBufferData(
+		    GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		u32 indices[] = {0, 1, 2, 2, 3, 0};
+
+		glGenBuffers(1, &g_floor.ibo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_floor.ibo);
+		glBufferData(
+		    GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		g_floor.shaders = g_defaultShader;
+		g_floor.texture = new Texture();
+		g_floor.texture->loadFromFile("data/textures/kitten.jpg");
+
+		g_floor.drawType = GL_TRIANGLES;
+		g_floor.drawCount = 6;
+	}
+
+
+
 	INTERNAL void loadInstances()
 	{
 		Transform parent;
@@ -166,23 +200,27 @@ namespace Game
 		ModelInstance a;
 		a.asset = &g_sprite;
 		a.transform.position = {0, 0, 0};
-		a.transform.scale = {3, 3, 3};
-		a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
+		a.transform.scale = {1, 1, 1};
+		//a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 		g_instances.push_back(a);
 
-		ModelInstance b;
-		b.asset = &g_sprite;
-		b.transform.position = {2, 0, -0.1f};
-		g_instances.push_back(b);
 
-		ModelInstance c;
-		c.asset = &g_sprite;
-		c.transform.position = {0, 0, 1};
-		c.transform.orientation = angleAxis(Degree(45), {0, 1, 0});
-		g_instances.push_back(c);
+		for (int i = -3; i < 4; i++)
+		{
+			for (int j = -3; j < 4; j++)
+			{
+				ModelInstance f;
+				f.asset = &g_floor;
+				f.transform.position = {(f32)i, -0.5, (f32)j};
+				
+				g_instances.push_back(f);
+
+			}
+		}
+
 
 		// Init Camera
-		g_camera.transform.position = {2, 0, 7};
+		g_camera.transform.position = {0, 2, 7};
 
 		g_camera.lookAt({0, 0, 0});
 		g_camera.projectionType = ProjectionType::Perspective;
@@ -191,156 +229,142 @@ namespace Game
 
 	INTERNAL void update(f32 dt)
 	{
+		std::cout << g_camera.transform.position << std::endl;
+
+		ModelInstance& player = g_instances[0];
+
+
 		f32 camVel = 3.0f;
-
 		{
-			if (Input::isGamepadPresent(Input::Gamepad_1))
-			{
-				Input::GamepadAxes axes =
-				    Input::getGamepadAxes(Input::Gamepad_1);
+		 	if (Input::isGamepadPresent(Input::Gamepad_1))
+		 	{
+		 		Input::GamepadAxes axes =
+		 		    Input::getGamepadAxes(Input::Gamepad_1);
 
-				const f32 lookSensitivity = 2.0f;
-				const f32 deadZone = 0.21f;
+		 		const f32 lookSensitivity = 2.0f;
+		 		const f32 deadZone = 0.21f;
 
-				Vector2 rts = axes.rightThumbstick;
-				if (std::abs(rts.x) < deadZone)
-					rts.x = 0;
-				if (std::abs(rts.y) < deadZone)
-					rts.y = 0;
+		 		Vector2 rts = axes.rightThumbstick;
+		 		if (std::abs(rts.x) < deadZone)
+		 			rts.x = 0;
+		 		if (std::abs(rts.y) < deadZone)
+		 			rts.y = 0;
 
-				g_camera.offsetOrientation(-lookSensitivity * Radian(rts.x * dt),
-				                            lookSensitivity * Radian(rts.y * dt));
+		 		g_camera.offsetOrientation(-lookSensitivity * Radian(rts.x * dt),
+		 		                            lookSensitivity * Radian(rts.y * dt));
 
-				Vector2 lts = axes.leftThumbstick;
+		 		Vector2 lts = axes.leftThumbstick;
 
-				if (std::abs(lts.x) < deadZone)
-					lts.x = 0;
-				if (std::abs(lts.y) < deadZone)
-					lts.y = 0;
+		 		if (std::abs(lts.x) < deadZone)
+		 			lts.x = 0;
+		 		if (std::abs(lts.y) < deadZone)
+		 			lts.y = 0;
 
-				if (length(lts) > 1.0f)
-					lts = normalize(lts);
+		 		if (length(lts) > 1.0f)
+		 			lts = normalize(lts);
 
-				Vector3 velDir = {0, 0, 0};
+		 		Vector3 velDir = {0, 0, 0};
 
-				Vector3 forward = g_camera.forward();
-				forward.y = 0;
-				forward = normalize(forward);
-				velDir += lts.x * g_camera.right();
-				velDir += lts.y * forward;
+		 		Vector3 forward = g_camera.forward();
+		 		forward.y = 0;
+		 		forward = normalize(forward);
+		 		velDir += lts.x * g_camera.right();
+		 		velDir += lts.y * forward;
 
-				Input::GamepadButtons buttons =
-				    Input::getGamepadButtons(Input::Gamepad_1);
+		 		Input::GamepadButtons buttons =
+		 		    Input::getGamepadButtons(Input::Gamepad_1);
 
-				if (buttons[(usize)Input::XboxButton::RightShoulder])
-					velDir.y += 1;
-				if (buttons[(usize)Input::XboxButton::LeftShoulder])
-					velDir.y -= 1;
-
-
-				if (buttons[(usize)Input::XboxButton::DpadUp])
-				{
-					Vector3 f = g_camera.forward();
-					f.y = 0;
-					f = normalize(f);
-					velDir += f;
-				}
-				if (buttons[(usize)Input::XboxButton::DpadDown])
-				{
-					Vector3 b = g_camera.backward();
-					b.y = 0;
-					b = normalize(b);
-					velDir += b;
-				}
+		 		if (buttons[(usize)Input::XboxButton::RightShoulder])
+		 			velDir.y += 1;
+		 		if (buttons[(usize)Input::XboxButton::LeftShoulder])
+		 			velDir.y -= 1;
 
 
-				if (buttons[(usize)Input::XboxButton::DpadLeft])
-				{
-					Vector3 l = g_camera.left();
-					l.y = 0;
-					l = normalize(l);
-					velDir += l;
-				}
-				if (buttons[(usize)Input::XboxButton::DpadRight])
-				{
-					Vector3 r = g_camera.right();
-					r.y = 0;
-					r = normalize(r);
-					velDir += r;
-				}
+		 		if (buttons[(usize)Input::XboxButton::DpadUp])
+		 		{
+		 			Vector3 f = g_camera.forward();
+		 			f.y = 0;
+		 			f = normalize(f);
+		 			velDir += f;
+		 		}
+		 		if (buttons[(usize)Input::XboxButton::DpadDown])
+		 		{
+		 			Vector3 b = g_camera.backward();
+		 			b.y = 0;
+		 			b = normalize(b);
+		 			velDir += b;
+		 		}
 
 
-				if (length(velDir) > 1.0f)
-					velDir = normalize(velDir);
+		 		if (buttons[(usize)Input::XboxButton::DpadLeft])
+		 		{
+		 			Vector3 l = g_camera.left();
+		 			l.y = 0;
+		 			l = normalize(l);
+		 			velDir += l;
+		 		}
+		 		if (buttons[(usize)Input::XboxButton::DpadRight])
+		 		{
+		 			Vector3 r = g_camera.right();
+		 			r.y = 0;
+		 			r = normalize(r);
+		 			velDir += r;
+		 		}
 
-				g_camera.transform.position += camVel * velDir * dt;
 
-				// Vibrate
-				if (Input::isGamepadButtonPressed(Input::Gamepad_1, Input::XboxButton::A))
-				{
-					Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
-				}
-				else
-				{
-					Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
-				}
+		 		if (length(velDir) > 1.0f)
+		 			velDir = normalize(velDir);
 
-			}
+		 		g_camera.transform.position += camVel * velDir * dt;
+
+		 		// Vibrate
+		 		if (Input::isGamepadButtonPressed(Input::Gamepad_1, Input::XboxButton::A))
+		 		{
+		 			Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
+		 		}
+		 		else
+		 		{
+		 			Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
+		 		}
+
+		 	}
 		}
 
+
+		f32 playerVel = 2.0f;
 		{
-			Vector2 curPos = Input::getCursorPosition();
+		 	Vector3 velDir = {0, 0, 0};
 
-			const f32 mouseSensitivity = 0.05f;
-
-			g_camera.offsetOrientation(-mouseSensitivity * Radian(curPos.x * dt),
-			                           -mouseSensitivity * Radian(curPos.y * dt));
-
-			Input::setCursorPosition({0, 0});
-
-			Vector3& camPos = g_camera.transform.position;
-
-			Vector3 velDir = {0, 0, 0};
-
-			if (Input::isKeyPressed(Input::Key::Up))
-			{
-				Vector3 f = g_camera.forward();
-				f.y = 0;
-				f = normalize(f);
-				velDir += f;
-			}
-			if (Input::isKeyPressed(Input::Key::Down))
-			{
-				Vector3 b = g_camera.backward();
-				b.y = 0;
-				b = normalize(b);
-				velDir += b;
-			}
+		 	if (Input::isKeyPressed(Input::Key::Up))
+		 	{
+				velDir += {0, 0, -1};
+		 	}
+		 	if (Input::isKeyPressed(Input::Key::Down))
+		 	{
+				velDir += {0, 0, +1};
+		 	}
 
 			if (Input::isKeyPressed(Input::Key::Left))
-				velDir += g_camera.left();
-			if (Input::isKeyPressed(Input::Key::Right))
-				velDir += g_camera.right();
+				velDir += {-1, 0, 0};
+		 	if (Input::isKeyPressed(Input::Key::Right))
+				velDir += {+1, 0, 0};
 
-			if (Input::isKeyPressed(Input::Key::RShift))
-				velDir += {0, +1, 0};
-			if (Input::isKeyPressed(Input::Key::RControl))
-				velDir += {0, -1, 0};
+		 	if (Input::isKeyPressed(Input::Key::RShift))
+		 		velDir += {0, +1, 0};
+		 	if (Input::isKeyPressed(Input::Key::RControl))
+		 		velDir += {0, -1, 0};
 
-			if (length(velDir) > 0)
-				velDir = normalize(velDir);
+		 	if (length(velDir) > 0)
+		 		velDir = normalize(velDir);
 
-			camPos += camVel * velDir * dt;
+			player.transform.position += playerVel * velDir * dt;
 
-			g_camera.viewportAspectRatio =
-			    getWindowSize().x / getWindowSize().y;
-
-		/*	std::cout << Input::getScrollOffset() << std::endl;
-
-			g_camera.fieldOfView =
-			    Radian(static_cast<f32>(g_camera.fieldOfView) +
-			           Input::getScrollOffset().y);*/
+			player.transform.orientation = quaternionLookAt(player.transform.position,
+			                               g_camera.transform.position,
+			                               {0, 0, -1});
 		}
+ 		g_camera.viewportAspectRatio = getWindowSize().x / getWindowSize().y;
+
 
 
 		//g_camera.lookAt({0, 0, 0});
@@ -357,15 +381,15 @@ namespace Game
 
 		asset->texture->bind(0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, g_sprite.vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_sprite.ibo);
+		glBindBuffer(GL_ARRAY_BUFFER, inst.asset->vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, inst.asset->ibo);
 
 		glEnableVertexAttribArray(0); // vertPosition
 		glEnableVertexAttribArray(1); // vertColor
 		glEnableVertexAttribArray(2); // vertTexCoord
 
 		glVertexAttribPointer(0,
-		                      2,
+		                      3,
 		                      GL_FLOAT,
 		                      GL_FALSE,
 		                      sizeof(Vertex), // Stride
@@ -443,7 +467,7 @@ namespace Game
 		Input::setup();
 
 		Input::setCursorPosition({0, 0});
-		Input::setCursorMode(Input::CursorMode::Disabled);
+		//Input::setCursorMode(Input::CursorMode::Disabled);
 
 		// glEnable(GL_CULL_FACE);
 		// glCullFace(GL_BACK);
@@ -452,6 +476,7 @@ namespace Game
 
 		loadShaders();
 		loadSpriteAsset();
+		loadFloorAsset();
 		loadInstances();
 	}
 

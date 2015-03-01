@@ -1,5 +1,7 @@
 #include <Dunjun/Camera.hpp>
 
+#include <Dunjun/Math.hpp>
+
 namespace Dunjun
 {
 Camera::Camera()
@@ -15,18 +17,7 @@ Camera::Camera()
 
 void Camera::lookAt(const Vector3& position, const Vector3& forward)
 {
-	const f32 similar = 0.001f;
-
-	if (length(position - transform.position) < similar)
-		return; // You cannot look at where you are!
-
-	// Forward Vector
-	Vector3 f = normalize(position - transform.position);
-	f32 cosTheta = dot(forward, f);
-
-	Radian angle(std::acos(cosTheta));
-	Vector3 axis = cross(forward, f);
-	transform.orientation = angleAxis(angle, axis);
+	transform.orientation = quaternionLookAt(transform.position, position, forward);
 }
 
 void Camera::offsetOrientation(const Radian& yaw, const Radian& pitch)

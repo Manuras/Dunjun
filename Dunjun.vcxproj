@@ -77,7 +77,7 @@
     <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\Input.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
-    <ClCompile Include="src\Dunjun\Math\Functions\Matrix.cpp" />
+    <ClCompile Include="src\Dunjun\Math\Functions\Transform.cpp" />
     <ClCompile Include="src\Dunjun\Math\Matrix4.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\Dunjun\Texture.cpp" />
@@ -96,7 +96,7 @@
     <ClInclude Include="include\Dunjun\Math\Constants.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions\Interpolation.hpp" />
-    <ClInclude Include="include\Dunjun\Math\Functions\Matrix.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Functions\Transform.hpp" />
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
     <ClInclude Include="include\Dunjun\Math\Quaternion.hpp" />
     <ClInclude Include="include\Dunjun\Math\Unit.hpp" />
