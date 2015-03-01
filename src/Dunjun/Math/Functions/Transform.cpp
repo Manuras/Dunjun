@@ -110,7 +110,8 @@ Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear)
 	return result;
 }
 
-Matrix4 matrixLookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
+Matrix4
+    matrix4lookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
 {
 	const Vector3 f(normalize(center - eye));
 	const Vector3 s(normalize(cross(f, up)));
@@ -136,20 +137,25 @@ Matrix4 matrixLookAt(const Vector3& eye, const Vector3& center, const Vector3& u
 	return result;
 }
 
-Quaternion quaternionLookAt(const Vector3& eye, const Vector3& center, const Vector3& forward)
+Quaternion quaternionLookAt(const Vector3& eye,
+                            const Vector3& center,
+                            const Vector3& up)
 {
 	const f32 similar = 0.001f;
 
 	if (length(center - eye) < similar)
 		return Quaternion(); // You cannot look at where you are!
 
-	// Forward Vector
-	Vector3 f = normalize(center - eye);
-	f32 cosTheta = dot(forward, f);
+	const Vector3 f(normalize(center - eye));
+	const Vector3 s(normalize(cross(f, up)));
+	const Vector3 u(cross(s, f));
+	const Vector3 refUp(normalize(up));
 
-	Radian angle(std::acos(cosTheta));
-	Vector3 axis = cross(forward, f);
-	return angleAxis(angle, axis);
+	// NOTE(bill): this is from
+	// http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
+	const f32 m = std::sqrt(2.0f + 2.0f * dot(u, refUp));
+	Vector3 v = (1.0f / m) * cross(u, refUp);
+	return Quaternion(v, 0.5f * m);
 }
 
 } // namespace Dunjun

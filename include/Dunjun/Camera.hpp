@@ -17,7 +17,7 @@ struct Camera
 	Camera();
 	Camera(const Camera& other) = default;
 
-	void lookAt(const Vector3& position, const Vector3& forward = {0, 0, -1});
+	void lookAt(const Vector3& position, const Vector3& up = {0, 1, 0});
 
 	// NOTE(bill): +ve == ccw => +ve yaw == face up, +ve pitch == face left
 	void offsetOrientation(const Radian& yaw, const Radian& pitch);

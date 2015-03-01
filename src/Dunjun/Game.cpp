@@ -146,7 +146,7 @@ namespace Game
 		glBufferData(
 		    GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		u32 indices[] = {0, 1, 2, 2, 3, 0};
+		u32 indices[] = {0, 3, 2, 2, 1, 0};
 
 		glGenBuffers(1, &g_sprite.ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_sprite.ibo);
@@ -176,7 +176,7 @@ namespace Game
 		glBufferData(
 		    GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		u32 indices[] = {0, 1, 2, 2, 3, 0};
+		u32 indices[] = {0, 3, 2, 2, 1, 0};
 
 		glGenBuffers(1, &g_floor.ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_floor.ibo);
@@ -205,9 +205,10 @@ namespace Game
 		g_instances.push_back(a);
 
 
-		for (int i = -3; i < 4; i++)
+		int mapSize = 3;
+		for (int i = -mapSize; i <= mapSize; i++)
 		{
-			for (int j = -3; j < 4; j++)
+			for (int j = -mapSize; j <= mapSize; j++)
 			{
 				ModelInstance f;
 				f.asset = &g_floor;
@@ -229,8 +230,6 @@ namespace Game
 
 	INTERNAL void update(f32 dt)
 	{
-		std::cout << g_camera.transform.position << std::endl;
-
 		ModelInstance& player = g_instances[0];
 
 
@@ -331,18 +330,14 @@ namespace Game
 		}
 
 
-		f32 playerVel = 2.0f;
+		f32 playerVel = 4.0f;
 		{
 		 	Vector3 velDir = {0, 0, 0};
 
 		 	if (Input::isKeyPressed(Input::Key::Up))
-		 	{
 				velDir += {0, 0, -1};
-		 	}
 		 	if (Input::isKeyPressed(Input::Key::Down))
-		 	{
 				velDir += {0, 0, +1};
-		 	}
 
 			if (Input::isKeyPressed(Input::Key::Left))
 				velDir += {-1, 0, 0};
@@ -355,13 +350,35 @@ namespace Game
 		 		velDir += {0, -1, 0};
 
 		 	if (length(velDir) > 0)
-		 		velDir = normalize(velDir);
+				velDir = normalize(velDir);
 
-			player.transform.position += playerVel * velDir * dt;
+			{
+				player.transform.position += playerVel * velDir * dt;
 
-			player.transform.orientation = quaternionLookAt(player.transform.position,
-			                               g_camera.transform.position,
-			                               {0, 0, -1});
+				
+#if 0 // Billboard
+				Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
+					g_camera.transform.position,
+					{0, 1, 0}));
+
+
+				player.transform.orientation = pRot;
+#elif 1 // Billboard fixed y-axis
+				Vector3 f = player.transform.position - g_camera.transform.position;
+				f.y = 0;
+				if (f.x == 0 && f.z == 0)
+					player.transform.orientation = Quaternion();
+				else
+				{
+					Radian a(-std::atan(f.z / f.x));
+					a += Radian(Constants::TAU / 4);
+					if (f.x < 0)
+						a -= Radian(Constants::TAU / 2);
+
+					player.transform.orientation = angleAxis(a, {0, 1, 0});
+				}
+#endif
+			}
 		}
  		g_camera.viewportAspectRatio = getWindowSize().x / getWindowSize().y;
 
@@ -469,8 +486,8 @@ namespace Game
 		Input::setCursorPosition({0, 0});
 		//Input::setCursorMode(Input::CursorMode::Disabled);
 
-		// glEnable(GL_CULL_FACE);
-		// glCullFace(GL_BACK);
+	/*	glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);*/
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 

@@ -15,9 +15,9 @@ Camera::Camera()
 {
 }
 
-void Camera::lookAt(const Vector3& position, const Vector3& forward)
+void Camera::lookAt(const Vector3& position, const Vector3& up)
 {
-	transform.orientation = quaternionLookAt(transform.position, position, forward);
+	transform.orientation = conjugate(quaternionLookAt(transform.position, position, up));
 }
 
 void Camera::offsetOrientation(const Radian& yaw, const Radian& pitch)

@@ -71,6 +71,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * 030.5 - Input Enums & Camera Transform Fix
 * 031 - Plans for Game
 * 032 - Basic Level and Billboards
+* 033 - Finish Billboards and Start Mesh
 
 ## Contact ##
 
