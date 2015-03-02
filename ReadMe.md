@@ -66,14 +66,14 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [026 - Basic First Person Camera Input](https://www.youtube.com/watch?v=dkYK0e0m_H0)
 * [027 - Game Separation and Input Wrapper](https://www.youtube.com/watch?v=9bpZjQYPXqg)
 * [028 - XInput Gamepads](https://www.youtube.com/watch?v=NAVaHMDNPjQ)
-* 029 - Gamepad Camera Control
-* 030 - Mouse Buttons and Scroll Input
-* 030.5 - Input Enums & Camera Transform Fix
+* [029 - Gamepad Camera Control](https://www.youtube.com/watch?v=JHNUHLgqBo4)
+* [030 - Mouse Buttons and Scroll Input](https://www.youtube.com/watch?v=oJmDEtCX9a0)
+* [030.5 - Input Enums & Camera Transform Fix](https://www.youtube.com/watch?v=rrMtsh2GZ0Y)
 
 ### Mesh Creation ###
 
-* 031 - Plans for Game
-* 032 - Basic Level and Billboards
+* [031 - Plans for Game](https://www.youtube.com/watch?v=s0-Ru3rIPeU)
+* [032 - Basic Level and Billboards](https://www.youtube.com/watch?v=OtvRnrakTkU)
 * 033 - Finish Billboards and Start Mesh
 * 034 - Materials and Meshes
 
