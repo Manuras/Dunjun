@@ -74,10 +74,10 @@ Matrix4 Camera::getProjection() const
 	else if (projectionType == ProjectionType::Orthographic)
 	{
 		f32 distance = 0.5f * (farPlane - nearPlane);
-		proj = ortho(-orthoScale * viewportAspectRatio,
-		             orthoScale * viewportAspectRatio,
-		             -orthoScale,
+		proj = ortho(orthoScale * viewportAspectRatio,
+		             -orthoScale * viewportAspectRatio,
 		             orthoScale,
+		             -orthoScale,
 		             -distance,
 		             distance);
 	}

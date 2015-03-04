@@ -76,6 +76,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [032 - Basic Level and Billboards](https://www.youtube.com/watch?v=OtvRnrakTkU)
 * 033 - Finish Billboards and Start Mesh
 * 034 - Materials and Meshes
+* 035 - Textured Tiled Room
 
 ## Contact ##
 

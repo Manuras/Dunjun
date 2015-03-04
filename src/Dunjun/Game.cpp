@@ -56,8 +56,6 @@ namespace
 
 GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
-GLOBAL ModelAsset g_floor;
-GLOBAL ModelAsset g_wall;
 GLOBAL std::vector<ModelInstance> g_instances;
 GLOBAL Camera g_camera;
 GLOBAL std::map<std::string, Material> g_materials;
@@ -86,35 +84,6 @@ namespace Game
 
 		// TODO(bill): Keep context when recreating display
 		//             !Fullscreen toggle!
-		/*if (glfwGetKey(window, GLFW_KEY_F11))
-		{
-		*fullscreen = !(*fullscreen);
-
-		GLFWwindow* newWindow;
-
-		glfwHints();
-		if (*fullscreen)
-		{
-		int count;
-		const GLFWvidmode* modes =
-		glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
-
-		newWindow = glfwCreateWindow(modes[count - 1].width,
-		modes[count - 1].height,
-		"Dunjun",
-		glfwGetPrimaryMonitor(),
-		window);
-		}
-		else
-		{
-		newWindow = glfwCreateWindow(
-		g_windowWidth, g_windowHeight, "Dunjun", nullptr, window);
-		}
-
-		glfwDestroyWindow(window);
-		window = newWindow;
-		glfwMakeContextCurrent(window);
-		}*/
 	}
 
 	INTERNAL void loadShaders()
@@ -144,6 +113,14 @@ namespace Game
 		g_materials["cat"].shaders = g_defaultShader;
 		g_materials["cat"].texture = new Texture();
 		g_materials["cat"].texture->loadFromFile("data/textures/kitten.jpg");
+
+		g_materials["stone"].shaders = g_defaultShader;
+		g_materials["stone"].texture = new Texture();
+		g_materials["stone"].texture->loadFromFile("data/textures/stone.png", TextureFilter::Nearest);
+
+		g_materials["terrain"].shaders = g_defaultShader;
+		g_materials["terrain"].texture = new Texture();
+		g_materials["terrain"].texture->loadFromFile("data/textures/terrain.png", TextureFilter::Nearest);
 	}
 
 	INTERNAL void loadSpriteAsset()
@@ -155,10 +132,10 @@ namespace Game
 		meshData.vertices.push_back({{-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f}, {{0xFF, 0x00, 0x00, 0xFF}}});
 
 		meshData.indices.push_back(0);
-		meshData.indices.push_back(3);
-		meshData.indices.push_back(2);
-		meshData.indices.push_back(2);
 		meshData.indices.push_back(1);
+		meshData.indices.push_back(2);
+		meshData.indices.push_back(2);
+		meshData.indices.push_back(3);
 		meshData.indices.push_back(0);
 
 
@@ -168,40 +145,126 @@ namespace Game
 		g_sprite.mesh = g_meshes["sprite"];
 	}
 
-	INTERNAL void loadFloorAsset()
-	{
-		Mesh::Data meshData;
-		meshData.vertices.push_back({{-0.5f, 0.0f, -0.5f}, {0.0f, 0.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		meshData.vertices.push_back({{+0.5f, 0.0f, -0.5f}, {1.0f, 0.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		meshData.vertices.push_back({{+0.5f, 0.0f, +0.5f}, {1.0f, 1.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		meshData.vertices.push_back({{-0.5f, 0.0f, +0.5f}, {0.0f, 1.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-
-		meshData.indices.push_back(0);
-		meshData.indices.push_back(3);
-		meshData.indices.push_back(2);
-		meshData.indices.push_back(2);
-		meshData.indices.push_back(1);
-		meshData.indices.push_back(0);
-
-		g_floor.material = &g_materials["default"];
-		g_floor.mesh = new Mesh(meshData);
-	}
 
 	INTERNAL void generateWorld()
 	{
+		const f32 tileWidth = 1.0f / 16.0f;
+		const f32 tileHeight = 1.0f / 16.0f;
+
+
+
 		Mesh::Data floorMD;
-		int mapSize = 5;
-		for (int i = -mapSize; i <= mapSize; i++)
+		int mapSize = 8;
+		for (int i = 0; i < mapSize; i++)
 		{
-			for (int j = -mapSize; j <= mapSize; j++)
+			for (int j = 0; j < mapSize; j++)
 			{
+				// Light Wood
+				int tileX = 0;
+				int tileY = 11;
 
 				usize index = floorMD.vertices.size();
 
-				floorMD.vertices.push_back({{-0.5f + i, 0.0f, -0.5f + j}, {0.0f, 0.0f}, {{0x00, 0x00, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, 0.0f, -0.5f + j}, {1.0f, 0.0f}, {{0x00, 0xFF, 0x00, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, 0.0f, +0.5f + j}, {1.0f, 1.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + i, 0.0f, +0.5f + j}, {0.0f, 1.0f}, {{0xFF, 0x00, 0x00, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + i, 0.0f, -0.5f + j}, {tileX*tileWidth, (tileY+1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + i, 0.0f, +0.5f + j}, {tileX*tileWidth, tileY*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, 0.0f, +0.5f + j}, {(tileX + 1)*tileWidth, tileY*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+
+
+				floorMD.indices.push_back(index + 0);
+				floorMD.indices.push_back(index + 1);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 3);
+				floorMD.indices.push_back(index + 0);
+			}
+		}
+
+		for (int k = 0; k < 3; k++)
+		{
+			// Left walls
+			for (int j = 0; j < mapSize; j++)
+			{
+				// Stone
+				int tileX = 0 + rand()%2;
+				int tileY = 15;
+
+				usize index = floorMD.vertices.size();
+
+				floorMD.vertices.push_back({{-0.5f, k + 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f, k + 0.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f, k + 1.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f, k + 1.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+
+
+				floorMD.indices.push_back(index + 0);
+				floorMD.indices.push_back(index + 3);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 1);
+				floorMD.indices.push_back(index + 0);
+			}
+
+			// Right walls
+			for (int j = 0; j < mapSize; j++)
+			{
+				// Stone
+				int tileX = 0 + rand() % 2;
+				int tileY = 15;
+
+				usize index = floorMD.vertices.size();
+
+				floorMD.vertices.push_back({{-0.5f + mapSize, k + 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + mapSize, k + 0.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + mapSize, k + 1.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + mapSize, k + 1.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+
+
+				floorMD.indices.push_back(index + 0);
+				floorMD.indices.push_back(index + 1);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 3);
+				floorMD.indices.push_back(index + 0);
+			}
+
+
+			// Back walls
+			for (int i = 0; i < mapSize; i++)
+			{
+				// Stone
+				int tileX = 0 + rand() % 2;
+				int tileY = 15;
+
+				usize index = floorMD.vertices.size();
+
+				floorMD.vertices.push_back({{-0.5f + i, k + 0.0f, -0.5f}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, k + 0.0f, -0.5f}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, k + 1.0f, -0.5f}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + i, k + 1.0f, -0.5f}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+
+
+				floorMD.indices.push_back(index + 0);
+				floorMD.indices.push_back(index + 1);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 2);
+				floorMD.indices.push_back(index + 3);
+				floorMD.indices.push_back(index + 0);
+			}
+
+			// Front walls
+			for (int i = 0; i < mapSize; i++)
+			{
+				// Stone
+				int tileX = 0 + rand() % 2;
+				int tileY = 15;
+
+				usize index = floorMD.vertices.size();
+
+				floorMD.vertices.push_back({{-0.5f + i, k + 0.0f, -0.5f + mapSize}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, k + 0.0f, -0.5f + mapSize}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{+0.5f + i, k + 1.0f, -0.5f + mapSize}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+				floorMD.vertices.push_back({{-0.5f + i, k + 1.0f, -0.5f + mapSize}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
 
 
 				floorMD.indices.push_back(index + 0);
@@ -213,11 +276,11 @@ namespace Game
 			}
 		}
 
+
 		ModelInstance floorMI;
 		floorMI.asset = new ModelAsset();
 		floorMI.asset->mesh = new Mesh(floorMD);
-		floorMI.asset->material = &g_materials["default"];
-		floorMI.transform.position.y = -0.5;
+		floorMI.asset->material = &g_materials["terrain"];
 
 		g_instances.push_back(floorMI);
 	}
@@ -228,7 +291,7 @@ namespace Game
 
 		ModelInstance a;
 		a.asset = &g_sprite;
-		a.transform.position = {0, 0, 0};
+		a.transform.position = {0, 0.5, 0};
 		a.transform.scale = {1, 1, 1};
 		//a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 		g_instances.push_back(a);
@@ -239,9 +302,11 @@ namespace Game
 
 
 		// Init Camera
-		g_camera.transform.position = {0, 2, 7};
+		g_camera.transform.position = {0, 4, 10};
 
 		g_camera.lookAt({0, 0, 0});
+		//g_camera.projectionType = ProjectionType::Orthographic;
+		//g_camera.orthoScale = 800;
 		g_camera.projectionType = ProjectionType::Perspective;
 		g_camera.fieldOfView = Degree(50.0f);
 	}
@@ -373,7 +438,7 @@ namespace Game
 			{
 				player.transform.position += playerVel * velDir * dt;
 
-				
+
 #if 0 // Billboard
 				Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
 					g_camera.transform.position,
@@ -398,8 +463,8 @@ namespace Game
 #endif
 			}
 		}
-		g_camera.transform.position.x = player.transform.position.x;
-		g_camera.lookAt(player.transform.position);
+		//g_camera.transform.position.x = player.transform.position.x;
+		//g_camera.lookAt(player.transform.position);
 		g_camera.viewportAspectRatio = getWindowSize().x / getWindowSize().y;
 
 
@@ -424,7 +489,8 @@ namespace Game
 	{
 		glViewport(0, 0, windowWidth, windowHeight);
 
-		glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
+		glClearColor(0, 0, 0, 1);
+		//glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const ShaderProgram* currentShaders = nullptr;
@@ -474,15 +540,15 @@ namespace Game
 		Input::setCursorPosition({0, 0});
 		//Input::setCursorMode(Input::CursorMode::Disabled);
 
-	/*	glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);*/
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
+
 
 		loadShaders();
 		loadMaterials();
 		loadSpriteAsset();
-		loadFloorAsset();
 		loadInstances();
 	}
 

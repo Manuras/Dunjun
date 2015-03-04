@@ -34,7 +34,7 @@ Texture::Texture()
 	glGenTextures(1, &object);
 }
 
-Texture::Texture(const Image& image, GLint minMagFilter, GLint wrapMode)
+Texture::Texture(const Image& image, TextureFilter minMagFilter, TextureWrapMode wrapMode)
 : object(0)
 , width(image.width)
 , height(image.height)
@@ -46,8 +46,8 @@ Texture::Texture(const Image& image, GLint minMagFilter, GLint wrapMode)
 }
 
 bool Texture::loadFromFile(const char* filename,
-                           GLint minMagFilter,
-                           GLint wrapMode)
+						   TextureFilter minMagFilter,
+						   TextureWrapMode wrapMode)
 {
 	Image image;
 	if (!image.loadFromFile(filename))
@@ -58,8 +58,8 @@ bool Texture::loadFromFile(const char* filename,
 }
 
 bool Texture::loadFromImage(const Image& image,
-                            GLint minMagFilter,
-                            GLint wrapMode)
+							TextureFilter minMagFilter,
+							TextureWrapMode wrapMode)
 {
 	if ((const ImageFormat&)image.format == ImageFormat::None)
 		return false;
@@ -69,10 +69,10 @@ bool Texture::loadFromImage(const Image& image,
 
 	glGenTextures(1, &object);
 	glBindTexture(GL_TEXTURE_2D, object);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minMagFilter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minMagFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapMode));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapMode));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minMagFilter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(minMagFilter));
 
 	glTexImage2D(GL_TEXTURE_2D,
 	             0,
