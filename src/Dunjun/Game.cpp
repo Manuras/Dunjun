@@ -2,20 +2,16 @@
 
 #include <Dunjun/OpenGL.hpp>
 #include <Dunjun/Common.hpp>
-#include <Dunjun/ShaderProgram.hpp>
-#include <Dunjun/Image.hpp>
-#include <Dunjun/Texture.hpp>
 
 #include <Dunjun/Input.hpp>
 
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
 
-#include <Dunjun/Vertex.hpp>
 #include <Dunjun/Math.hpp>
-#include <Dunjun/Transform.hpp>
 #include <Dunjun/Camera.hpp>
-#include <Dunjun/Mesh.hpp>
+#include <Dunjun/ModelAsset.hpp>
+#include <Dunjun/Level.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -28,18 +24,6 @@
 
 namespace Dunjun
 {
-struct Material
-{
-	ShaderProgram* shaders;
-	Texture* texture;
-};
-
-struct ModelAsset
-{
-	const Material* material;
-	const Mesh* mesh;
-};
-
 struct ModelInstance
 {
 	ModelAsset* asset;
@@ -61,6 +45,8 @@ GLOBAL Camera g_camera;
 GLOBAL std::map<std::string, Material> g_materials;
 GLOBAL std::map<std::string, Mesh*> g_meshes;
 
+GLOBAL Level g_level;
+
 namespace Game
 {
 	INTERNAL void glfwHints()
@@ -79,7 +65,8 @@ namespace Game
 
 	INTERNAL void handleInput(bool* running, bool* fullscreen)
 	{
-		if (glfwWindowShouldClose(window) || Input::isKeyPressed(Input::Key::Escape))
+		if (glfwWindowShouldClose(window) ||
+		    Input::isKeyPressed(Input::Key::Escape))
 			*running = false;
 
 		// TODO(bill): Keep context when recreating display
@@ -96,9 +83,12 @@ namespace Game
 		if (!g_defaultShader->attachShaderFromFile(
 		        ShaderType::Fragment, "data/shaders/default.frag.glsl"))
 			throw std::runtime_error(g_defaultShader->errorLog);
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Position, "a_position");
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord, "a_texCoord");
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Position,
+		                                    "a_position");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+		                                    "a_texCoord");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color,
+		                                    "a_color");
 
 		if (!g_defaultShader->link())
 			throw std::runtime_error(g_defaultShader->errorLog);
@@ -108,7 +98,8 @@ namespace Game
 	{
 		g_materials["default"].shaders = g_defaultShader;
 		g_materials["default"].texture = new Texture();
-		g_materials["default"].texture->loadFromFile("data/textures/default.png");
+		g_materials["default"].texture->loadFromFile(
+		    "data/textures/default.png");
 
 		g_materials["cat"].shaders = g_defaultShader;
 		g_materials["cat"].texture = new Texture();
@@ -116,20 +107,26 @@ namespace Game
 
 		g_materials["stone"].shaders = g_defaultShader;
 		g_materials["stone"].texture = new Texture();
-		g_materials["stone"].texture->loadFromFile("data/textures/stone.png", TextureFilter::Nearest);
+		g_materials["stone"].texture->loadFromFile("data/textures/stone.png",
+		                                           TextureFilter::Nearest);
 
 		g_materials["terrain"].shaders = g_defaultShader;
 		g_materials["terrain"].texture = new Texture();
-		g_materials["terrain"].texture->loadFromFile("data/textures/terrain.png", TextureFilter::Nearest);
+		g_materials["terrain"].texture->loadFromFile(
+		    "data/textures/terrain.png", TextureFilter::Nearest);
 	}
 
 	INTERNAL void loadSpriteAsset()
 	{
 		Mesh::Data meshData;
-		meshData.vertices.push_back({{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {{0x00, 0x00, 0xFF, 0xFF}}});
-		meshData.vertices.push_back({{+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {{0x00, 0xFF, 0x00, 0xFF}}});
-		meshData.vertices.push_back({{+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		meshData.vertices.push_back({{-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f}, {{0xFF, 0x00, 0x00, 0xFF}}});
+		meshData.vertices.push_back(
+		    {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}, {{0x00, 0x00, 0xFF, 0xFF}}});
+		meshData.vertices.push_back(
+		    {{+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}, {{0x00, 0xFF, 0x00, 0xFF}}});
+		meshData.vertices.push_back(
+		    {{+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		meshData.vertices.push_back(
+		    {{-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f}, {{0xFF, 0x00, 0x00, 0xFF}}});
 
 		meshData.indices.push_back(0);
 		meshData.indices.push_back(1);
@@ -138,124 +135,55 @@ namespace Game
 		meshData.indices.push_back(3);
 		meshData.indices.push_back(0);
 
-
 		g_meshes["sprite"] = new Mesh(meshData);
 
 		g_sprite.material = &g_materials["cat"];
 		g_sprite.mesh = g_meshes["sprite"];
 	}
 
-	enum class TileSurfaceFace : u32
-	{
-		Right = 0,
-		Left = 1,
-		Up = 2,
-		Down = 3,
-		Front = 4,
-		Back = 5,
-	};
-
-	INTERNAL void addTileSurface(Mesh::Data* data, const Vector3& position, TileSurfaceFace face, const Vector2& tilePos)
-	{
-		const f32 tileWidth = 1.0f / 16.0f;
-		const f32 tileHeight = 1.0f / 16.0f;
-
-		usize index = data->vertices.size();
-
-		// Right/Left
-		if ((u32)face / 2 == 0)
-		{
-			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		}
-		// Up/Down
-		else if ((u32)face / 2 == 1)
-		{
-			data->vertices.push_back({{position.x + 0.0f, position.y, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 0.0f, position.y, position.z + 1.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 1.0f, position.y, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 1.0f, position.y, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		}
-		// Front/Back
-		else if ((u32)face / 2 == 2)
-		{
-			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 1.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 1.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		}
-
-
-
-		if ((u32)face % 2 == 0)
-		{
-			data->indices.push_back(index + 0);
-			data->indices.push_back(index + 1);
-			data->indices.push_back(index + 2);
-			data->indices.push_back(index + 2);
-			data->indices.push_back(index + 3);
-			data->indices.push_back(index + 0);
-		}
-		else // (u32)face % 2 == 1
-		{
-			data->indices.push_back(index + 0);
-			data->indices.push_back(index + 3);
-			data->indices.push_back(index + 2);
-			data->indices.push_back(index + 2);
-			data->indices.push_back(index + 1);
-			data->indices.push_back(index + 0);
-		}
-	}
-
-	INTERNAL void addTileSurface(Mesh::Data* data, const Vector3& position, TileSurfaceFace face, const std::vector<Vector2>& randomTilePosSet)
-	{
-		usize length = randomTilePosSet.size();
-		// TODO(bill): use better randomizer
-		Vector2 tilePos = randomTilePosSet[rand() % length];
-		addTileSurface(data, position, face, tilePos);
-	}
-
 	INTERNAL void generateWorld()
 	{
-		Mesh::Data floorMD;
+		g_level.material = &g_materials["terrain"];
 		int mapWidth = 16;
 		int mapDepth = 16;
 
-		Vector2 lightWoodTile(0, 11);
-		std::vector<Vector2> stoneTiles;
-		for (int i = 1; i < 11; i++)
-			stoneTiles.emplace_back(Vector2(i, 15));
+		Level::TileId lightWoodTile = {0, 11};
+		Level::RandomTileSet stoneTiles;
+		for (int i = 1; i < 3; i++)
+			stoneTiles.push_back({i, 15});
 
 		for (int i = 0; i < mapWidth; i++)
 		{
 			for (int j = 0; j < mapDepth; j++)
-				addTileSurface(&floorMD, Vector3(i, 0, j), TileSurfaceFace::Up, lightWoodTile);
+				g_level.addTileSurface(Vector3(i, 0, j),
+				                       Level::TileSurfaceFace::Up,
+				                       lightWoodTile);
 		}
 
 		for (int k = 0; k < 3; k++)
 		{
 			for (int j = 0; j < mapDepth; j++)
-				addTileSurface(&floorMD, Vector3(0, k, j), TileSurfaceFace::Right, stoneTiles);
+				g_level.addTileSurface(Vector3(0, k, j),
+				                       Level::TileSurfaceFace::Right,
+				                       stoneTiles);
 
 			for (int j = 0; j < mapDepth; j++)
-				addTileSurface(&floorMD, Vector3(mapWidth, k, j), TileSurfaceFace::Left, stoneTiles);
+				g_level.addTileSurface(Vector3(mapWidth, k, j),
+				                       Level::TileSurfaceFace::Left,
+				                       stoneTiles);
 
 			for (int i = 0; i < mapWidth; i++)
-				addTileSurface(&floorMD, Vector3(i, k, 0), TileSurfaceFace::Front, stoneTiles);
+				g_level.addTileSurface(Vector3(i, k, 0),
+				                       Level::TileSurfaceFace::Front,
+				                       stoneTiles);
 
 			for (int i = 0; i < mapWidth; i++)
-				addTileSurface(&floorMD, Vector3(i, k, mapDepth), TileSurfaceFace::Back, stoneTiles);
+				g_level.addTileSurface(Vector3(i, k, mapDepth),
+				                       Level::TileSurfaceFace::Back,
+				                       stoneTiles);
 		}
 
-
-		ModelInstance floorMI;
-		floorMI.asset = new ModelAsset();
-		floorMI.asset->mesh = new Mesh(floorMD);
-		floorMI.asset->material = &g_materials["terrain"];
-
-		g_instances.push_back(floorMI);
+		g_level.generate();
 	}
 
 	INTERNAL void loadInstances()
@@ -266,20 +194,17 @@ namespace Game
 		a.asset = &g_sprite;
 		a.transform.position = {4, 0.5, 4};
 		a.transform.scale = {1, 1, 1};
-		//a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
+		// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 		g_instances.push_back(a);
 
-
 		generateWorld();
-
-
 
 		// Init Camera
 		g_camera.transform.position = {4, 4, 10};
 
 		g_camera.lookAt({4, 0, 0});
-		//g_camera.projectionType = ProjectionType::Orthographic;
-		//g_camera.orthoScale = 800;
+		// g_camera.projectionType = ProjectionType::Orthographic;
+		// g_camera.orthoScale = 800;
 		g_camera.projectionType = ProjectionType::Perspective;
 		g_camera.fieldOfView = Degree(50.0f);
 	}
@@ -288,139 +213,135 @@ namespace Game
 	{
 		ModelInstance& player = g_instances[0];
 
-
 		f32 camVel = 3.0f;
 		{
-		 	if (Input::isGamepadPresent(Input::Gamepad_1))
-		 	{
-		 		Input::GamepadAxes axes =
-		 		    Input::getGamepadAxes(Input::Gamepad_1);
+			if (Input::isGamepadPresent(Input::Gamepad_1))
+			{
+				Input::GamepadAxes axes =
+				    Input::getGamepadAxes(Input::Gamepad_1);
 
-		 		const f32 lookSensitivity = 2.0f;
-		 		const f32 deadZone = 0.21f;
+				const f32 lookSensitivity = 2.0f;
+				const f32 deadZone = 0.21f;
 
-		 		Vector2 rts = axes.rightThumbstick;
-		 		if (std::abs(rts.x) < deadZone)
-		 			rts.x = 0;
-		 		if (std::abs(rts.y) < deadZone)
-		 			rts.y = 0;
+				Vector2 rts = axes.rightThumbstick;
+				if (std::abs(rts.x) < deadZone)
+					rts.x = 0;
+				if (std::abs(rts.y) < deadZone)
+					rts.y = 0;
 
-		 		g_camera.offsetOrientation(-lookSensitivity * Radian(rts.x * dt),
-		 		                            lookSensitivity * Radian(rts.y * dt));
+				g_camera.offsetOrientation(
+				    -lookSensitivity * Radian(rts.x * dt),
+				    lookSensitivity * Radian(rts.y * dt));
 
-		 		Vector2 lts = axes.leftThumbstick;
+				Vector2 lts = axes.leftThumbstick;
 
-		 		if (std::abs(lts.x) < deadZone)
-		 			lts.x = 0;
-		 		if (std::abs(lts.y) < deadZone)
-		 			lts.y = 0;
+				if (std::abs(lts.x) < deadZone)
+					lts.x = 0;
+				if (std::abs(lts.y) < deadZone)
+					lts.y = 0;
 
-		 		if (length(lts) > 1.0f)
-		 			lts = normalize(lts);
+				if (length(lts) > 1.0f)
+					lts = normalize(lts);
 
-		 		Vector3 velDir = {0, 0, 0};
+				Vector3 velDir = {0, 0, 0};
 
-		 		Vector3 forward = g_camera.forward();
-		 		forward.y = 0;
-		 		forward = normalize(forward);
-		 		velDir += lts.x * g_camera.right();
-		 		velDir += lts.y * forward;
+				Vector3 forward = g_camera.forward();
+				forward.y = 0;
+				forward = normalize(forward);
+				velDir += lts.x * g_camera.right();
+				velDir += lts.y * forward;
 
-		 		Input::GamepadButtons buttons =
-		 		    Input::getGamepadButtons(Input::Gamepad_1);
+				Input::GamepadButtons buttons =
+				    Input::getGamepadButtons(Input::Gamepad_1);
 
-		 		if (buttons[(usize)Input::XboxButton::RightShoulder])
-		 			velDir.y += 1;
-		 		if (buttons[(usize)Input::XboxButton::LeftShoulder])
-		 			velDir.y -= 1;
+				if (buttons[(usize)Input::XboxButton::RightShoulder])
+					velDir.y += 1;
+				if (buttons[(usize)Input::XboxButton::LeftShoulder])
+					velDir.y -= 1;
 
+				if (buttons[(usize)Input::XboxButton::DpadUp])
+				{
+					Vector3 f = g_camera.forward();
+					f.y = 0;
+					f = normalize(f);
+					velDir += f;
+				}
+				if (buttons[(usize)Input::XboxButton::DpadDown])
+				{
+					Vector3 b = g_camera.backward();
+					b.y = 0;
+					b = normalize(b);
+					velDir += b;
+				}
 
-		 		if (buttons[(usize)Input::XboxButton::DpadUp])
-		 		{
-		 			Vector3 f = g_camera.forward();
-		 			f.y = 0;
-		 			f = normalize(f);
-		 			velDir += f;
-		 		}
-		 		if (buttons[(usize)Input::XboxButton::DpadDown])
-		 		{
-		 			Vector3 b = g_camera.backward();
-		 			b.y = 0;
-		 			b = normalize(b);
-		 			velDir += b;
-		 		}
+				if (buttons[(usize)Input::XboxButton::DpadLeft])
+				{
+					Vector3 l = g_camera.left();
+					l.y = 0;
+					l = normalize(l);
+					velDir += l;
+				}
+				if (buttons[(usize)Input::XboxButton::DpadRight])
+				{
+					Vector3 r = g_camera.right();
+					r.y = 0;
+					r = normalize(r);
+					velDir += r;
+				}
 
+				if (length(velDir) > 1.0f)
+					velDir = normalize(velDir);
 
-		 		if (buttons[(usize)Input::XboxButton::DpadLeft])
-		 		{
-		 			Vector3 l = g_camera.left();
-		 			l.y = 0;
-		 			l = normalize(l);
-		 			velDir += l;
-		 		}
-		 		if (buttons[(usize)Input::XboxButton::DpadRight])
-		 		{
-		 			Vector3 r = g_camera.right();
-		 			r.y = 0;
-		 			r = normalize(r);
-		 			velDir += r;
-		 		}
+				g_camera.transform.position += camVel * velDir * dt;
 
-
-		 		if (length(velDir) > 1.0f)
-		 			velDir = normalize(velDir);
-
-		 		g_camera.transform.position += camVel * velDir * dt;
-
-		 		// Vibrate
-		 		if (Input::isGamepadButtonPressed(Input::Gamepad_1, Input::XboxButton::A))
-		 		{
-		 			Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
-		 		}
-		 		else
-		 		{
-		 			Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
-		 		}
-
-		 	}
+				// Vibrate
+				if (Input::isGamepadButtonPressed(Input::Gamepad_1,
+				                                  Input::XboxButton::A))
+				{
+					Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
+				}
+				else
+				{
+					Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
+				}
+			}
 		}
-
 
 		f32 playerVel = 4.0f;
 		{
-		 	Vector3 velDir = {0, 0, 0};
+			Vector3 velDir = {0, 0, 0};
 
-		 	if (Input::isKeyPressed(Input::Key::Up))
+			if (Input::isKeyPressed(Input::Key::Up))
 				velDir += {0, 0, -1};
-		 	if (Input::isKeyPressed(Input::Key::Down))
+			if (Input::isKeyPressed(Input::Key::Down))
 				velDir += {0, 0, +1};
 
 			if (Input::isKeyPressed(Input::Key::Left))
 				velDir += {-1, 0, 0};
-		 	if (Input::isKeyPressed(Input::Key::Right))
+			if (Input::isKeyPressed(Input::Key::Right))
 				velDir += {+1, 0, 0};
 
-		 	if (Input::isKeyPressed(Input::Key::RShift))
-		 		velDir += {0, +1, 0};
-		 	if (Input::isKeyPressed(Input::Key::RControl))
-		 		velDir += {0, -1, 0};
+			if (Input::isKeyPressed(Input::Key::RShift))
+				velDir += {0, +1, 0};
+			if (Input::isKeyPressed(Input::Key::RControl))
+				velDir += {0, -1, 0};
 
-		 	if (length(velDir) > 0)
+			if (length(velDir) > 0)
 				velDir = normalize(velDir);
 
 			{
 				player.transform.position += playerVel * velDir * dt;
 
-
-#if 0 // Billboard
+#if 0   // Billboard
 				Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
 					g_camera.transform.position,
 					{0, 1, 0}));
 
 
 				player.transform.orientation = pRot;
-#elif 0 // Billboard fixed y-axis
-				Vector3 f = player.transform.position - g_camera.transform.position;
+#elif 1 // Billboard fixed y-axis
+				Vector3 f =
+				    player.transform.position - g_camera.transform.position;
 				f.y = 0;
 				if (f.x == 0 && f.z == 0)
 					player.transform.orientation = Quaternion();
@@ -428,7 +349,7 @@ namespace Game
 				{
 					Radian a(-std::atan(f.z / f.x));
 					a += Radian(Constants::TAU / 4);
-					if (f.x < 0)
+					if (f.x >= 0)
 						a -= Radian(Constants::TAU / 2);
 
 					player.transform.orientation = angleAxis(a, {0, 1, 0});
@@ -436,13 +357,10 @@ namespace Game
 #endif
 			}
 		}
-		//g_camera.transform.position.x = player.transform.position.x;
-		//g_camera.lookAt(player.transform.position);
+		// g_camera.transform.position.x = player.transform.position.x;
 		g_camera.viewportAspectRatio = getWindowSize().x / getWindowSize().y;
 
-
-
-		//g_camera.lookAt({0, 0, 0});
+		// g_camera.lookAt({0, 0, 0});
 	}
 
 	INTERNAL void renderInstance(const ModelInstance& inst)
@@ -457,17 +375,29 @@ namespace Game
 		asset->mesh->draw();
 	}
 
+	INTERNAL void renderLevel(const Level& level)
+	{
+		ShaderProgram* shaders = level.material->shaders;
+
+		shaders->setUniform("u_camera", g_camera.getMatrix());
+		shaders->setUniform("u_transform", level.transform);
+		shaders->setUniform("u_tex", (u32)0);
+
+		level.mesh->draw();
+	}
+
 	INTERNAL void render()
 	{
 		glViewport(0, 0, windowWidth, windowHeight);
 
 		glClearColor(0, 0, 0, 1);
-		//glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
+		// glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const ShaderProgram* currentShaders = nullptr;
 		const Texture* currentTexture = nullptr;
 
+		// Instances
 		for (const auto& inst : g_instances)
 		{
 			if (inst.asset->material->shaders != currentShaders)
@@ -487,11 +417,33 @@ namespace Game
 			renderInstance(inst);
 		}
 
+		// Level
+		{
+			if (g_level.material->shaders != currentShaders)
+			{
+				if (currentShaders)
+					currentShaders->stopUsing();
+				currentShaders = g_level.material->shaders;
+				currentShaders->use();
+			}
+
+			if (g_level.material->texture != currentTexture)
+			{
+				currentTexture = g_level.material->texture;
+				Texture::bind(currentTexture, 0);
+			}
+
+			renderLevel(g_level);
+		}
+
+
+
+
+
 		if (currentShaders)
 			currentShaders->stopUsing();
 
 		Texture::bind(nullptr, 0);
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -521,13 +473,12 @@ namespace Game
 		Input::setup();
 
 		Input::setCursorPosition({0, 0});
-		//Input::setCursorMode(Input::CursorMode::Disabled);
+		// Input::setCursorMode(Input::CursorMode::Disabled);
 
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
-
 
 		loadShaders();
 		loadMaterials();

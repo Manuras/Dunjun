@@ -17,6 +17,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [Model Assets and Model Instances](https://www.youtube.com/playlist?list=PL93bFkoCMJsksaZto9IK1jbjhWw0glUDs)
 * [Quaternions and Rotations in 3D](https://www.youtube.com/playlist?list=PL93bFkoCMJsmLfAhNyeXzhH-POMvBAn6y)
 * [Camera and Input](https://www.youtube.com/playlist?list=PL93bFkoCMJslgYPipJ-6k7jwRxlO6fyha)
+* [Mesh Creation](https://www.youtube.com/playlist?list=PL93bFkoCMJskXMQcGKayIfx50sIAepgz8)
 
 ## Episode List ##
 
@@ -70,13 +71,18 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [030 - Mouse Buttons and Scroll Input](https://www.youtube.com/watch?v=oJmDEtCX9a0)
 * [030.5 - Input Enums & Camera Transform Fix](https://www.youtube.com/watch?v=rrMtsh2GZ0Y)
 
-### Mesh Creation ###
+### [Mesh Creation](https://www.youtube.com/playlist?list=PL93bFkoCMJskXMQcGKayIfx50sIAepgz8) ###
 
 * [031 - Plans for Game](https://www.youtube.com/watch?v=s0-Ru3rIPeU)
 * [032 - Basic Level and Billboards](https://www.youtube.com/watch?v=OtvRnrakTkU)
-* 033 - Finish Billboards and Start Mesh
-* 034 - Materials and Meshes
+* [033 - Finish Billboards and Start Mesh](https://www.youtube.com/watch?v=6MNVfDS59m0)
+* [034 - Materials and Meshes](https://www.youtube.com/watch?v=Fkl4qeuHT2A)
+
+### Level Generation ###
+
 * 035 - Textured Tiled Room
+* 036 - Add Tile Surfaces and Random Tile Sets
+* 037 - Level Class and Code Tidying
 
 ## Contact ##
 

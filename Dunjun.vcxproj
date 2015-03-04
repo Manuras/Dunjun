@@ -76,6 +76,7 @@
     <ClCompile Include="src\Dunjun\Game.cpp" />
     <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\Input.cpp" />
+    <ClCompile Include="src\Dunjun\Level.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
     <ClCompile Include="src\Dunjun\Math\Functions\Transform.cpp" />
     <ClCompile Include="src\Dunjun\Math\Matrix4.cpp" />
@@ -92,6 +93,8 @@
     <ClInclude Include="include\Dunjun\Game.hpp" />
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Input.hpp" />
+    <ClInclude Include="include\Dunjun\Level.hpp" />
+    <ClInclude Include="include\Dunjun\Material.hpp" />
     <ClInclude Include="include\Dunjun\Math.hpp" />
     <ClInclude Include="include\Dunjun\Math\Angle.hpp" />
     <ClInclude Include="include\Dunjun\Math\Constants.hpp" />
@@ -105,6 +108,7 @@
     <ClInclude Include="include\Dunjun\Math\Vector3.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector4.hpp" />
     <ClInclude Include="include\Dunjun\Mesh.hpp" />
+    <ClInclude Include="include\Dunjun\ModelAsset.hpp" />
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
     <ClInclude Include="include\Dunjun\ReadOnly.hpp" />
