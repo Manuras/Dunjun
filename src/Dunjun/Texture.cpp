@@ -91,7 +91,7 @@ bool Texture::loadFromImage(const Image& image,
 
 Texture::~Texture() { glDeleteTextures(1, &object); }
 
-void Texture::bind(GLuint position) const
+void Texture::bind(const Texture* tex, GLuint position)
 {
 	if (position > 31)
 	{
@@ -104,8 +104,12 @@ void Texture::bind(GLuint position) const
 	glClientActiveTexture(GL_TEXTURE0 + position);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, (object ? object : 0));
+	if (tex)
+		glBindTexture(GL_TEXTURE_2D, (tex->object ? tex->object : 0));
+	else
+		glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 }
+
 
 } // namespace Dunjun

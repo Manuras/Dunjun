@@ -145,135 +145,108 @@ namespace Game
 		g_sprite.mesh = g_meshes["sprite"];
 	}
 
+	enum class TileSurfaceFace : u32
+	{
+		Right = 0,
+		Left = 1,
+		Up = 2,
+		Down = 3,
+		Front = 4,
+		Back = 5,
+	};
 
-	INTERNAL void generateWorld()
+	INTERNAL void addTileSurface(Mesh::Data* data, const Vector3& position, TileSurfaceFace face, const Vector2& tilePos)
 	{
 		const f32 tileWidth = 1.0f / 16.0f;
 		const f32 tileHeight = 1.0f / 16.0f;
 
+		usize index = data->vertices.size();
 
-
-		Mesh::Data floorMD;
-		int mapSize = 8;
-		for (int i = 0; i < mapSize; i++)
+		// Right/Left
+		if ((u32)face / 2 == 0)
 		{
-			for (int j = 0; j < mapSize; j++)
-			{
-				// Light Wood
-				int tileX = 0;
-				int tileY = 11;
+			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		}
+		// Up/Down
+		else if ((u32)face / 2 == 1)
+		{
+			data->vertices.push_back({{position.x + 0.0f, position.y, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 0.0f, position.y, position.z + 1.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 1.0f, position.y, position.z + 1.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 1.0f, position.y, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		}
+		// Front/Back
+		else if ((u32)face / 2 == 2)
+		{
+			data->vertices.push_back({{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 1.0f, position.y + 0.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 1.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 0)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			data->vertices.push_back({{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f}, {(tilePos.x + 1)*tileWidth, (tilePos.y + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		}
 
-				usize index = floorMD.vertices.size();
-
-				floorMD.vertices.push_back({{-0.5f + i, 0.0f, -0.5f + j}, {tileX*tileWidth, (tileY+1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + i, 0.0f, +0.5f + j}, {tileX*tileWidth, tileY*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, 0.0f, +0.5f + j}, {(tileX + 1)*tileWidth, tileY*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
 
 
-				floorMD.indices.push_back(index + 0);
-				floorMD.indices.push_back(index + 1);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 3);
-				floorMD.indices.push_back(index + 0);
-			}
+		if ((u32)face % 2 == 0)
+		{
+			data->indices.push_back(index + 0);
+			data->indices.push_back(index + 1);
+			data->indices.push_back(index + 2);
+			data->indices.push_back(index + 2);
+			data->indices.push_back(index + 3);
+			data->indices.push_back(index + 0);
+		}
+		else // (u32)face % 2 == 1
+		{
+			data->indices.push_back(index + 0);
+			data->indices.push_back(index + 3);
+			data->indices.push_back(index + 2);
+			data->indices.push_back(index + 2);
+			data->indices.push_back(index + 1);
+			data->indices.push_back(index + 0);
+		}
+	}
+
+	INTERNAL void addTileSurface(Mesh::Data* data, const Vector3& position, TileSurfaceFace face, const std::vector<Vector2>& randomTilePosSet)
+	{
+		usize length = randomTilePosSet.size();
+		// TODO(bill): use better randomizer
+		Vector2 tilePos = randomTilePosSet[rand() % length];
+		addTileSurface(data, position, face, tilePos);
+	}
+
+	INTERNAL void generateWorld()
+	{
+		Mesh::Data floorMD;
+		int mapWidth = 16;
+		int mapDepth = 16;
+
+		Vector2 lightWoodTile(0, 11);
+		std::vector<Vector2> stoneTiles;
+		for (int i = 1; i < 11; i++)
+			stoneTiles.emplace_back(Vector2(i, 15));
+
+		for (int i = 0; i < mapWidth; i++)
+		{
+			for (int j = 0; j < mapDepth; j++)
+				addTileSurface(&floorMD, Vector3(i, 0, j), TileSurfaceFace::Up, lightWoodTile);
 		}
 
 		for (int k = 0; k < 3; k++)
 		{
-			// Left walls
-			for (int j = 0; j < mapSize; j++)
-			{
-				// Stone
-				int tileX = 0 + rand()%2;
-				int tileY = 15;
+			for (int j = 0; j < mapDepth; j++)
+				addTileSurface(&floorMD, Vector3(0, k, j), TileSurfaceFace::Right, stoneTiles);
 
-				usize index = floorMD.vertices.size();
+			for (int j = 0; j < mapDepth; j++)
+				addTileSurface(&floorMD, Vector3(mapWidth, k, j), TileSurfaceFace::Left, stoneTiles);
 
-				floorMD.vertices.push_back({{-0.5f, k + 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f, k + 0.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f, k + 1.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f, k + 1.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
+			for (int i = 0; i < mapWidth; i++)
+				addTileSurface(&floorMD, Vector3(i, k, 0), TileSurfaceFace::Front, stoneTiles);
 
-
-				floorMD.indices.push_back(index + 0);
-				floorMD.indices.push_back(index + 3);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 1);
-				floorMD.indices.push_back(index + 0);
-			}
-
-			// Right walls
-			for (int j = 0; j < mapSize; j++)
-			{
-				// Stone
-				int tileX = 0 + rand() % 2;
-				int tileY = 15;
-
-				usize index = floorMD.vertices.size();
-
-				floorMD.vertices.push_back({{-0.5f + mapSize, k + 0.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + mapSize, k + 0.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + mapSize, k + 1.0f, +0.5f + j}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + mapSize, k + 1.0f, -0.5f + j}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-
-
-				floorMD.indices.push_back(index + 0);
-				floorMD.indices.push_back(index + 1);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 3);
-				floorMD.indices.push_back(index + 0);
-			}
-
-
-			// Back walls
-			for (int i = 0; i < mapSize; i++)
-			{
-				// Stone
-				int tileX = 0 + rand() % 2;
-				int tileY = 15;
-
-				usize index = floorMD.vertices.size();
-
-				floorMD.vertices.push_back({{-0.5f + i, k + 0.0f, -0.5f}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, k + 0.0f, -0.5f}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, k + 1.0f, -0.5f}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + i, k + 1.0f, -0.5f}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-
-
-				floorMD.indices.push_back(index + 0);
-				floorMD.indices.push_back(index + 1);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 3);
-				floorMD.indices.push_back(index + 0);
-			}
-
-			// Front walls
-			for (int i = 0; i < mapSize; i++)
-			{
-				// Stone
-				int tileX = 0 + rand() % 2;
-				int tileY = 15;
-
-				usize index = floorMD.vertices.size();
-
-				floorMD.vertices.push_back({{-0.5f + i, k + 0.0f, -0.5f + mapSize}, {(tileX + 1)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, k + 0.0f, -0.5f + mapSize}, {(tileX + 0)*tileWidth, (tileY + 0)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{+0.5f + i, k + 1.0f, -0.5f + mapSize}, {(tileX + 0)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-				floorMD.vertices.push_back({{-0.5f + i, k + 1.0f, -0.5f + mapSize}, {(tileX + 1)*tileWidth, (tileY + 1)*tileHeight}, {{0xFF, 0xFF, 0xFF, 0xFF}}});
-
-
-				floorMD.indices.push_back(index + 0);
-				floorMD.indices.push_back(index + 3);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 2);
-				floorMD.indices.push_back(index + 1);
-				floorMD.indices.push_back(index + 0);
-			}
+			for (int i = 0; i < mapWidth; i++)
+				addTileSurface(&floorMD, Vector3(i, k, mapDepth), TileSurfaceFace::Back, stoneTiles);
 		}
 
 
@@ -291,7 +264,7 @@ namespace Game
 
 		ModelInstance a;
 		a.asset = &g_sprite;
-		a.transform.position = {0, 0.5, 0};
+		a.transform.position = {4, 0.5, 4};
 		a.transform.scale = {1, 1, 1};
 		//a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 		g_instances.push_back(a);
@@ -302,9 +275,9 @@ namespace Game
 
 
 		// Init Camera
-		g_camera.transform.position = {0, 4, 10};
+		g_camera.transform.position = {4, 4, 10};
 
-		g_camera.lookAt({0, 0, 0});
+		g_camera.lookAt({4, 0, 0});
 		//g_camera.projectionType = ProjectionType::Orthographic;
 		//g_camera.orthoScale = 800;
 		g_camera.projectionType = ProjectionType::Perspective;
@@ -481,7 +454,6 @@ namespace Game
 		shaders->setUniform("u_transform", inst.transform);
 		shaders->setUniform("u_tex", (u32)0);
 
-		asset->material->texture->bind(0);
 		asset->mesh->draw();
 	}
 
@@ -494,6 +466,7 @@ namespace Game
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		const ShaderProgram* currentShaders = nullptr;
+		const Texture* currentTexture = nullptr;
 
 		for (const auto& inst : g_instances)
 		{
@@ -504,11 +477,21 @@ namespace Game
 				currentShaders = inst.asset->material->shaders;
 				currentShaders->use();
 			}
+
+			if (inst.asset->material->texture != currentTexture)
+			{
+				currentTexture = inst.asset->material->texture;
+				Texture::bind(currentTexture, 0);
+			}
+
 			renderInstance(inst);
 		}
 
 		if (currentShaders)
 			currentShaders->stopUsing();
+
+		Texture::bind(nullptr, 0);
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
