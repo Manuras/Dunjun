@@ -17,7 +17,8 @@ Camera::Camera()
 
 void Camera::lookAt(const Vector3& position, const Vector3& up)
 {
-	transform.orientation = conjugate(quaternionLookAt(transform.position, position, up));
+	transform.orientation =
+	    conjugate(quaternionLookAt(transform.position, position, up));
 }
 
 void Camera::offsetOrientation(const Radian& yaw, const Radian& pitch)
@@ -68,8 +69,7 @@ Matrix4 Camera::getProjection() const
 	}
 	else if (projectionType == ProjectionType::InfinitePerspective)
 	{
-		proj =
-			infinitePerspective(fieldOfView, viewportAspectRatio, nearPlane);
+		proj = infinitePerspective(fieldOfView, viewportAspectRatio, nearPlane);
 	}
 	else if (projectionType == ProjectionType::Orthographic)
 	{

@@ -5,12 +5,13 @@
     AccessModifierOffset: -4, # 1 tab
     AlignTrailingComments: true,
     AllowAllParametersOfDeclarationOnNextLine: false,
+    AllowShortBlocksOnASingleLine: false,
     AllowShortIfStatementsOnASingleLine: false,
     AllowShortLoopsOnASingleLine: false,
     AlwaysBreakBeforeMultilineStrings: false,
     AlwaysBreakTemplateDeclarations: true,
-	BinPackArguments: false,
-	BinPackParameters: false,
+    BinPackArguments: false,
+    BinPackParameters: false,
     BreakBeforeBraces: Allman,
     BreakConstructorInitializersBeforeComma: true,
     ColumnLimit: 80,
@@ -21,7 +22,7 @@
     IndentFunctionDeclarationAfterType: true,
     IndentWidth: 4, # 1 tab
     MaxEmptyLinesToKeep: 1,
-    NamespaceIndentation: Inner,
+    NamespaceIndentation: None,
     PointerBindsToType: true,
     SpaceBeforeAssignmentOperators: true,
     SpaceInEmptyParentheses: false,
@@ -29,5 +30,6 @@
     SpacesInAngles: false,
     SpacesInCStyleCastParentheses: false,
     SpacesInParentheses: false,
+    SpacesInSquareBrackets: false,
     Standard: Cpp11,
 }

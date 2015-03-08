@@ -47,7 +47,8 @@ inline Transform inverse(const Transform& t)
 
 inline Matrix4 transformMatrix4(const Transform& t)
 {
-	return translate(t.position) * quaternionToMatrix4(t.orientation) * scale(t.scale);
+	return translate(t.position) * quaternionToMatrix4(t.orientation) *
+	       scale(t.scale);
 }
 
 } // namespace Dunjun

@@ -32,14 +32,12 @@ Image::Image(const Image& other)
 , height(0)
 , pixels(nullptr)
 {
-	loadFromMemory(
-	    other.width, other.height, other.format, other.pixels);
+	loadFromMemory(other.width, other.height, other.format, other.pixels);
 }
 
 Image& Image::operator=(const Image& other)
 {
-	loadFromMemory(
-	    other.width, other.height, other.format, other.pixels);
+	loadFromMemory(other.width, other.height, other.format, other.pixels);
 	return *this;
 }
 
@@ -69,10 +67,7 @@ bool Image::loadFromFile(const char* filename)
 	return false;
 }
 
-bool Image::loadFromMemory(u32 w,
-                           u32 h,
-                           ImageFormat f,
-                           const u8* p)
+bool Image::loadFromMemory(u32 w, u32 h, ImageFormat f, const u8* p)
 {
 	if (w == 0)
 	{

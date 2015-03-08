@@ -29,12 +29,15 @@ public:
 
 	using RandomTileSet = std::vector<TileId>;
 
-
 	Level();
 	virtual ~Level();
 
-	void addTileSurface(const Vector3& position, TileSurfaceFace face, const TileId& tilePos);
-	void addTileSurface(const Vector3& position, TileSurfaceFace face, const RandomTileSet& randomTilePosSet);
+	void addTileSurface(const Vector3& position,
+	                    TileSurfaceFace face,
+	                    const TileId& tilePos);
+	void addTileSurface(const Vector3& position,
+	                    TileSurfaceFace face,
+	                    const RandomTileSet& randomTilePosSet);
 
 	void generate();
 
@@ -44,7 +47,6 @@ public:
 
 private:
 	Mesh::Data m_meshData;
-	
 };
 } // namespace Dunjun
 

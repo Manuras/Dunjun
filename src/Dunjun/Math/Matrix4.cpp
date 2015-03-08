@@ -29,7 +29,6 @@ Matrix4::Matrix4(const Vector4& v0,
 	data[3] = v3;
 }
 
-
 Vector4& Matrix4::operator[](usize index) { return data[index]; }
 const Vector4& Matrix4::operator[](usize index) const { return data[index]; }
 

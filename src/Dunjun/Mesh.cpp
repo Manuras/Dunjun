@@ -71,7 +71,6 @@ void Mesh::draw() const
 	glEnableVertexAttribArray((u32)AtrribLocation::TexCoord);
 	glEnableVertexAttribArray((u32)AtrribLocation::Color);
 
-
 	glVertexAttribPointer((u32)AtrribLocation::Position,
 	                      3,
 	                      GL_FLOAT,
@@ -86,18 +85,17 @@ void Mesh::draw() const
 	                      sizeof(Vertex), // Stride
 	                      (const GLvoid*)(sizeof(Vector3)));
 	glVertexAttribPointer((u32)AtrribLocation::Color,
-						  4,
-						  GL_UNSIGNED_BYTE, // 0-255 => 0-1
-						  GL_TRUE,
-						  sizeof(Vertex), // Stride
-						  (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2)));
+	                      4,
+	                      GL_UNSIGNED_BYTE, // 0-255 => 0-1
+	                      GL_TRUE,
+	                      sizeof(Vertex), // Stride
+	                      (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2)));
 
 	glDrawElements(m_drawType, m_drawCount, GL_UNSIGNED_INT, nullptr);
 
 	glDisableVertexAttribArray((u32)AtrribLocation::Position);
 	glDisableVertexAttribArray((u32)AtrribLocation::TexCoord);
 	glDisableVertexAttribArray((u32)AtrribLocation::Color);
-
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

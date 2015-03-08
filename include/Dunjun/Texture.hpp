@@ -29,7 +29,7 @@ public:
 	Texture();
 	Texture(const Image& image,
 	        TextureFilter minMagFilter = TextureFilter::Linear,
-			TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge);
+	        TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge);
 
 	bool loadFromFile(const char* filename,
 	                  TextureFilter minMagFilter = TextureFilter::Linear,
@@ -39,7 +39,7 @@ public:
 	                   TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge);
 
 	virtual ~Texture();
-	
+
 	GLOBAL void bind(const Texture* tex, GLuint position);
 
 	ReadOnly<GLuint, Texture> object;

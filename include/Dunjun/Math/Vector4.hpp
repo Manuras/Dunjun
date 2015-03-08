@@ -82,7 +82,10 @@ struct Vector4
 		return true;
 	}
 
-	inline bool operator!=(const Vector4& other) const { return !operator==(other); }
+	inline bool operator!=(const Vector4& other) const
+	{
+		return !operator==(other);
+	}
 
 	inline Vector4 operator-() const { return {-x, -y, -z, -w}; }
 

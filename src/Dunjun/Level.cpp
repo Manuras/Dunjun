@@ -3,13 +3,9 @@
 
 namespace Dunjun
 {
-Level::Level() 
-{}
+Level::Level() {}
 
-Level::~Level()
-{
-	delete mesh;
-}
+Level::~Level() { delete mesh; }
 
 void Level::generate()
 {

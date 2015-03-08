@@ -49,7 +49,10 @@ struct Vector2
 		return true;
 	}
 
-	inline bool operator!=(const Vector2& other) const { return !operator==(other); }
+	inline bool operator!=(const Vector2& other) const
+	{
+		return !operator==(other);
+	}
 
 	inline Vector2 operator-() const { return {-x, -y}; }
 

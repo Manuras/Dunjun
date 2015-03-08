@@ -3,20 +3,16 @@
 
 #include <Dunjun/Math.hpp>
 
-struct GLFWwindow;
-
 namespace Dunjun
 {
 namespace Game
 {
-	void init();
-	void run();
-	void cleanup();
+void init();
+void run();
+void cleanup();
 
-	GLFWwindow* getGlfwWindow();
-	Vector2 getWindowSize();
-
+void glInit();
 } // namespace Game
 } // namespace Dunjun
 
-#endif 
+#endif

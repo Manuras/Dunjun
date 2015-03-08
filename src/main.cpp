@@ -6,5 +6,5 @@ int main(int argc, char** argv)
 	Dunjun::Game::run();
 	Dunjun::Game::cleanup();
 
-	return EXIT_SUCCESS;
+	return 0;
 }

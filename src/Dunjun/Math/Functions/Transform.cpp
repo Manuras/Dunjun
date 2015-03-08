@@ -110,8 +110,9 @@ Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear)
 	return result;
 }
 
-Matrix4
-    matrix4lookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
+Matrix4 matrix4lookAt(const Vector3& eye,
+                      const Vector3& center,
+                      const Vector3& up)
 {
 	const Vector3 f(normalize(center - eye));
 	const Vector3 s(normalize(cross(f, up)));
