@@ -80,9 +80,12 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 ### Level Generation ###
 
-* 035 - Textured Tiled Room
-* 036 - Add Tile Surfaces and Random Tile Sets
+* [035 - Textured Tiled Room](https://www.youtube.com/watch?v=TMr1hDw6BoE)
+* [036 - Add Tile Surfaces and Random Tile Sets](https://www.youtube.com/watch?v=DhDtvNRFLkA)
 * 037 - Level Class and Code Tidying
+* 038 - Fullscreen Support and Window Functions
+* 039 - Level Generation
+* 049 - Random Numbers and Experimental Camera
 
 ## Contact ##
 

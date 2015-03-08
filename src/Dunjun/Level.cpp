@@ -1,4 +1,7 @@
 #include <Dunjun/Level.hpp>
+
+#include <random>
+
 #include <cstdlib>
 
 namespace Dunjun
@@ -15,7 +18,8 @@ void Level::generate()
 	mapGrid =
 	    std::vector<std::vector<TileId>>(length, std::vector<TileId>(depth));
 
-	srand(1);
+	std::mt19937 mt(1);
+	std::uniform_int_distribution<int> dist(0, 100);
 
 	TileId emptyTile = {-1, -1};
 
@@ -33,7 +37,7 @@ void Level::generate()
 	{
 		for (int j = 0; j < depth; j++)
 		{
-			if (rand() % 100 > 20)
+			if (dist(mt) > 5)
 				mapGrid[i][j] = lightWoodTile;
 			else
 				mapGrid[i][j] = emptyTile;
@@ -49,8 +53,10 @@ void Level::generate()
 			if (mapGrid[i][j] != emptyTile)
 			{
 				addTileSurface(Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
-
-				addTileSurface(Vector3(i, height, j), TileSurfaceFace::Down, darkRockTiles);
+			}
+			else
+			{
+				addTileSurface(Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
 			}
 
 			for (int k = 0; k < height; k++)

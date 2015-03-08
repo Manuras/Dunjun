@@ -63,8 +63,8 @@ public:
 	void generate();
 
 	std::vector<std::vector<TileId>> mapGrid;
-	ReadOnly<u16, Level> length = 16;
-	ReadOnly<u16, Level> depth = 16;
+	ReadOnly<u16, Level> length = 100;
+	ReadOnly<u16, Level> depth = 5;
 
 	const Material* material;
 	Mesh* mesh;

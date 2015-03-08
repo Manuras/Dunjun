@@ -145,27 +145,43 @@ INTERNAL void generateWorld()
 	g_level.generate();
 }
 
+
+GLOBAL Matrix4 g_projTest;
+
 INTERNAL void loadInstances()
 {
 	Transform parent;
 
 	ModelInstance a;
 	a.asset = &g_sprite;
-	a.transform.position = {4, 0.5, 4};
-	a.transform.scale = {1, 1, 1};
+	a.transform.position = {4, 1, 4};
+	a.transform.scale = {1, 2, 1};
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 	g_instances.push_back(a);
 
 	generateWorld();
 
+
+	g_camera.viewportAspectRatio = 16.0f / 9.0f;
+
 	// Init Camera
-	g_camera.transform.position = {4, 4, 10};
+	g_camera.transform.position = {4, 7, 14};
 
 	g_camera.lookAt({4, 0, 0});
 	// g_camera.projectionType = ProjectionType::Orthographic;
 	// g_camera.orthoScale = 800;
 	g_camera.projectionType = ProjectionType::Perspective;
 	g_camera.fieldOfView = Degree(50.0f);
+
+	const Matrix4 pp = g_camera.getProjection();
+
+	g_camera.projectionType = ProjectionType::Orthographic;
+	g_camera.orthoScale = 600;
+
+	const Matrix4 op = g_camera.getProjection();
+
+
+	g_projTest = lerp(pp, op, 0.9f);
 }
 
 INTERNAL void update(f32 dt)
@@ -188,7 +204,7 @@ INTERNAL void update(f32 dt)
 				rts.y = 0;
 
 			g_camera.offsetOrientation(-lookSensitivity * Radian(rts.x * dt),
-			                           lookSensitivity * Radian(rts.y * dt));
+									   lookSensitivity * Radian(rts.y * dt));
 
 			Vector2 lts = axes.leftThumbstick;
 
@@ -209,7 +225,7 @@ INTERNAL void update(f32 dt)
 			velDir += lts.y * forward;
 
 			Input::GamepadButtons buttons =
-			    Input::getGamepadButtons(Input::Gamepad_1);
+				Input::getGamepadButtons(Input::Gamepad_1);
 
 			if (buttons[(usize)Input::XboxButton::RightShoulder])
 				velDir.y += 1;
@@ -253,7 +269,7 @@ INTERNAL void update(f32 dt)
 
 			// Vibrate
 			if (Input::isGamepadButtonPressed(Input::Gamepad_1,
-			                                  Input::XboxButton::A))
+				Input::XboxButton::A))
 			{
 				Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
 			}
@@ -290,12 +306,12 @@ INTERNAL void update(f32 dt)
 			player.transform.position += playerVel * velDir * dt;
 
 #if 0   // Billboard
-				Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
-					g_camera.transform.position,
-					{0, 1, 0}));
+			Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
+				g_camera.transform.position,
+				{0, 1, 0}));
 
 
-				player.transform.orientation = pRot;
+			player.transform.orientation = pRot;
 #elif 0 // Billboard fixed y-axis
 			Vector3 f = player.transform.position - g_camera.transform.position;
 			f.y = 0;
@@ -315,21 +331,59 @@ INTERNAL void update(f32 dt)
 #endif
 		}
 	}
+
+	{
+		f32 dx = player.transform.position.x - g_camera.transform.position.x;
+
+		f32 dxAbs = std::abs(dx);
+		f32 w = 0.5f;
+		f32 speed = 3.0f;
+
+		if (dxAbs > w)
+		{
+			f32 sgn = dx / dxAbs;
+			f32 x = dxAbs - w;
+			x = x * x;
+			g_camera.transform.position.x += speed * sgn * x * dt;
+		}
+	}
+
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =
 	    Window::getFramebufferSize().x / Window::getFramebufferSize().y;
 	if (aspectRatio && Window::getFramebufferSize().y > 0)
 		g_camera.viewportAspectRatio = aspectRatio;
 
-	// g_camera.lookAt({0, 0, 0});
+
+	{
+		g_camera.projectionType = ProjectionType::Perspective;
+		const Matrix4 pp = g_camera.getProjection();
+		g_camera.projectionType = ProjectionType::Orthographic;
+		const Matrix4 op = g_camera.getProjection();
+
+
+		LOCAL_PERSIST f32 time = 0;
+		time += dt;
+		
+		f32 w = 0.3f;
+		f32 t = std::sin(w * time)*std::sin(w * time);
+
+		t = std::pow(t, 0.3f);
+
+		g_projTest = lerp(pp, op, 0.95f);
+		//g_projTest = lerp(pp, op, 1.0f);
+
+	}
+
 }
+
 
 INTERNAL void renderInstance(const ModelInstance& inst)
 {
 	ModelAsset* asset = inst.asset;
 	ShaderProgram* shaders = asset->material->shaders;
 
-	shaders->setUniform("u_camera", g_camera.getMatrix());
+	shaders->setUniform("u_camera", g_projTest * g_camera.getView());
 	shaders->setUniform("u_transform", inst.transform);
 	shaders->setUniform("u_tex", (u32)0);
 
@@ -342,7 +396,7 @@ INTERNAL void renderLevel(const Level& level)
 	if (!shaders)
 		return;
 
-	shaders->setUniform("u_camera", g_camera.getMatrix());
+	shaders->setUniform("u_camera", g_projTest * g_camera.getView());
 	shaders->setUniform("u_transform", level.transform);
 	shaders->setUniform("u_tex", (u32)0);
 
