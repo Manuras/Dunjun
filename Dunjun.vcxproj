@@ -83,6 +83,7 @@
     <ClCompile Include="src\Dunjun\Mesh.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\Dunjun\Texture.cpp" />
+    <ClCompile Include="src\Dunjun\Window.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +119,7 @@
     <ClInclude Include="include\Dunjun\Transform.hpp" />
     <ClInclude Include="include\Dunjun\Types.hpp" />
     <ClInclude Include="include\Dunjun\Vertex.hpp" />
+    <ClInclude Include="include\Dunjun\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

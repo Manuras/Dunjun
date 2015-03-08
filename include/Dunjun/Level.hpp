@@ -23,8 +23,29 @@ public:
 
 	struct TileId
 	{
-		u16 x;
-		u16 y;
+		TileId() {}
+
+		TileId(s16 x, s16 y)
+		: x(x)
+		, y(y)
+		{
+		}
+
+		TileId(s16 xy[2])
+		: x(xy[0])
+		, y(xy[1])
+		{
+		}
+
+		inline bool operator==(const TileId& id)
+		{
+			return (x == id.x) && (y == id.y);
+		}
+
+		inline bool operator!=(const TileId& id) { return !operator==(id); }
+
+		s16 x = 0;
+		s16 y = 0;
 	};
 
 	using RandomTileSet = std::vector<TileId>;
@@ -40,6 +61,10 @@ public:
 	                    const RandomTileSet& randomTilePosSet);
 
 	void generate();
+
+	std::vector<std::vector<TileId>> mapGrid;
+	ReadOnly<u16, Level> length = 16;
+	ReadOnly<u16, Level> depth = 16;
 
 	const Material* material;
 	Mesh* mesh;

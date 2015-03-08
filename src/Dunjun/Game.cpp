@@ -141,41 +141,6 @@ INTERNAL void loadSpriteAsset()
 INTERNAL void generateWorld()
 {
 	g_level.material = &g_materials["terrain"];
-	int mapWidth = 16;
-	int mapDepth = 16;
-
-	Level::TileId lightWoodTile = {0, 11};
-	Level::RandomTileSet stoneTiles;
-	for (int i = 1; i < 3; i++)
-		stoneTiles.push_back({i, 15});
-
-	for (int i = 0; i < mapWidth; i++)
-	{
-		for (int j = 0; j < mapDepth; j++)
-			g_level.addTileSurface(
-			    Vector3(i, 0, j), Level::TileSurfaceFace::Up, lightWoodTile);
-	}
-
-	for (int k = 0; k < 3; k++)
-	{
-		for (int j = 0; j < mapDepth; j++)
-			g_level.addTileSurface(
-			    Vector3(0, k, j), Level::TileSurfaceFace::Right, stoneTiles);
-
-		for (int j = 0; j < mapDepth; j++)
-			g_level.addTileSurface(Vector3(mapWidth, k, j),
-			                       Level::TileSurfaceFace::Left,
-			                       stoneTiles);
-
-		for (int i = 0; i < mapWidth; i++)
-			g_level.addTileSurface(
-			    Vector3(i, k, 0), Level::TileSurfaceFace::Front, stoneTiles);
-
-		for (int i = 0; i < mapWidth; i++)
-			g_level.addTileSurface(Vector3(i, k, mapDepth),
-			                       Level::TileSurfaceFace::Back,
-			                       stoneTiles);
-	}
 
 	g_level.generate();
 }

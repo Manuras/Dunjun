@@ -12,6 +12,100 @@ void Level::generate()
 	if (!mesh)
 		mesh = new Mesh();
 
+	mapGrid =
+	    std::vector<std::vector<TileId>>(length, std::vector<TileId>(depth));
+
+	srand(1);
+
+	TileId emptyTile = {-1, -1};
+
+	TileId lightWoodTile = {0, 11};
+	TileId darkWoodTile = {0, 0};
+	RandomTileSet stoneTiles;
+	for (int i = 1; i < 3; i++)
+		stoneTiles.emplace_back(i, 15);
+	RandomTileSet darkRockTiles;
+	for (int i = 0; i < 4; i++)
+		darkRockTiles.emplace_back(i, 0);
+
+
+	for (int i = 0; i < length; i++)
+	{
+		for (int j = 0; j < depth; j++)
+		{
+			if (rand() % 100 > 20)
+				mapGrid[i][j] = lightWoodTile;
+			else
+				mapGrid[i][j] = emptyTile;
+		}
+	}
+
+	int height = 3;
+
+	for (int i = 0; i < length; i++)
+	{
+		for (int j = 0; j < depth; j++)
+		{
+			if (mapGrid[i][j] != emptyTile)
+			{
+				addTileSurface(Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
+
+				addTileSurface(Vector3(i, height, j), TileSurfaceFace::Down, darkRockTiles);
+			}
+
+			for (int k = 0; k < height; k++)
+			{
+				if (mapGrid[i][j] == emptyTile)
+				{
+
+					if (i > 0)
+					{
+						if (mapGrid[i - 1][j] != emptyTile)
+							addTileSurface(Vector3(i, k, j),
+							TileSurfaceFace::Left,
+							stoneTiles);
+					}
+
+					if (i < length - 1)
+					{
+						if (mapGrid[i + 1][j] != emptyTile)
+							addTileSurface(Vector3(i + 1, k, j),
+							TileSurfaceFace::Right,
+							stoneTiles);
+					}
+
+					if (j > 0)
+					{
+						if (mapGrid[i][j - 1] != emptyTile)
+							addTileSurface(Vector3(i, k, j),
+							TileSurfaceFace::Back,
+							stoneTiles);
+					}
+
+					if (j < depth - 1)
+					{
+						if (mapGrid[i][j + 1] != emptyTile)
+							addTileSurface(Vector3(i, k, j + 1),
+							TileSurfaceFace::Front,
+							stoneTiles);
+					}
+				}
+				else
+				{
+					if (i == 0)
+						addTileSurface(Vector3(i, k, j), TileSurfaceFace::Right, stoneTiles);
+					if (i == length - 1)
+						addTileSurface(Vector3(i + 1, k, j), TileSurfaceFace::Left, stoneTiles);
+					if (j == 0)
+						addTileSurface(Vector3(i, k, j), TileSurfaceFace::Front, stoneTiles);
+					if (j == depth - 1)
+						addTileSurface(Vector3(i, k, j + 1), TileSurfaceFace::Back, stoneTiles);
+
+				}
+			}
+		}
+	}
+
 	mesh->addData(m_meshData);
 }
 
