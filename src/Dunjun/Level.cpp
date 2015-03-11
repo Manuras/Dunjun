@@ -28,6 +28,9 @@ void Level::generate()
 	RandomTileSet darkRockTiles;
 	for (int i = 0; i < 4; i++)
 		darkRockTiles.emplace_back(i, 0);
+	RandomTileSet colorfulTiles;
+	for (int i = 3; i < 12; i++)
+		colorfulTiles.emplace_back(i, 15);
 
 
 	for (int i = 0; i < length; i++)
@@ -37,29 +40,22 @@ void Level::generate()
 	}
 
 
-	for (int n = 0; n < 60; n++)
+	placeRooms();
+
+	for (int n = 0; n < m_rooms.size(); n++)
 	{
-		int w = m_random.getInt(5, 16);
-		int h = m_random.getInt(5, 16);
+		const auto& room = m_rooms[n];
 
-		int x = m_random.getInt(0, length - 1 - w);
-		int y = m_random.getInt(0, depth - 1 - h);
-
-		for (int i = x; i < x + w; i++)
+		TileId id = colorfulTiles[n % colorfulTiles.size()];
+		for (int i = room.x; i < room.x + room.width; i++)
 		{
-			for (int j = y; j < y + h; j++)
-				mapGrid[i][j] = lightWoodTile;
+			for (int j = room.y; j < room.y + room.height; j++)
+			{
+				//mapGrid[i][j] = lightWoodTile;
+				mapGrid[i][j] = id;
+			}
 		}
-
 	}
-
-
-
-
-
-
-
-
 
 
 
@@ -143,6 +139,53 @@ void Level::generate()
 	}
 
 	mesh->addData(m_meshData);
+}
+
+void Level::placeRooms()
+{
+	int skips = 0;
+
+	for (int n = 0; n < 10; n++)
+	{
+		int w = m_random.getInt(5, 16);
+		int h = m_random.getInt(5, 16);
+
+		int x = m_random.getInt(0, length - 1 - w);
+		int y = m_random.getInt(0, depth - 1 - h);
+
+		Rect newRoom(x, y, w, h);
+
+		bool failed = false;
+		for (const Rect& room : m_rooms)
+		{
+			Rect a = room;
+			a.x -= 1;
+			a.y -= 1;
+			a.width += 2;
+			a.height += 2;
+
+			if (newRoom.intersects(a))
+			{
+				failed = true;
+				break;
+			}
+		}
+
+		if (!failed)
+		{
+			m_rooms.push_back(newRoom);
+		}
+		else
+		{
+			skips++;
+
+			if (skips < 10)
+				n--;
+			else
+				return;
+			continue;
+		}
+	}
 }
 
 void Level::addTileSurface(const Vector3& position,
