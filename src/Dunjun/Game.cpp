@@ -147,19 +147,34 @@ GLOBAL Matrix4 g_projTest;
 
 INTERNAL void loadInstances()
 {
-	Transform parent;
-
-	ModelInstance a;
-	a.asset = &g_sprite;
-	a.transform.position = {4, 1, 4};
-	a.transform.scale = {1, 1, 1};
-	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
-	g_instances.push_back(a);
-
 	generateWorld();
 
+	ModelInstance player;
+	player.asset = &g_sprite;
+	player.transform.position = {4, 0.5, 4};
+	player.transform.scale = {1, 1, 1};
+
+	for (int j = 0; j < g_level.depth; j++)
+	{
+		bool escape = false;
+		for (int i = 0; i < g_level.length; i++)
+		{
+			if (g_level.mapGrid[i][j] != Level::TileId(-1, -1))
+			{
+				player.transform.position = Vector3(i, 0.5, j);
+				escape = true;
+				break;
+			}
+		}
+		if (escape)
+			break;
+	}
+
+	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
+	g_instances.push_back(player);
+
 	// Init Camera
-	g_cameraPlayer.transform.position = {4, 7, 14};
+	g_cameraPlayer.transform.position = {-4, 7, 14};
 	g_cameraPlayer.lookAt({4, 0, 0});
 
 	g_cameraPlayer.projectionType = ProjectionType::Perspective;
@@ -175,7 +190,7 @@ INTERNAL void update(f32 dt)
 {
 	ModelInstance& player = g_instances[0];
 
-	f32 camVel = 3.0f;
+	f32 camVel = 10.0f;
 	{
 		if (Input::isGamepadPresent(Input::Gamepad_1))
 		{
@@ -321,7 +336,9 @@ INTERNAL void update(f32 dt)
 	}
 
 	g_cameraPlayer.transform.position.x = lerp(
-	    g_cameraPlayer.transform.position.x, player.transform.position.x, 0.2f);
+	    g_cameraPlayer.transform.position.x, player.transform.position.x - 5, 10.0f*dt);
+	g_cameraPlayer.transform.position.z = lerp(
+		g_cameraPlayer.transform.position.z, player.transform.position.z + 12, 10.0f*dt);
 
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =

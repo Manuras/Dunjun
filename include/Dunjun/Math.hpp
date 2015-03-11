@@ -11,4 +11,6 @@
 
 #include <Dunjun/Math/Functions.hpp>
 
+#include <Dunjun/Math/Random.hpp>
+
 #endif

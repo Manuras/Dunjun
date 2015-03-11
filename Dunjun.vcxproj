@@ -104,6 +104,7 @@
     <ClInclude Include="include\Dunjun\Math\Functions\Transform.hpp" />
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
     <ClInclude Include="include\Dunjun\Math\Quaternion.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Random.hpp" />
     <ClInclude Include="include\Dunjun\Math\Unit.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector2.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector3.hpp" />

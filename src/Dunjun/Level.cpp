@@ -1,8 +1,6 @@
 #include <Dunjun/Level.hpp>
 
-#include <random>
-
-#include <cstdlib>
+#include <Dunjun/Math/Random.hpp>
 
 namespace Dunjun
 {
@@ -18,8 +16,7 @@ void Level::generate()
 	mapGrid =
 	    std::vector<std::vector<TileId>>(length, std::vector<TileId>(depth));
 
-	std::mt19937 mt(1);
-	std::uniform_int_distribution<int> dist(0, 100);
+	m_random.setSeed(1);
 
 	TileId emptyTile = {-1, -1};
 
@@ -32,16 +29,39 @@ void Level::generate()
 	for (int i = 0; i < 4; i++)
 		darkRockTiles.emplace_back(i, 0);
 
+
 	for (int i = 0; i < length; i++)
 	{
 		for (int j = 0; j < depth; j++)
-		{
-			if (dist(mt) > 5)
-				mapGrid[i][j] = lightWoodTile;
-			else
-				mapGrid[i][j] = emptyTile;
-		}
+			mapGrid[i][j] = emptyTile;
 	}
+
+
+	for (int n = 0; n < 60; n++)
+	{
+		int w = m_random.getInt(5, 16);
+		int h = m_random.getInt(5, 16);
+
+		int x = m_random.getInt(0, length - 1 - w);
+		int y = m_random.getInt(0, depth - 1 - h);
+
+		for (int i = x; i < x + w; i++)
+		{
+			for (int j = y; j < y + h; j++)
+				mapGrid[i][j] = lightWoodTile;
+		}
+
+	}
+
+
+
+
+
+
+
+
+
+
 
 	int height = 3;
 
@@ -54,6 +74,7 @@ void Level::generate()
 				addTileSurface(
 				    Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
 			}
+#if 0 // Build Walls
 			else
 			{
 				addTileSurface(
@@ -117,6 +138,7 @@ void Level::generate()
 						               stoneTiles);
 				}
 			}
+#endif
 		}
 	}
 
@@ -202,8 +224,8 @@ void Level::addTileSurface(const Vector3& position,
 		addTileSurface(position, face, randomTilePosSet[0]);
 		return;
 	}
-	// TODO(bill): use better randomizer
-	TileId tilePos = randomTilePosSet[rand() % length];
+
+	TileId tilePos = randomTilePosSet[m_random.getInt(0, length - 1)];
 	addTileSurface(position, face, tilePos);
 }
 } // namespace Dunjun

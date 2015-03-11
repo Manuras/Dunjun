@@ -4,6 +4,8 @@
 #include <Dunjun/Common.hpp>
 #include <Dunjun/ModelAsset.hpp>
 
+#include <Dunjun/Math/Random.hpp>
+
 #include <vector>
 
 namespace Dunjun
@@ -63,14 +65,16 @@ public:
 	void generate();
 
 	std::vector<std::vector<TileId>> mapGrid;
-	ReadOnly<u16, Level> length = 100;
-	ReadOnly<u16, Level> depth = 5;
+	ReadOnly<u16, Level> length = 128;
+	ReadOnly<u16, Level> depth = 128;
 
 	const Material* material;
 	Mesh* mesh;
 	Transform transform;
 
 private:
+	Random m_random;
+
 	Mesh::Data m_meshData;
 };
 } // namespace Dunjun

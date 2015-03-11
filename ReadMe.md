@@ -82,10 +82,12 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
 * [035 - Textured Tiled Room](https://www.youtube.com/watch?v=TMr1hDw6BoE)
 * [036 - Add Tile Surfaces and Random Tile Sets](https://www.youtube.com/watch?v=DhDtvNRFLkA)
-* 037 - Level Class and Code Tidying
-* 038 - Fullscreen Support and Window Functions
-* 039 - Level Generation
-* 049 - Random Numbers and Experimental Camera
+* [037 - Level Class and Code Tidying](https://www.youtube.com/watch?v=d2AnU8MoMGM)
+* [038 - Fullscreen Support and Window Functions](https://www.youtube.com/watch?v=KuwnMEOtkxc)
+* [039 - Level Generation](https://www.youtube.com/watch?v=42cc43q1hcs)
+* [040 - Random Numbers and Experimental Camera](https://www.youtube.com/watch?v=zlrwvH8WGms)
+* 041 - Camera Swapping & Mesh::Data Helpers
+* 042 - Random Non-Connected Rooms
 
 ## Contact ##
 
