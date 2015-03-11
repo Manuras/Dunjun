@@ -32,7 +32,6 @@ void Level::generate()
 	for (int i = 0; i < 4; i++)
 		darkRockTiles.emplace_back(i, 0);
 
-
 	for (int i = 0; i < length; i++)
 	{
 		for (int j = 0; j < depth; j++)
@@ -52,11 +51,13 @@ void Level::generate()
 		{
 			if (mapGrid[i][j] != emptyTile)
 			{
-				addTileSurface(Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
+				addTileSurface(
+				    Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
 			}
 			else
 			{
-				addTileSurface(Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
+				addTileSurface(
+				    Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
 			}
 
 			for (int k = 0; k < height; k++)
@@ -68,45 +69,52 @@ void Level::generate()
 					{
 						if (mapGrid[i - 1][j] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							TileSurfaceFace::Left,
-							stoneTiles);
+							               TileSurfaceFace::Left,
+							               stoneTiles);
 					}
 
 					if (i < length - 1)
 					{
 						if (mapGrid[i + 1][j] != emptyTile)
 							addTileSurface(Vector3(i + 1, k, j),
-							TileSurfaceFace::Right,
-							stoneTiles);
+							               TileSurfaceFace::Right,
+							               stoneTiles);
 					}
 
 					if (j > 0)
 					{
 						if (mapGrid[i][j - 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							TileSurfaceFace::Back,
-							stoneTiles);
+							               TileSurfaceFace::Back,
+							               stoneTiles);
 					}
 
 					if (j < depth - 1)
 					{
 						if (mapGrid[i][j + 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j + 1),
-							TileSurfaceFace::Front,
-							stoneTiles);
+							               TileSurfaceFace::Front,
+							               stoneTiles);
 					}
 				}
 				else
 				{
 					if (i == 0)
-						addTileSurface(Vector3(i, k, j), TileSurfaceFace::Right, stoneTiles);
+						addTileSurface(Vector3(i, k, j),
+						               TileSurfaceFace::Right,
+						               stoneTiles);
 					if (i == length - 1)
-						addTileSurface(Vector3(i + 1, k, j), TileSurfaceFace::Left, stoneTiles);
+						addTileSurface(Vector3(i + 1, k, j),
+						               TileSurfaceFace::Left,
+						               stoneTiles);
 					if (j == 0)
-						addTileSurface(Vector3(i, k, j), TileSurfaceFace::Front, stoneTiles);
+						addTileSurface(Vector3(i, k, j),
+						               TileSurfaceFace::Front,
+						               stoneTiles);
 					if (j == depth - 1)
-						addTileSurface(Vector3(i, k, j + 1), TileSurfaceFace::Back, stoneTiles);
-
+						addTileSurface(Vector3(i, k, j + 1),
+						               TileSurfaceFace::Back,
+						               stoneTiles);
 				}
 			}
 		}
@@ -130,82 +138,56 @@ void Level::addTileSurface(const Vector3& position,
 	// Right/Left
 	if ((u32)face / 2 == 0)
 	{
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 0.0f, position.z + 1.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 1.0f, position.z + 1.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 0.0f, position.z + 1.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 0.0f, position.z + 0.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 1.0f, position.z + 0.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 1.0f, position.z + 1.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight});
 	}
 	// Up/Down
 	else if ((u32)face / 2 == 1)
 	{
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y, position.z + 0.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y, position.z + 1.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 1.0f, position.y, position.z + 1.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 1.0f, position.y, position.z + 0.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y, position.z + 0.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y, position.z + 1.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 1.0f, position.y, position.z + 1.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 1.0f, position.y, position.z + 0.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight});
 	}
 	// Front/Back
 	else if ((u32)face / 2 == 2)
 	{
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 0.0f, position.z + 0.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 1.0f, position.y + 0.0f, position.z + 0.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 1.0f, position.y + 1.0f, position.z + 0.0f},
-		     {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
-		m_meshData.vertices.push_back(
-		    {{position.x + 0.0f, position.y + 1.0f, position.z + 0.0f},
-		     {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight},
-		     {{0xFF, 0xFF, 0xFF, 0xFF}}});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 0.0f, position.z + 0.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 1.0f, position.y + 0.0f, position.z + 0.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 0) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 1.0f, position.y + 1.0f, position.z + 0.0f},
+		    {(tilePos.x + 0) * tileWidth, (tilePos.y + 1) * tileHeight});
+		m_meshData.vertices.append(
+		    {position.x + 0.0f, position.y + 1.0f, position.z + 0.0f},
+		    {(tilePos.x + 1) * tileWidth, (tilePos.y + 1) * tileHeight});
 	}
 
 	if ((u32)face % 2 == 0)
-	{
-		m_meshData.indices.push_back(index + 0);
-		m_meshData.indices.push_back(index + 1);
-		m_meshData.indices.push_back(index + 2);
-		m_meshData.indices.push_back(index + 2);
-		m_meshData.indices.push_back(index + 3);
-		m_meshData.indices.push_back(index + 0);
-	}
+		m_meshData.addFace(index, 0, 1, 2).addFace(index, 2, 3, 0);
 	else // if ((u32)face % 2 == 1)
-	{
-		m_meshData.indices.push_back(index + 0);
-		m_meshData.indices.push_back(index + 3);
-		m_meshData.indices.push_back(index + 2);
-		m_meshData.indices.push_back(index + 2);
-		m_meshData.indices.push_back(index + 1);
-		m_meshData.indices.push_back(index + 0);
-	}
+		m_meshData.addFace(index, 0, 3, 2).addFace(index, 2, 1, 0);
 }
 
 void Level::addTileSurface(const Vector3& position,

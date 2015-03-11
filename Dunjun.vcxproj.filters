@@ -180,5 +180,9 @@
     <None Include="misc\todo_check.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="misc\cloc.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="TODO.md" />
   </ItemGroup>
 </Project>

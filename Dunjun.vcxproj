@@ -129,12 +129,14 @@
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="cloc.bat" />
     <None Include="License.md" />
+    <None Include="misc\cloc.bat" />
     <None Include="misc\Iridis Blue.vssettings" />
     <None Include="misc\shell.bat" />
     <None Include="misc\st.bat" />
     <None Include="misc\static_check.bat" />
     <None Include="misc\todo_check.bat" />
     <None Include="ReadMe.md" />
+    <None Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

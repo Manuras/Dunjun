@@ -11,8 +11,11 @@ bool isFullscreen = false;
 
 namespace
 {
-GLOBAL int g_width = 854;
-GLOBAL int g_height = 480;
+GLOBAL const int g_windowWidth = 1280;
+GLOBAL const int g_windowHeight = 720;
+
+GLOBAL int g_width = g_windowWidth;
+GLOBAL int g_height = g_windowHeight;
 } // namespace (anonymous)
 
 // GLFW Specific Callback Prototypes
@@ -74,8 +77,8 @@ GLFWwindow* createWindow(GLFWmonitor* monitor)
 
 		// TODO(bill): Set to previous window size
 		// Initial Window Size
-		Window::g_width = 854;
-		Window::g_height = 480;
+		Window::g_width = g_windowWidth;
+		Window::g_height = g_windowHeight;
 	}
 
 	GLFWwindow* w = glfwCreateWindow(
