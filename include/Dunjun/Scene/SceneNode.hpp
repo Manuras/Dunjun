@@ -5,6 +5,7 @@
 #include <Dunjun/ReadOnly.hpp>
 #include <Dunjun/Transform.hpp>
 #include <Dunjun/NonCopyable.hpp>
+#include <Dunjun/Renderer.hpp>
 
 #include <Dunjun/Scene/NodeComponent.hpp>
 
@@ -15,14 +16,14 @@
 #include <typeinfo>
 #include <typeindex>
 
-
 namespace Dunjun
 {
 class SceneNode : private NonCopyable
 {
 public:
 	using UPtr = std::unique_ptr<SceneNode>;
-	using GroupedComponentMap = std::map<std::type_index, std::vector<NodeComponent*>>;
+	using GroupedComponentMap =
+	    std::map<std::type_index, std::vector<NodeComponent*>>;
 
 	SceneNode();
 
@@ -39,7 +40,7 @@ public:
 
 	void onStart();
 	void update(f32 dt);
-	virtual void draw(Transform t = Transform());
+	virtual void draw(Renderer& renderer, Transform t = Transform());
 
 	std::string name;
 	Transform transform;
@@ -52,11 +53,10 @@ protected:
 	virtual void updateCurrent(f32 dt);
 	void updateChildren(f32 dt);
 
-	virtual void drawCurrent(Transform t);
-	void drawChildren(Transform t);
+	virtual void drawCurrent(Renderer& renderer, Transform t);
+	void drawChildren(Renderer& renderer, Transform t);
 
 	std::vector<UPtr> m_children;
-
 
 	// NOTE(bill): A GroupedComponentMap groups components of the same
 	//             type together by std::type_index(...)
@@ -106,12 +106,9 @@ public:
 		auto c = getComponents<ComponentType>();
 		if (c)
 			return std::static_pointer_cast<ComponentType>(c->at(0));
-		
+
 		return nullptr;
 	}
-
-
-
 };
 } // namespace Dunjun
 

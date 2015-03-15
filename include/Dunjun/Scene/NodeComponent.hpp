@@ -5,6 +5,7 @@
 #include <Dunjun/Types.hpp>
 #include <Dunjun/Common.hpp>
 #include <Dunjun/Transform.hpp>
+#include <Dunjun/Renderer.hpp>
 
 namespace Dunjun
 {
@@ -14,9 +15,11 @@ class NodeComponent : private NonCopyable
 public:
 	NodeComponent() = default;
 
+	virtual ~NodeComponent() {}
+
 	virtual void onStart() {}
 	virtual void update(f32 dt) {}
-	virtual void draw(Transform t) {}
+	virtual void draw(Renderer& renderer, Transform t) {}
 
 	SceneNode* parent = nullptr;
 

@@ -12,7 +12,8 @@
 #include <Dunjun/Camera.hpp>
 #include <Dunjun/ModelAsset.hpp>
 
-#include <Dunjun/Scene/SceneNode.hpp>
+#include <Dunjun/Scene.hpp>
+#include <Dunjun/Renderer.hpp>
 
 #include <Dunjun/Level.hpp>
 
@@ -42,45 +43,14 @@ GLOBAL Camera g_cameraWorld;
 
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
-class ModelNode : public SceneNode
-{
-public:
-	using UPtr = std::unique_ptr<ModelNode>;
-
-	ModelAsset* asset = nullptr;
-
-protected:
-	virtual void drawCurrent(Transform t)
-	{
-		ShaderProgram* shaders = asset->material->shaders;
-		const Texture* tex = asset->material->texture;
-
-		if (!shaders || !tex)
-			return;
-
-		shaders->use();
-		Texture::bind(tex, 0);
-
-		shaders->setUniform("u_camera", g_currentCamera->getMatrix());
-
-		shaders->setUniform("u_transform", t);
-		shaders->setUniform("u_tex", (u32)0);
-
-		asset->mesh->draw();
-
-		shaders->stopUsing();
-		Texture::bind(nullptr, 0);
-	}
-};
-
 GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
 GLOBAL std::vector<ModelInstance> g_instances;
 
 GLOBAL SceneNode g_rootNode;
-GLOBAL ModelNode* g_player;
+GLOBAL SceneNode* g_player;
 
-
+GLOBAL Renderer g_renderer;
 
 
 GLOBAL std::map<std::string, Material> g_materials;
@@ -193,11 +163,12 @@ INTERNAL void loadInstances()
 	generateWorld();
 
 	{
-		ModelNode::UPtr player = make_unique<ModelNode>();
+		SceneNode::UPtr player = make_unique<SceneNode>();
 
 		player->name = "player";
-		player->asset = &g_sprite;
 		player->transform.position = {4, 0.5, 4};
+		player->addComponent<MeshRenderer>(g_sprite);
+		player->addComponent<FaceCamera>(g_cameraWorld);
 
 		g_player = player.get();
 
@@ -508,7 +479,11 @@ INTERNAL void render()
 
 	Texture::bind(nullptr, 0);
 
-	g_rootNode.draw();
+	g_renderer.setCamera(*g_currentCamera);
+
+	g_rootNode.draw(g_renderer);
+
+	g_renderer.reset();
 
 	Window::swapBuffers();
 }
