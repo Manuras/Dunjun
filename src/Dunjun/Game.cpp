@@ -11,6 +11,9 @@
 #include <Dunjun/Math.hpp>
 #include <Dunjun/Camera.hpp>
 #include <Dunjun/ModelAsset.hpp>
+
+#include <Dunjun/Scene/SceneNode.hpp>
+
 #include <Dunjun/Level.hpp>
 
 #include <cmath>
@@ -38,6 +41,9 @@ GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
 GLOBAL std::vector<ModelInstance> g_instances;
 
+GLOBAL SceneNode g_rootNode;
+
+
 GLOBAL Camera g_cameraPlayer;
 GLOBAL Camera g_cameraWorld;
 
@@ -47,6 +53,30 @@ GLOBAL std::map<std::string, Material> g_materials;
 GLOBAL std::map<std::string, Mesh*> g_meshes;
 
 GLOBAL Level g_level;
+
+
+class ModelNode : public SceneNode
+{
+public:
+	using UPtr = std::unique_ptr<ModelNode>;
+
+	ModelAsset* asset = nullptr;
+
+protected:
+	virtual void drawCurrent(Transform t) 
+	{
+		ShaderProgram* shaders = asset->material->shaders;
+		Texture* tex = asset->material->texture;
+
+		shaders->use();
+		Texture::bind(tex, 0);
+	
+		asset->mesh->draw();
+
+		shaders->stopUsing();
+	}
+};
+
 
 namespace Game
 {
@@ -141,6 +171,8 @@ INTERNAL void generateWorld()
 	g_level.material = &g_materials["terrain"];
 
 	g_level.generate();
+
+	g_rootNode.onStart();
 }
 
 GLOBAL Matrix4 g_projTest;
@@ -148,6 +180,16 @@ GLOBAL Matrix4 g_projTest;
 INTERNAL void loadInstances()
 {
 	generateWorld();
+
+	{
+		ModelNode::UPtr player = make_unique<ModelNode>();
+
+		player->asset = &g_sprite;
+		player->transform.position = {4, 0.5, 4};
+
+		g_rootNode.attachChild(std::move(player));
+	}
+
 
 	ModelInstance player;
 	player.asset = &g_sprite;
@@ -179,7 +221,7 @@ INTERNAL void loadInstances()
 
 	g_cameraPlayer.projectionType = ProjectionType::Perspective;
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
-	g_cameraPlayer.orthoScale = 8;
+	g_cameraPlayer.orthoScale = 80;
 
 	g_cameraWorld = g_cameraPlayer;
 
@@ -188,6 +230,9 @@ INTERNAL void loadInstances()
 
 INTERNAL void update(f32 dt)
 {
+	g_rootNode.update(dt);
+
+
 	ModelInstance& player = g_instances[0];
 
 	f32 camVel = 10.0f;
@@ -458,6 +503,8 @@ INTERNAL void render()
 		currentShaders->stopUsing();
 
 	Texture::bind(nullptr, 0);
+
+	g_rootNode.draw();
 
 	Window::swapBuffers();
 }

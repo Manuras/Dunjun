@@ -78,7 +78,7 @@
     <ClCompile Include="src\Dunjun\Input.cpp" />
     <ClCompile Include="src\Dunjun\Level.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
-    <ClCompile Include="src\Dunjun\Math\Functions\Transform.cpp" />
+    <ClCompile Include="src\Dunjun\Math\Functions\Transformation.cpp" />
     <ClCompile Include="src\Dunjun\Math\Matrix4.cpp" />
     <ClCompile Include="src\Dunjun\Math\Quaternion.cpp" />
     <ClCompile Include="src\Dunjun\Math\Rect.cpp" />
@@ -86,6 +86,7 @@
     <ClCompile Include="src\Dunjun\Math\Vector3.cpp" />
     <ClCompile Include="src\Dunjun\Math\Vector4.cpp" />
     <ClCompile Include="src\Dunjun\Mesh.cpp" />
+    <ClCompile Include="src\Dunjun\Scene\SceneNode.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\Dunjun\Texture.cpp" />
     <ClCompile Include="src\Dunjun\Transform.cpp" />
@@ -107,7 +108,7 @@
     <ClInclude Include="include\Dunjun\Math\Constants.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions.hpp" />
     <ClInclude Include="include\Dunjun\Math\Functions\Interpolation.hpp" />
-    <ClInclude Include="include\Dunjun\Math\Functions\Transform.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Functions\Transformation.hpp" />
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
     <ClInclude Include="include\Dunjun\Math\Quaternion.hpp" />
     <ClInclude Include="include\Dunjun\Math\Random.hpp" />
@@ -121,6 +122,7 @@
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
     <ClInclude Include="include\Dunjun\ReadOnly.hpp" />
+    <ClInclude Include="include\Dunjun\Scene\SceneNode.hpp" />
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
     <ClInclude Include="include\Dunjun\Texture.hpp" />
     <ClInclude Include="include\Dunjun\TickCounter.hpp" />

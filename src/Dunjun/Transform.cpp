@@ -1,5 +1,7 @@
 #include <Dunjun/Transform.hpp>
 
+#include <Dunjun/Math/Functions/Transformation.hpp>
+
 namespace Dunjun
 {
 // World = Parent * Local
@@ -13,6 +15,14 @@ Transform operator*(const Transform& ps, const Transform& ls)
 
 	return ws;
 }
+
+Transform& operator*=(Transform& ps, const Transform& ls)
+{
+	ps = ps * ls;
+
+	return ps;
+}
+
 // Local = World / Parent
 Transform operator/(const Transform& ws, const Transform& ps)
 {
@@ -25,6 +35,13 @@ Transform operator/(const Transform& ws, const Transform& ps)
 	ls.scale = psConjugate * (ws.scale / ps.scale);
 
 	return ls;
+}
+
+Transform& operator/=(Transform& ws, const Transform& ps)
+{
+	ws = ws / ps;
+
+	return ws;
 }
 
 // TODO(bill): inverse of Transform without division trick
