@@ -29,11 +29,11 @@ Matrix4 rotate(const Radian& angle, const Vector3& v)
 
 	rot[1][0] = 0 + t[1] * axis[0] - s * axis[2];
 	rot[1][1] = c + t[1] * axis[1];
-	rot[1][2] = 0 + t[1] * axis[2] + s * axis[2];
+	rot[1][2] = 0 + t[1] * axis[2] + s * axis[0];
 	rot[1][3] = 0;
 
 	rot[2][0] = 0 + t[2] * axis[0] + s * axis[1];
-	rot[2][1] = 0 + t[2] * axis[0] - s * axis[0];
+	rot[2][1] = 0 + t[2] * axis[1] - s * axis[0];
 	rot[2][2] = c + t[2] * axis[2];
 	rot[2][3] = 0;
 
@@ -42,8 +42,10 @@ Matrix4 rotate(const Radian& angle, const Vector3& v)
 
 Matrix4 scale(const Vector3& v)
 {
-	Matrix4 result(
-	    {v.x, 0, 0, 0}, {0, v.y, 0, 0}, {0, 0, v.z, 0}, {0, 0, 0, 1});
+	Matrix4 result({v.x, 0,   0, 0},
+	               {0, v.y,   0, 0},
+	               {0,   0, v.z, 0},
+	               {0,   0,   0, 1});
 	return result;
 }
 
@@ -64,8 +66,8 @@ Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 zNear, f32 zFar)
 {
 	Matrix4 result;
 
-	result[0][0] = 2.0f * zNear / (right - left);
-	result[1][1] = 2.0f * zNear / (top - bottom);
+	result[0][0] = 2.0f / (right - left);
+	result[1][1] = 2.0f / (top - bottom);
 	result[2][2] = -2.0f / (zFar - zNear);
 	result[3][0] = -(right + left) / (right - left);
 	result[3][1] = -(top + bottom) / (top - bottom);
@@ -74,7 +76,6 @@ Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 zNear, f32 zFar)
 	return result;
 }
 
-// Angle in Radians
 Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar)
 {
 	assert(std::fabs(aspect - std::numeric_limits<f32>::epsilon()) > 0.0f);
@@ -158,5 +159,4 @@ Quaternion quaternionLookAt(const Vector3& eye,
 	Vector3 v = (1.0f / m) * cross(u, refUp);
 	return Quaternion(v, 0.5f * m);
 }
-
 } // namespace Dunjun

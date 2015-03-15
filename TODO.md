@@ -1,5 +1,9 @@
 # TODO #
 
+## Code ##
+* Trigonometric Functions
+* Misc. Math Functions
+
 ## Gameplay ##
 
 * Attacking

@@ -86,9 +86,10 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [038 - Fullscreen Support and Window Functions](https://www.youtube.com/watch?v=KuwnMEOtkxc)
 * [039 - Level Generation](https://www.youtube.com/watch?v=42cc43q1hcs)
 * [040 - Random Numbers and Experimental Camera](https://www.youtube.com/watch?v=zlrwvH8WGms)
-* 041 - Camera Swapping & Mesh::Data Helpers
-* 042 - Random Non-Connected Rooms
-* 043 - Non-Overlapping Rooms
+* [041 - Camera Swapping & Mesh::Data Helpers](https://www.youtube.com/watch?v=y0AlRG9x4Ow)
+* [042 - Random Non-Connected Rooms](https://www.youtube.com/watch?v=9IGk-eyoTs0)
+* [043 - Non-Overlapping Rooms](https://www.youtube.com/watch?v=qUskLwsedAo)
+* 044 - Code Review
 
 ## Contact ##
 

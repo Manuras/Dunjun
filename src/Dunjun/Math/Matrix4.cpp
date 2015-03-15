@@ -133,22 +133,20 @@ Matrix4& Matrix4::operator*=(const Matrix4& other)
 	return (*this = (*this) * other);
 }
 
-Matrix4 Matrix4::transpose() const
+Matrix4 transpose(const Matrix4& m)
 {
 	Matrix4 result;
 
 	for (usize i = 0; i < 4; i++)
 	{
 		for (usize j = 0; j < 4; j++)
-			result[i][j] = data[j][i];
+			result[i][j] = m.data[j][i];
 	}
 	return result;
 }
 
-f32 Matrix4::determinant() const
+f32 determinant(const Matrix4& m)
 {
-	const Matrix4& m = *this;
-
 	f32 coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
 	f32 coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
 	f32 coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
@@ -201,10 +199,8 @@ f32 Matrix4::determinant() const
 	return dot1;
 }
 
-Matrix4 Matrix4::inverse() const
+Matrix4 inverse(const Matrix4& m)
 {
-	const Matrix4& m = *this;
-
 	f32 coef00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
 	f32 coef02 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
 	f32 coef03 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
@@ -254,4 +250,15 @@ Matrix4 Matrix4::inverse() const
 
 	return inverse * oneOverDeterminant;
 }
+
+Matrix4 hadamardProduct(const Matrix4& a, const Matrix4& b)
+{
+	Matrix4 result;
+
+	for (usize i = 0; i < 4; i++)
+		result[i] = a[i] * b[i];
+
+	return result;
+}
+
 } // namespace  Dunjun

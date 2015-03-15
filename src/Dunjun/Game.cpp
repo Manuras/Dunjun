@@ -57,18 +57,18 @@ INTERNAL void handleInput()
 
 	if (Input::isKeyPressed(Input::Key::F11))
 	{
-		Window::isFullscreen = !Window::isFullscreen;
-		if (Window::isFullscreen)
+		Window::g_isFullscreen = !Window::g_isFullscreen;
+		if (Window::g_isFullscreen)
 		{
 			GLFWwindow* w = Window::createWindow(glfwGetPrimaryMonitor());
 			Window::destroyWindow();
-			Window::ptr = w;
+			Window::g_ptr = w;
 		}
 		else
 		{
 			GLFWwindow* w = Window::createWindow(nullptr);
 			Window::destroyWindow();
-			Window::ptr = w;
+			Window::g_ptr = w;
 		}
 
 		Window::makeContextCurrent();
@@ -179,7 +179,7 @@ INTERNAL void loadInstances()
 
 	g_cameraPlayer.projectionType = ProjectionType::Perspective;
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
-	g_cameraPlayer.orthoScale = 800;
+	g_cameraPlayer.orthoScale = 8;
 
 	g_cameraWorld = g_cameraPlayer;
 
@@ -325,9 +325,9 @@ INTERNAL void update(f32 dt)
 			else
 			{
 				Radian a(-std::atan(f.z / f.x));
-				a += Radian(Constants::TAU / 4);
+				a += Radian(Constants::Tau / 4);
 				if (f.x >= 0)
-					a -= Radian(Constants::TAU / 2);
+					a -= Radian(Constants::Tau / 2);
 
 				player.transform.orientation = angleAxis(a, {0, 1, 0});
 			}

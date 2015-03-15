@@ -18,7 +18,7 @@ public:
 	}
 
 	void setSeed(std::mt19937::result_type seed) { m_engine.seed(seed); }
-	
+
 	// inclusive
 	s32 getInt(s32 min, s32 max)
 	{
@@ -31,6 +31,11 @@ public:
 	{
 		std::uniform_real_distribution<f32> dist(min, max);
 		return dist(m_engine);
+	}
+
+	b8 getBool()
+	{
+		return getInt(0, 1) == 1;
 	}
 
 private:

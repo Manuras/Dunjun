@@ -6,8 +6,8 @@ namespace Dunjun
 {
 namespace Window
 {
-GLFWwindow* ptr = nullptr;
-bool isFullscreen = false;
+GLFWwindow* g_ptr = nullptr;
+bool g_isFullscreen = false;
 
 namespace
 {
@@ -29,14 +29,14 @@ bool init()
 	if (!glfwInit())
 		return false;
 
-	Window::ptr = createWindow(nullptr);
-	if (!Window::ptr)
+	Window::g_ptr = createWindow(nullptr);
+	if (!Window::g_ptr)
 	{
 		glfwTerminate();
 		return false;
 	}
 
-	glfwMakeContextCurrent(Window::ptr);
+	glfwMakeContextCurrent(Window::g_ptr);
 	glfwSwapInterval(1);
 
 	glfwSetErrorCallback(errorCallback);
@@ -46,7 +46,7 @@ bool init()
 
 void cleanup()
 {
-	glfwDestroyWindow(Window::ptr);
+	glfwDestroyWindow(Window::g_ptr);
 	glfwTerminate();
 }
 
@@ -82,7 +82,7 @@ GLFWwindow* createWindow(GLFWmonitor* monitor)
 	}
 
 	GLFWwindow* w = glfwCreateWindow(
-	    Window::g_width, Window::g_height, "Dunjun", monitor, Window::ptr);
+		Window::g_width, Window::g_height, "Dunjun", monitor, Window::g_ptr);
 
 	// Set GLFW specific callbacks
 	glfwSetFramebufferSizeCallback(w, framebufferSizeCallback);
@@ -94,21 +94,36 @@ GLFWwindow* createWindow(GLFWmonitor* monitor)
 	return w;
 }
 
-void destroyWindow() { glfwDestroyWindow(Window::ptr); }
+void destroyWindow()
+{
+	glfwDestroyWindow(Window::g_ptr);
+}
 
 void destroyWindow(GLFWwindow* windowPtr) { glfwDestroyWindow(windowPtr); }
 
-void makeContextCurrent() { glfwMakeContextCurrent(Window::ptr); }
+void makeContextCurrent()
+{
+	glfwMakeContextCurrent(Window::g_ptr);
+}
 
 void swapInterval(int i) { glfwSwapInterval(i); }
 
-bool shouldClose() { return glfwWindowShouldClose(Window::ptr); }
+bool shouldClose()
+{
+	return glfwWindowShouldClose(Window::g_ptr);
+}
 
-void swapBuffers() { glfwSwapBuffers(Window::ptr); }
+void swapBuffers()
+{
+	glfwSwapBuffers(Window::g_ptr);
+}
 
 void pollEvents() { glfwPollEvents(); }
 
-void setTitle(const char* title) { glfwSetWindowTitle(Window::ptr, title); }
+void setTitle(const char* title)
+{
+	glfwSetWindowTitle(Window::g_ptr, title);
+}
 
 Vector2 getWindowSize() { return Vector2(Window::g_width, Window::g_height); }
 
@@ -117,14 +132,20 @@ Vector2 getFramebufferSize()
 	int width;
 	int height;
 
-	glfwGetFramebufferSize(Window::ptr, &width, &height);
+	glfwGetFramebufferSize(Window::g_ptr, &width, &height);
 
 	return Vector2(width, height);
 }
 
-bool isInFocus() { return glfwGetWindowAttrib(Window::ptr, GLFW_FOCUSED); }
+bool isInFocus()
+{
+	return glfwGetWindowAttrib(Window::g_ptr, GLFW_FOCUSED);
+}
 
-bool isIconified() { return glfwGetWindowAttrib(Window::ptr, GLFW_ICONIFIED); }
+bool isIconified()
+{
+	return glfwGetWindowAttrib(Window::g_ptr, GLFW_ICONIFIED);
+}
 
 // GLFW Specific Callbacks
 INTERNAL void resizeCallback(GLFWwindow* window, int width, int height)

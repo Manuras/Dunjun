@@ -3,8 +3,6 @@
 
 #include <Dunjun/Math/Vector4.hpp>
 
-#include <array>
-
 namespace Dunjun
 {
 class Matrix4
@@ -41,32 +39,18 @@ public:
 
 	Matrix4& operator*=(const Matrix4& other);
 
-	Matrix4 transpose() const;
-
-	f32 determinant() const;
-	Matrix4 inverse() const;
-
-	// std::array<Vector4, 4> data;
 	Vector4 data[4];
 };
 
 inline Matrix4 operator*(f32 scalar, const Matrix4& m) { return m * scalar; }
 
-inline Matrix4 transpose(const Matrix4& m) { return m.transpose(); }
+Matrix4 transpose(const Matrix4& m);
 
-inline f32 determinant(const Matrix4& m) { return m.determinant(); }
+f32 determinant(const Matrix4& m);
 
-inline Matrix4 inverse(const Matrix4& m) { return m.inverse(); }
+Matrix4 inverse(const Matrix4& m);
 
-inline Matrix4 hadamardProduct(const Matrix4& a, const Matrix4& b)
-{
-	Matrix4 result;
-
-	for (usize i = 0; i < 4; i++)
-		result[i] = a[i] * b[i];
-
-	return result;
-}
+Matrix4 hadamardProduct(const Matrix4& a, const Matrix4& b);
 
 inline std::ostream& operator<<(std::ostream& os, const Matrix4& m)
 {

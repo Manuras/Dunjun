@@ -58,24 +58,21 @@ void cleanup()
 void setCursorMode(CursorMode mode)
 {
 	if (mode == CursorMode::Normal)
-		glfwSetInputMode(
-		    Window::ptr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(Window::g_ptr, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	if (mode == CursorMode::Hidden)
-		glfwSetInputMode(
-		    Window::ptr, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(Window::g_ptr, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	if (mode == CursorMode::Disabled)
-		glfwSetInputMode(
-		    Window::ptr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(Window::g_ptr, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void setStickyKeys(bool sticky)
 {
-	glfwSetInputMode(Window::ptr, GLFW_STICKY_KEYS, sticky);
+	glfwSetInputMode(Window::g_ptr, GLFW_STICKY_KEYS, sticky);
 }
 
 void setStickyMouseButtons(bool sticky)
 {
-	glfwSetInputMode(Window::ptr, GLFW_STICKY_MOUSE_BUTTONS, sticky);
+	glfwSetInputMode(Window::g_ptr, GLFW_STICKY_MOUSE_BUTTONS, sticky);
 }
 
 // Keyboard
@@ -416,30 +413,28 @@ bool isKeyPressed(Key key)
 	if (code == 0)
 		return false;
 
-	return static_cast<bool>(glfwGetKey(Window::ptr, code));
+	return static_cast<bool>(glfwGetKey(Window::g_ptr, code));
 }
 
 // Cursor
 Vector2 getCursorPosition()
 {
 	f64 x, y;
-	glfwGetCursorPos(Window::ptr, &x, &y);
+	glfwGetCursorPos(Window::g_ptr, &x, &y);
 
 	return Vector2(x, y);
 }
 
 void setCursorPosition(const Vector2& pos)
 {
-	glfwSetCursorPos(Window::ptr,
-	                 static_cast<f64>(pos.x),
-	                 static_cast<f64>(pos.y));
+	glfwSetCursorPos(
+	    Window::g_ptr, static_cast<f64>(pos.x), static_cast<f64>(pos.y));
 }
 
 // Mouse
 bool isMouseButtonPressed(Mouse button)
 {
-	return static_cast<bool>(
-		glfwGetMouseButton(Window::ptr, (int)button));
+	return static_cast<bool>(glfwGetMouseButton(Window::g_ptr, (int)button));
 }
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
@@ -557,12 +552,12 @@ void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor)
 // Clipboard
 std::string getClipboardString()
 {
-	return glfwGetClipboardString(Window::ptr);
+	return glfwGetClipboardString(Window::g_ptr);
 }
 
 void setClipboardString(const std::string& str)
 {
-	glfwSetClipboardString(Window::ptr, str.c_str());
+	glfwSetClipboardString(Window::g_ptr, str.c_str());
 }
 
 } // namespace Input

@@ -10,8 +10,8 @@ namespace Dunjun
 {
 namespace Window
 {
-extern GLFWwindow* ptr;
-extern bool isFullscreen;
+extern GLFWwindow* g_ptr;
+extern bool g_isFullscreen;
 
 bool init();
 void cleanup();
