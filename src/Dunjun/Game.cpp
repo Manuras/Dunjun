@@ -37,23 +37,10 @@ GLOBAL const f32 TIME_STEP = 1.0f / 60.0f;
 GLOBAL bool g_running = true;
 } // namespace (anonymous)
 
-GLOBAL ShaderProgram* g_defaultShader;
-GLOBAL ModelAsset g_sprite;
-GLOBAL std::vector<ModelInstance> g_instances;
-
-GLOBAL SceneNode g_rootNode;
-
-
 GLOBAL Camera g_cameraPlayer;
 GLOBAL Camera g_cameraWorld;
 
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
-
-GLOBAL std::map<std::string, Material> g_materials;
-GLOBAL std::map<std::string, Mesh*> g_meshes;
-
-GLOBAL Level g_level;
-
 
 class ModelNode : public SceneNode
 {
@@ -63,19 +50,43 @@ public:
 	ModelAsset* asset = nullptr;
 
 protected:
-	virtual void drawCurrent(Transform t) 
+	virtual void drawCurrent(Transform t)
 	{
 		ShaderProgram* shaders = asset->material->shaders;
-		Texture* tex = asset->material->texture;
+		const Texture* tex = asset->material->texture;
+
+		if (!shaders || !tex)
+			return;
 
 		shaders->use();
 		Texture::bind(tex, 0);
-	
+
+		shaders->setUniform("u_camera", g_currentCamera->getMatrix());
+
+		shaders->setUniform("u_transform", t);
+		shaders->setUniform("u_tex", (u32)0);
+
 		asset->mesh->draw();
 
 		shaders->stopUsing();
+		Texture::bind(nullptr, 0);
 	}
 };
+
+GLOBAL ShaderProgram* g_defaultShader;
+GLOBAL ModelAsset g_sprite;
+GLOBAL std::vector<ModelInstance> g_instances;
+
+GLOBAL SceneNode g_rootNode;
+GLOBAL ModelNode* g_player;
+
+
+
+
+GLOBAL std::map<std::string, Material> g_materials;
+GLOBAL std::map<std::string, Mesh*> g_meshes;
+
+GLOBAL Level g_level;
 
 
 namespace Game
@@ -184,17 +195,14 @@ INTERNAL void loadInstances()
 	{
 		ModelNode::UPtr player = make_unique<ModelNode>();
 
+		player->name = "player";
 		player->asset = &g_sprite;
 		player->transform.position = {4, 0.5, 4};
 
+		g_player = player.get();
+
 		g_rootNode.attachChild(std::move(player));
 	}
-
-
-	ModelInstance player;
-	player.asset = &g_sprite;
-	player.transform.position = {4, 0.5, 4};
-	player.transform.scale = {1, 1, 1};
 
 	for (int j = 0; j < g_level.depth; j++)
 	{
@@ -203,7 +211,7 @@ INTERNAL void loadInstances()
 		{
 			if (g_level.mapGrid[i][j] != Level::TileId(-1, -1))
 			{
-				player.transform.position = Vector3(i, 0.5, j);
+				g_player->transform.position = Vector3(i, 0.5, j);
 				escape = true;
 				break;
 			}
@@ -213,7 +221,6 @@ INTERNAL void loadInstances()
 	}
 
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
-	g_instances.push_back(player);
 
 	// Init Camera
 	g_cameraPlayer.transform.position = {-4, 7, 14};
@@ -221,7 +228,7 @@ INTERNAL void loadInstances()
 
 	g_cameraPlayer.projectionType = ProjectionType::Perspective;
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
-	g_cameraPlayer.orthoScale = 80;
+	g_cameraPlayer.orthoScale = 8;
 
 	g_cameraWorld = g_cameraPlayer;
 
@@ -231,9 +238,6 @@ INTERNAL void loadInstances()
 INTERNAL void update(f32 dt)
 {
 	g_rootNode.update(dt);
-
-
-	ModelInstance& player = g_instances[0];
 
 	f32 camVel = 10.0f;
 	{
@@ -351,7 +355,7 @@ INTERNAL void update(f32 dt)
 			velDir = normalize(velDir);
 
 		{
-			player.transform.position += playerVel * velDir * dt;
+			g_player->transform.position += playerVel * velDir * dt;
 
 #if 0   // Billboard
 			Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
@@ -381,9 +385,9 @@ INTERNAL void update(f32 dt)
 	}
 
 	g_cameraPlayer.transform.position.x = lerp(
-	    g_cameraPlayer.transform.position.x, player.transform.position.x - 5, 10.0f*dt);
+		g_cameraPlayer.transform.position.x, g_player->transform.position.x - 5, 10.0f*dt);
 	g_cameraPlayer.transform.position.z = lerp(
-		g_cameraPlayer.transform.position.z, player.transform.position.z + 12, 10.0f*dt);
+		g_cameraPlayer.transform.position.z, g_player->transform.position.z + 12, 10.0f*dt);
 
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =

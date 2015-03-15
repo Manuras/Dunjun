@@ -185,6 +185,9 @@
     <ClInclude Include="include\Dunjun\Math\Functions\Transformation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Dunjun\Scene\NodeComponent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

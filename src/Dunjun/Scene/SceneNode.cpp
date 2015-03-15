@@ -69,12 +69,22 @@ void SceneNode::onStart()
 {
 	onStartCurrent();
 	onStartChildren();
+	for (auto& group : m_groupedComponents)
+	{
+		for (auto& component : group.second)
+			component->onStart();
+	}
 }
 
 void SceneNode::update(f32 dt)
 {
 	updateCurrent(dt);
 	updateChildren(dt);
+	for (auto& group : m_groupedComponents)
+	{
+		for (auto& component : group.second)
+			component->update(dt);
+	}
 }
 
 void SceneNode::draw(Transform t)
@@ -83,6 +93,11 @@ void SceneNode::draw(Transform t)
 
 	drawCurrent(t);
 	drawChildren(t);
+	for (auto& group : m_groupedComponents)
+	{
+		for (auto& component : group.second)
+			component->draw(t);
+	}
 }
 
 void SceneNode::onStartCurrent()
@@ -116,6 +131,17 @@ void SceneNode::drawChildren(Transform t)
 {
 	for (UPtr& child : m_children)
 		child->draw(t);
+}
+
+SceneNode* SceneNode::addComponent(NodeComponent* component)
+{
+	component->parent = this;
+
+	const std::type_index id(typeid(*component));
+
+	m_groupedComponents[id].push_back(component);
+
+	return this;
 }
 
 } // namespace Dunjun
