@@ -1,22 +1,30 @@
-#include <Dunjun/Level.hpp>
+#include <Dunjun/Level/Room.hpp>
 
-#include <Dunjun/Math/Random.hpp>
+#include <Dunjun/Scene/MeshRenderer.hpp>
+
+#include <Dunjun/Level.hpp>
 
 namespace Dunjun
 {
-Level::Level() {}
 
-Level::~Level() { delete mesh; }
+Room::Room(Random& random, const Room::Size& size)
+: SceneNode()
+, size(size)
+, mesh(nullptr)
+, material(nullptr)
+, m_random(random)
+{
+}
 
-void Level::generate()
+Room::~Room() { delete mesh; }
+
+void Room::generate()
 {
 	if (!mesh)
 		mesh = new Mesh();
 
-	mapGrid =
-	    std::vector<std::vector<TileId>>(length, std::vector<TileId>(depth));
-
-	m_random.setSeed(1);
+	std::vector<std::vector<TileId>> mapGrid(size.x,
+	                                         std::vector<TileId>(size.y));
 
 	TileId emptyTile = {-1, -1};
 
@@ -32,38 +40,26 @@ void Level::generate()
 	for (int i = 3; i < 12; i++)
 		colorfulTiles.emplace_back(i, 15);
 
-
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < size.x; i++)
 	{
-		for (int j = 0; j < depth; j++)
+		for (int j = 0; j < size.y; j++)
 			mapGrid[i][j] = emptyTile;
 	}
 
-
-	placeRooms();
-
-	for (int n = 0; n < m_rooms.size(); n++)
+	for (int i = 0; i < size.x; i++)
 	{
-		const auto& room = m_rooms[n];
-
-		TileId id = colorfulTiles[n % colorfulTiles.size()];
-		for (int i = room.x; i < room.x + room.width; i++)
+		for (int j = 0; j < size.y; j++)
 		{
-			for (int j = room.y; j < room.y + room.height; j++)
-			{
-				//mapGrid[i][j] = lightWoodTile;
-				mapGrid[i][j] = id;
-			}
+			if (m_random.getBool())
+				mapGrid[i][j] = lightWoodTile;
 		}
 	}
 
-
-
 	int height = 3;
 
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < size.x; i++)
 	{
-		for (int j = 0; j < depth; j++)
+		for (int j = 0; j < size.y; j++)
 		{
 			if (mapGrid[i][j] != emptyTile)
 			{
@@ -74,7 +70,7 @@ void Level::generate()
 			else
 			{
 				addTileSurface(
-				    Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
+					Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
 			}
 
 			for (int k = 0; k < height; k++)
@@ -86,52 +82,52 @@ void Level::generate()
 					{
 						if (mapGrid[i - 1][j] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							               TileSurfaceFace::Left,
-							               stoneTiles);
+							TileSurfaceFace::Left,
+							stoneTiles);
 					}
 
 					if (i < length - 1)
 					{
 						if (mapGrid[i + 1][j] != emptyTile)
 							addTileSurface(Vector3(i + 1, k, j),
-							               TileSurfaceFace::Right,
-							               stoneTiles);
+							TileSurfaceFace::Right,
+							stoneTiles);
 					}
 
 					if (j > 0)
 					{
 						if (mapGrid[i][j - 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							               TileSurfaceFace::Back,
-							               stoneTiles);
+							TileSurfaceFace::Back,
+							stoneTiles);
 					}
 
 					if (j < depth - 1)
 					{
 						if (mapGrid[i][j + 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j + 1),
-							               TileSurfaceFace::Front,
-							               stoneTiles);
+							TileSurfaceFace::Front,
+							stoneTiles);
 					}
 				}
 				else
 				{
 					if (i == 0)
 						addTileSurface(Vector3(i, k, j),
-						               TileSurfaceFace::Right,
-						               stoneTiles);
+						TileSurfaceFace::Right,
+						stoneTiles);
 					if (i == length - 1)
 						addTileSurface(Vector3(i + 1, k, j),
-						               TileSurfaceFace::Left,
-						               stoneTiles);
+						TileSurfaceFace::Left,
+						stoneTiles);
 					if (j == 0)
 						addTileSurface(Vector3(i, k, j),
-						               TileSurfaceFace::Front,
-						               stoneTiles);
+						TileSurfaceFace::Front,
+						stoneTiles);
 					if (j == depth - 1)
 						addTileSurface(Vector3(i, k, j + 1),
-						               TileSurfaceFace::Back,
-						               stoneTiles);
+						TileSurfaceFace::Back,
+						stoneTiles);
 				}
 			}
 #endif
@@ -139,58 +135,15 @@ void Level::generate()
 	}
 
 	mesh->addData(m_meshData);
+
+	mesh->generate();
+
+	addComponent<MeshRenderer>(mesh, material);
 }
 
-void Level::placeRooms()
-{
-	int skips = 0;
-
-	for (int n = 0; n < 10; n++)
-	{
-		int w = m_random.getInt(5, 16);
-		int h = m_random.getInt(5, 16);
-
-		int x = m_random.getInt(0, length - 1 - w);
-		int y = m_random.getInt(0, depth - 1 - h);
-
-		Rectangle newRoom(x, y, w, h);
-
-		bool failed = false;
-		for (const Rectangle& room : m_rooms)
-		{
-			Rectangle a = room;
-			a.x -= 1;
-			a.y -= 1;
-			a.width += 2;
-			a.height += 2;
-
-			if (newRoom.intersects(a))
-			{
-				failed = true;
-				break;
-			}
-		}
-
-		if (!failed)
-		{
-			m_rooms.push_back(newRoom);
-		}
-		else
-		{
-			skips++;
-
-			if (skips < 10)
-				n--;
-			else
-				return;
-			continue;
-		}
-	}
-}
-
-void Level::addTileSurface(const Vector3& position,
-                           TileSurfaceFace face,
-                           const TileId& tilePos)
+void Room::addTileSurface(const Vector3& position,
+                          TileSurfaceFace face,
+                          const TileId& tilePos)
 {
 	if (!mesh)
 		mesh = new Mesh();
@@ -255,9 +208,9 @@ void Level::addTileSurface(const Vector3& position,
 		m_meshData.addFace(index, 0, 3, 2).addFace(index, 2, 1, 0);
 }
 
-void Level::addTileSurface(const Vector3& position,
-                           TileSurfaceFace face,
-                           const RandomTileSet& randomTilePosSet)
+void Room::addTileSurface(const Vector3& position,
+                          TileSurfaceFace face,
+                          const RandomTileSet& randomTilePosSet)
 {
 	usize length = randomTilePosSet.size();
 	if (length == 0)
@@ -271,4 +224,5 @@ void Level::addTileSurface(const Vector3& position,
 	TileId tilePos = randomTilePosSet[m_random.getInt(0, length - 1)];
 	addTileSurface(position, face, tilePos);
 }
+
 } // namespace Dunjun

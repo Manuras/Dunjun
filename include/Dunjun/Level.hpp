@@ -5,7 +5,7 @@
 #include <Dunjun/ModelAsset.hpp>
 
 #include <Dunjun/Math/Random.hpp>
-#include <Dunjun/Math/Rect.hpp>
+#include <Dunjun/Math/Rectangle.hpp>
 
 #include <vector>
 
@@ -76,7 +76,7 @@ public:
 private:
 	void placeRooms();
 
-	std::vector<Rect> m_rooms;
+	std::vector<Rectangle> m_rooms;
 
 	Random m_random;
 

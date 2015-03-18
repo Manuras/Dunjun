@@ -1,18 +1,18 @@
-#include <Dunjun/Math/Rect.hpp>
+#include <Dunjun/Math/Rectangle.hpp>
 
 // TODO(bill): implement math functions
 #include <algorithm>
 
 namespace Dunjun
 {
-Rect::Rect(f32 x, f32 y, f32 width, f32 height)
+Rectangle::Rectangle(f32 x, f32 y, f32 width, f32 height)
 : x(x)
 , y(y)
 , width(width)
 , height(height)
 {
 }
-Rect::Rect(const Vector2& position, const Vector2& size)
+Rectangle::Rectangle(const Vector2& position, const Vector2& size)
 : x(position.x)
 , y(position.y)
 , width(size.x)
@@ -20,7 +20,7 @@ Rect::Rect(const Vector2& position, const Vector2& size)
 {
 }
 
-bool Rect::contains(const Vector2& point) const
+bool Rectangle::contains(const Vector2& point) const
 {
 	// TODO(bill): compare similar due to floating point arithmetic
 	f32 minX = std::min(x, x + width);
@@ -32,13 +32,14 @@ bool Rect::contains(const Vector2& point) const
 	       (point.y < maxY);
 }
 
-bool Rect::intersects(const Rect& rectangle) const
+bool Rectangle::intersects(const Rectangle& rectangle) const
 {
-	Rect intersection;
+	Rectangle intersection;
 	return intersects(rectangle, intersection);
 }
 
-bool Rect::intersects(const Rect& rectangle, Rect& intersection) const
+bool Rectangle::intersects(const Rectangle& rectangle,
+                           Rectangle& intersection) const
 {
 	f32 r1MinX = std::min(x, x + width);
 	f32 r1MaxX = std::max(x, x + width);
@@ -59,24 +60,24 @@ bool Rect::intersects(const Rect& rectangle, Rect& intersection) const
 	// If intersection is valid (positive non-zero area)
 	if ((x1 < x2) && (y1 < y2))
 	{
-		intersection = Rect(x1, y1, x2 - x1, y2 - y1);
+		intersection = Rectangle(x1, y1, x2 - x1, y2 - y1);
 		return true;
 	}
 	else
 	{
-		intersection = Rect(0, 0, 0, 0);
+		intersection = Rectangle(0, 0, 0, 0);
 		return false;
 	}
 }
 
-bool operator==(const Rect& left, const Rect& right)
+bool operator==(const Rectangle& left, const Rectangle& right)
 {
 	// TODO(bill): compare similar due to floating point arithmetic
 	return (left.x == right.x) && (left.y == right.y) &&
 	       (left.width == right.width) && (left.height == right.height);
 }
 
-bool operator!=(const Rect& left, const Rect& right)
+bool operator!=(const Rectangle& left, const Rectangle& right)
 {
 	return !(left == right);
 }

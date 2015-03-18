@@ -77,11 +77,12 @@
     <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\Input.cpp" />
     <ClCompile Include="src\Dunjun\Level.cpp" />
+    <ClCompile Include="src\Dunjun\Level\Room.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
     <ClCompile Include="src\Dunjun\Math\Functions\Transformation.cpp" />
     <ClCompile Include="src\Dunjun\Math\Matrix4.cpp" />
     <ClCompile Include="src\Dunjun\Math\Quaternion.cpp" />
-    <ClCompile Include="src\Dunjun\Math\Rect.cpp" />
+    <ClCompile Include="src\Dunjun\Math\Rectangle.cpp" />
     <ClCompile Include="src\Dunjun\Math\Vector2.cpp" />
     <ClCompile Include="src\Dunjun\Math\Vector3.cpp" />
     <ClCompile Include="src\Dunjun\Math\Vector4.cpp" />
@@ -104,6 +105,7 @@
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Input.hpp" />
     <ClInclude Include="include\Dunjun\Level.hpp" />
+    <ClInclude Include="include\Dunjun\Level\Room.hpp" />
     <ClInclude Include="include\Dunjun\Material.hpp" />
     <ClInclude Include="include\Dunjun\Math.hpp" />
     <ClInclude Include="include\Dunjun\Math\Angle.hpp" />
@@ -114,7 +116,7 @@
     <ClInclude Include="include\Dunjun\Math\Matrix4.hpp" />
     <ClInclude Include="include\Dunjun\Math\Quaternion.hpp" />
     <ClInclude Include="include\Dunjun\Math\Random.hpp" />
-    <ClInclude Include="include\Dunjun\Math\Rect.hpp" />
+    <ClInclude Include="include\Dunjun\Math\Rectangle.hpp" />
     <ClInclude Include="include\Dunjun\Math\Unit.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector2.hpp" />
     <ClInclude Include="include\Dunjun\Math\Vector3.hpp" />

@@ -12,9 +12,9 @@ namespace Dunjun
 class MeshRenderer : public NodeComponent
 {
 public:
-	explicit MeshRenderer(const Mesh& mesh, const Material& material)
-	: mesh(&mesh)
-	, material(&material)
+	explicit MeshRenderer(const Mesh* mesh, const Material* material)
+	: mesh(mesh)
+	, material(material)
 	{
 	}
 
@@ -26,6 +26,9 @@ public:
 
 	virtual void draw(Renderer& renderer, Transform t) const
 	{
+		if (!material || !mesh)
+			return;
+
 		ShaderProgram* shaders = material->shaders;
 		const Texture* tex = material->texture;
 
@@ -37,19 +40,6 @@ public:
 		renderer.setUniforms(t);
 
 		mesh->draw();
-
-	/*	shaders->use();
-		Texture::bind(tex, 0);
-
-		shaders->setUniform("u_camera", camera.getMatrix());
-
-		shaders->setUniform("u_transform", t);
-		shaders->setUniform("u_tex", (u32)0);
-
-		mesh->draw();
-
-		shaders->stopUsing();
-		Texture::bind(nullptr, 0);*/
 	}
 
 	const Mesh* mesh;

@@ -16,6 +16,7 @@
 #include <Dunjun/Renderer.hpp>
 
 #include <Dunjun/Level.hpp>
+#include <Dunjun/Level/Room.hpp>
 
 #include <cmath>
 #include <fstream>
@@ -156,17 +157,17 @@ INTERNAL void loadInstances()
 	generateWorld();
 
 	{
-		SceneNode::UPtr level = make_unique<SceneNode>();
+		auto level = make_unique<SceneNode>();
 
 		level->name = "level";
 
-		level->addComponent<MeshRenderer>(*g_level.mesh, *g_level.material);
-	
+		level->addComponent<MeshRenderer>(g_level.mesh, g_level.material);
+		level->visible = false;
 		g_rootNode.attachChild(std::move(level));
 	}
 
 	{
-		SceneNode::UPtr player = make_unique<SceneNode>();
+		auto player = make_unique<SceneNode>();
 
 		player->name = "player";
 		player->transform.position = {4, 0.5, 4};
@@ -194,6 +195,18 @@ INTERNAL void loadInstances()
 			break;
 	}
 
+	{
+		Random random(1);
+
+		auto room = make_unique<Room>(random, Room::Size(10, 10));
+
+		room->material = &g_materials["terrain"];
+		room->generate();
+		room->transform = g_player->transform;
+
+		g_rootNode.attachChild(std::move(room));
+	}
+
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 
 	// Init Camera
@@ -207,6 +220,8 @@ INTERNAL void loadInstances()
 	g_cameraWorld = g_cameraPlayer;
 
 	g_cameraPlayer.projectionType = ProjectionType::Orthographic;
+
+	g_rootNode.onStart();
 }
 
 INTERNAL void update(f32 dt)
@@ -406,7 +421,7 @@ INTERNAL void render()
 {
 	{
 		Vector2 fbSize = Window::getFramebufferSize();
-		glViewport(0, 0, fbSize.x, fbSize.y);
+		glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	}
 	glClearColor(0, 0, 0, 1);
 	// glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
