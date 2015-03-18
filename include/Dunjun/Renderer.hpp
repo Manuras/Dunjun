@@ -7,6 +7,8 @@
 
 namespace Dunjun
 {
+class SceneNode;
+
 class Renderer : private NonCopyable
 {
 public:
@@ -15,6 +17,8 @@ public:
 	virtual ~Renderer() {}
 
 	void reset();
+
+	void draw(const SceneNode& node, Transform t = Transform());
 
 	void setShaders(ShaderProgram* shaders);
 	void setTexture(const Texture* texture);

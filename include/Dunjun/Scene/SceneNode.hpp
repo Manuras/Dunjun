@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <deque>
 #include <typeinfo>
 #include <typeindex>
 
@@ -23,7 +24,7 @@ class SceneNode : private NonCopyable
 public:
 	using UPtr = std::unique_ptr<SceneNode>;
 	using GroupedComponentMap =
-	    std::map<std::type_index, std::vector<NodeComponent*>>;
+	    std::map<std::type_index, std::vector<NodeComponent::UPtr>>;
 
 	SceneNode();
 
@@ -31,6 +32,11 @@ public:
 
 	SceneNode& attachChild(UPtr child);
 	UPtr detachChild(const SceneNode& node);
+
+	
+	// NOTE(bill): Children of only this node
+	// TODO(bill): Search all children and children of children
+	SceneNode* findChildById(usize id) const;
 
 	// NOTE(bill): Children of only this node
 	// TODO(bill): Search all children and children of children
@@ -40,35 +46,40 @@ public:
 
 	void onStart();
 	void update(f32 dt);
-	virtual void draw(Renderer& renderer, Transform t = Transform());
 
+	const usize id;
 	std::string name;
 	Transform transform;
 	ReadOnly<SceneNode*, SceneNode> parent;
+	bool visible = true;
 
 protected:
+	friend class Renderer;
+
+	void draw(Renderer& renderer, Transform t = Transform()) const;
+
 	virtual void onStartCurrent();
 	void onStartChildren();
 
 	virtual void updateCurrent(f32 dt);
 	void updateChildren(f32 dt);
 
-	virtual void drawCurrent(Renderer& renderer, Transform t);
-	void drawChildren(Renderer& renderer, Transform t);
+	virtual void drawCurrent(Renderer& renderer, Transform t) const;
+	void drawChildren(Renderer& renderer, Transform t) const;
 
-	std::vector<UPtr> m_children;
+	std::deque<UPtr> m_children;
 
 	// NOTE(bill): A GroupedComponentMap groups components of the same
 	//             type together by std::type_index(...)
 	GroupedComponentMap m_groupedComponents;
 
 public:
-	SceneNode* addComponent(NodeComponent* component);
+	SceneNode* addComponent(NodeComponent::UPtr component);
 
 	template <class Derived, class... Args>
 	inline SceneNode* addComponent(Args&&... args)
 	{
-		return addComponent(new Derived(args...));
+		return addComponent(make_unique<Derived>(args...));
 	}
 
 	inline void removeAllComponents()
@@ -79,7 +90,7 @@ public:
 	}
 
 	template <class ComponentType>
-	std::vector<NodeComponent*>* getComponents()
+	std::vector<NodeComponent::UPtr>* getComponents()
 	{
 		if (!std::is_base_of<NodeComponent, ComponentType>::vale)
 			return nullptr;
@@ -105,7 +116,7 @@ public:
 	{
 		auto c = getComponents<ComponentType>();
 		if (c)
-			return std::static_pointer_cast<ComponentType>(c->at(0));
+			return std::static_pointer_cast<ComponentType>(c->at(0).get());
 
 		return nullptr;
 	}

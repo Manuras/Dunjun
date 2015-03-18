@@ -34,7 +34,7 @@ struct ModelInstance
 
 namespace
 {
-GLOBAL const f32 TIME_STEP = 1.0f / 60.0f;
+GLOBAL const f32 TimeStep = 1.0f / 60.0f;
 GLOBAL bool g_running = true;
 } // namespace (anonymous)
 
@@ -45,19 +45,16 @@ GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
 GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ModelAsset g_sprite;
-GLOBAL std::vector<ModelInstance> g_instances;
 
 GLOBAL SceneNode g_rootNode;
 GLOBAL SceneNode* g_player;
 
 GLOBAL Renderer g_renderer;
 
-
 GLOBAL std::map<std::string, Material> g_materials;
 GLOBAL std::map<std::string, Mesh*> g_meshes;
 
 GLOBAL Level g_level;
-
 
 namespace Game
 {
@@ -132,12 +129,10 @@ INTERNAL void loadMaterials()
 INTERNAL void loadSpriteAsset()
 {
 	Mesh::Data meshData;
-	meshData.vertices
-		.append({-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f})
+	meshData.vertices.append({-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f})
 	    .append({+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f})
 	    .append({+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f})
 	    .append({-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f});
-
 
 	meshData.addFace(0, 1, 2).addFace(2, 3, 0);
 
@@ -156,11 +151,19 @@ INTERNAL void generateWorld()
 	g_rootNode.onStart();
 }
 
-GLOBAL Matrix4 g_projTest;
-
 INTERNAL void loadInstances()
 {
 	generateWorld();
+
+	{
+		SceneNode::UPtr level = make_unique<SceneNode>();
+
+		level->name = "level";
+
+		level->addComponent<MeshRenderer>(*g_level.mesh, *g_level.material);
+	
+		g_rootNode.attachChild(std::move(level));
+	}
 
 	{
 		SceneNode::UPtr player = make_unique<SceneNode>();
@@ -355,10 +358,14 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
-	g_cameraPlayer.transform.position.x = lerp(
-		g_cameraPlayer.transform.position.x, g_player->transform.position.x - 5, 10.0f*dt);
-	g_cameraPlayer.transform.position.z = lerp(
-		g_cameraPlayer.transform.position.z, g_player->transform.position.z + 12, 10.0f*dt);
+	g_cameraPlayer.transform.position.x =
+	    lerp(g_cameraPlayer.transform.position.x,
+	         g_player->transform.position.x - 5,
+	         10.0f * dt);
+	g_cameraPlayer.transform.position.z =
+	    lerp(g_cameraPlayer.transform.position.z,
+	         g_player->transform.position.z + 12,
+	         10.0f * dt);
 
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =
@@ -395,33 +402,6 @@ INTERNAL void update(f32 dt)
 	}
 }
 
-INTERNAL void renderInstance(const ModelInstance& inst)
-{
-	ModelAsset* asset = inst.asset;
-	ShaderProgram* shaders = asset->material->shaders;
-
-	shaders->setUniform("u_camera", g_currentCamera->getMatrix());
-
-	shaders->setUniform("u_transform", inst.transform);
-	shaders->setUniform("u_tex", (u32)0);
-
-	asset->mesh->draw();
-}
-
-INTERNAL void renderLevel(const Level& level)
-{
-	ShaderProgram* shaders = level.material->shaders;
-	if (!shaders)
-		return;
-
-	shaders->setUniform("u_camera", g_currentCamera->getMatrix());
-
-	shaders->setUniform("u_transform", level.transform);
-	shaders->setUniform("u_tex", (u32)0);
-
-	level.mesh->draw();
-}
-
 INTERNAL void render()
 {
 	{
@@ -432,58 +412,9 @@ INTERNAL void render()
 	// glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	const ShaderProgram* currentShaders = nullptr;
-	const Texture* currentTexture = nullptr;
-
-	// Level
-	{
-		if (g_level.material->shaders != currentShaders)
-		{
-			if (currentShaders)
-				currentShaders->stopUsing();
-			currentShaders = g_level.material->shaders;
-			currentShaders->use();
-		}
-
-		if (g_level.material->texture != currentTexture)
-		{
-			currentTexture = g_level.material->texture;
-
-			Texture::bind(currentTexture, 0);
-		}
-
-		renderLevel(g_level);
-	}
-	// Instances
-	for (const auto& inst : g_instances)
-	{
-		if (inst.asset->material->shaders != currentShaders)
-		{
-			if (currentShaders)
-				currentShaders->stopUsing();
-			currentShaders = inst.asset->material->shaders;
-			currentShaders->use();
-		}
-
-		if (inst.asset->material->texture != currentTexture)
-		{
-			currentTexture = inst.asset->material->texture;
-			Texture::bind(currentTexture, 0);
-		}
-
-		renderInstance(inst);
-	}
-
-	if (currentShaders)
-		currentShaders->stopUsing();
-
-	Texture::bind(nullptr, 0);
-
-	g_renderer.setCamera(*g_currentCamera);
-
-	g_rootNode.draw(g_renderer);
-
 	g_renderer.reset();
+	g_renderer.setCamera(*g_currentCamera);
+	g_renderer.draw(g_rootNode);
 
 	Window::swapBuffers();
 }
@@ -532,13 +463,13 @@ void run()
 		if (accumulator > 1.2f) // remove loop of death
 			accumulator = 1.2f;
 
-		while (accumulator >= TIME_STEP)
+		while (accumulator >= TimeStep)
 		{
-			accumulator -= TIME_STEP;
+			accumulator -= TimeStep;
 			Window::pollEvents();
 			handleInput();
 			Input::updateGamepads();
-			update(TIME_STEP);
+			update(TimeStep);
 		}
 
 		if (tc.update(0.5))
