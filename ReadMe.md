@@ -89,7 +89,13 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [041 - Camera Swapping & Mesh::Data Helpers](https://www.youtube.com/watch?v=y0AlRG9x4Ow)
 * [042 - Random Non-Connected Rooms](https://www.youtube.com/watch?v=9IGk-eyoTs0)
 * [043 - Non-Overlapping Rooms](https://www.youtube.com/watch?v=qUskLwsedAo)
-* 044 - Code Review
+* [044 - Code Review](https://www.youtube.com/watch?v=ChGR0LVsF2g)
+
+### Scene Graphs and Component Based Design###
+
+* [045 - Scene Graphs and SceneNodes](https://www.youtube.com/watch?v=nC34SQ3X_JY)
+* [046 - Component Based Design and NodeComponent](https://www.youtube.com/watch?v=uvu4Z2ntyO8)
+* [047 - Renderer and FaceCamera Component](https://www.youtube.com/watch?v=WLwd84Fu3TU)
 
 ## Contact ##
 
@@ -296,25 +302,23 @@ enum class CursorMode
 
 If a weak enum is needed, please prefix the item with the name of the enum then an underscore.
 
-Example:
+Example (made up):
 
 ```c++
-enum MouseButton
+enum Flag : u32
 {
-	MouseButton_1 = 0,
-	MouseButton_2 = 1,
-	MouseButton_3 = 2,
-	MouseButton_4 = 3,
-	MouseButton_5 = 4,
-	MouseButton_6 = 5,
-	MouseButton_7 = 6,
-	MouseButton_8 = 7,
+	Flag_1 = (1 << 0),
+	Flag_2 = (1 << 1),
+	Flag_3 = (1 << 2),
+	Flag_4 = (1 << 3),
+	Flag_5 = (1 << 4),
+	Flag_6 = (1 << 5),
+	Flag_7 = (1 << 6),
+	Flag_8 = (1 << 7),
 
-	MouseButton_Last = MouseButton_8,
-
-	MouseButton_Left = MouseButton_1,
-	MouseButton_Right = MouseButton_2,
-	MouseButton_Middle = MouseButton_3,
+	Flag_A = Flag_1,
+	Flag_B = Flag_2,
+	Flag_C = Flag_3,
 };
 ```
 
