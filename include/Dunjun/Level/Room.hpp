@@ -70,7 +70,6 @@ public:
 	virtual ~Room();
 
 	const Room::Size size;
-	Mesh* mesh;
 	const Material* material;
 
 	void generate();
@@ -83,7 +82,10 @@ protected:
 	                    TileSurfaceFace face,
 	                    const RandomTileSet& randomTilePosSet);
 
+	Mesh* m_mesh;
+
 	Random& m_random;
+	bool m_generated;
 	Mesh::Data m_meshData;
 };
 } // namespace Dunjun

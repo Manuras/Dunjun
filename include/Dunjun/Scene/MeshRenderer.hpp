@@ -29,17 +29,10 @@ public:
 		if (!material || !mesh)
 			return;
 
-		ShaderProgram* shaders = material->shaders;
-		const Texture* tex = material->texture;
-
-		if (!shaders || !tex)
-			return;
-
-		renderer.setShaders(shaders);
-		renderer.setTexture(tex);
+		renderer.setMaterial(material);
 		renderer.setUniforms(t);
 
-		mesh->draw();
+		renderer.draw(mesh);
 	}
 
 	const Mesh* mesh;

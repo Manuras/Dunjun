@@ -38,30 +38,30 @@ public:
 
 	void bindAttribLocation(GLuint location, const std::string& name);
 
-	GLint getAttribLocation(const std::string& name);
-	GLint getUniformLocation(const std::string& name);
+	GLint getAttribLocation(const std::string& name) const;
+	GLint getUniformLocation(const std::string& name) const;
 
-	void setUniform(const std::string& name, f32 x);
-	void setUniform(const std::string& name, f32 x, f32 y);
-	void setUniform(const std::string& name, f32 x, f32 y, f32 z);
-	void setUniform(const std::string& name, f32 x, f32 y, f32 z, f32 w);
-	void setUniform(const std::string& name, u32 x);
-	void setUniform(const std::string& name, s32 x);
-	void setUniform(const std::string& name, bool x);
-	void setUniform(const std::string& name, const Vector2& v);
-	void setUniform(const std::string& name, const Vector3& v);
-	void setUniform(const std::string& name, const Vector4& v);
-	void setUniform(const std::string& name, const Matrix4& m);
-	void setUniform(const std::string& name, const Quaternion& t);
-	void setUniform(const std::string& name, const Transform& t);
+	void setUniform(const std::string& name, f32 x) const;
+	void setUniform(const std::string& name, f32 x, f32 y) const;
+	void setUniform(const std::string& name, f32 x, f32 y, f32 z) const;
+	void setUniform(const std::string& name, f32 x, f32 y, f32 z, f32 w) const;
+	void setUniform(const std::string& name, u32 x) const;
+	void setUniform(const std::string& name, s32 x) const;
+	void setUniform(const std::string& name, bool x) const;
+	void setUniform(const std::string& name, const Vector2& v) const;
+	void setUniform(const std::string& name, const Vector3& v) const;
+	void setUniform(const std::string& name, const Vector4& v) const;
+	void setUniform(const std::string& name, const Matrix4& m) const;
+	void setUniform(const std::string& name, const Quaternion& t) const;
+	void setUniform(const std::string& name, const Transform& t) const;
 
 	ReadOnly<GLuint, ShaderProgram> object;
 	ReadOnly<bool, ShaderProgram> isLinked;
 	ReadOnly<std::string, ShaderProgram> errorLog;
 
 private:
-	std::map<std::string, GLint> m_attribLocations;
-	std::map<std::string, GLint> m_uniformLocations;
+	mutable std::map<std::string, GLint> m_attribLocations;
+	mutable std::map<std::string, GLint> m_uniformLocations;
 };
 } // namespace Dunjun
 

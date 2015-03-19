@@ -170,7 +170,7 @@ void ShaderProgram::bindAttribLocation(GLuint location, const std::string& name)
 	m_attribLocations[name] = location;
 }
 
-GLint ShaderProgram::getAttribLocation(const std::string& name)
+GLint ShaderProgram::getAttribLocation(const std::string& name) const
 {
 	auto found = m_attribLocations.find(name);
 	if (found != m_attribLocations.end())
@@ -181,7 +181,7 @@ GLint ShaderProgram::getAttribLocation(const std::string& name)
 	return loc;
 }
 
-GLint ShaderProgram::getUniformLocation(const std::string& name)
+GLint ShaderProgram::getUniformLocation(const std::string& name) const
 {
 	auto found = m_uniformLocations.find(name);
 	if (found != m_uniformLocations.end())
@@ -192,7 +192,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name)
 	return loc;
 }
 
-void ShaderProgram::setUniform(const std::string& name, f32 x)
+void ShaderProgram::setUniform(const std::string& name, f32 x) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -201,7 +201,7 @@ void ShaderProgram::setUniform(const std::string& name, f32 x)
 	glUniform1f(loc, x);
 }
 
-void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y)
+void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -210,7 +210,7 @@ void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y)
 	glUniform2f(loc, x, y);
 }
 
-void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y, f32 z)
+void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y, f32 z) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -223,7 +223,7 @@ void ShaderProgram::setUniform(const std::string& name,
                                f32 x,
                                f32 y,
                                f32 z,
-                               f32 w)
+							   f32 w) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -232,7 +232,7 @@ void ShaderProgram::setUniform(const std::string& name,
 	glUniform4f(loc, x, y, z, w);
 }
 
-void ShaderProgram::setUniform(const std::string& name, u32 x)
+void ShaderProgram::setUniform(const std::string& name, u32 x) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -241,7 +241,7 @@ void ShaderProgram::setUniform(const std::string& name, u32 x)
 	glUniform1ui(loc, x);
 }
 
-void ShaderProgram::setUniform(const std::string& name, s32 x)
+void ShaderProgram::setUniform(const std::string& name, s32 x) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -250,7 +250,7 @@ void ShaderProgram::setUniform(const std::string& name, s32 x)
 	glUniform1i(loc, x);
 }
 
-void ShaderProgram::setUniform(const std::string& name, bool x)
+void ShaderProgram::setUniform(const std::string& name, bool x) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -259,7 +259,7 @@ void ShaderProgram::setUniform(const std::string& name, bool x)
 	glUniform1i(loc, (int)x);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Vector2& v)
+void ShaderProgram::setUniform(const std::string& name, const Vector2& v) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -268,7 +268,7 @@ void ShaderProgram::setUniform(const std::string& name, const Vector2& v)
 	glUniform2fv(loc, 1, &v[0]);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Vector3& v)
+void ShaderProgram::setUniform(const std::string& name, const Vector3& v) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -277,7 +277,7 @@ void ShaderProgram::setUniform(const std::string& name, const Vector3& v)
 	glUniform3fv(loc, 1, &v[0]);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Vector4& v)
+void ShaderProgram::setUniform(const std::string& name, const Vector4& v) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -286,7 +286,7 @@ void ShaderProgram::setUniform(const std::string& name, const Vector4& v)
 	glUniform4fv(loc, 1, &v[0]);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Matrix4& m)
+void ShaderProgram::setUniform(const std::string& name, const Matrix4& m) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -295,7 +295,7 @@ void ShaderProgram::setUniform(const std::string& name, const Matrix4& m)
 	glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Quaternion& t)
+void ShaderProgram::setUniform(const std::string& name, const Quaternion& t) const
 {
 	checkInUse();
 	GLint loc = getUniformLocation(name);
@@ -304,7 +304,7 @@ void ShaderProgram::setUniform(const std::string& name, const Quaternion& t)
 	glUniform4fv(loc, 1, &t.data[0]);
 }
 
-void ShaderProgram::setUniform(const std::string& name, const Transform& t)
+void ShaderProgram::setUniform(const std::string& name, const Transform& t) const
 {
 	checkInUse();
 

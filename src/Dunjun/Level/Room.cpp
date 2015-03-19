@@ -2,26 +2,29 @@
 
 #include <Dunjun/Scene/MeshRenderer.hpp>
 
-#include <Dunjun/Level.hpp>
-
 namespace Dunjun
 {
 
 Room::Room(Random& random, const Room::Size& size)
 : SceneNode()
 , size(size)
-, mesh(nullptr)
 , material(nullptr)
+, m_mesh(nullptr)
 , m_random(random)
+, m_generated(false)
+, m_meshData()
 {
 }
 
-Room::~Room() { delete mesh; }
+Room::~Room() { delete m_mesh; }
 
 void Room::generate()
 {
-	if (!mesh)
-		mesh = new Mesh();
+	if (m_generated)
+		return;
+
+	if (!m_mesh)
+		m_mesh = new Mesh();
 
 	std::vector<std::vector<TileId>> mapGrid(size.x,
 	                                         std::vector<TileId>(size.y));
@@ -49,10 +52,7 @@ void Room::generate()
 	for (int i = 0; i < size.x; i++)
 	{
 		for (int j = 0; j < size.y; j++)
-		{
-			if (m_random.getBool())
-				mapGrid[i][j] = lightWoodTile;
-		}
+			mapGrid[i][j] = lightWoodTile;
 	}
 
 	int height = 3;
@@ -66,7 +66,7 @@ void Room::generate()
 				addTileSurface(
 				    Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
 			}
-#if 0 // Build Walls
+#if 1 // Build Walls
 			else
 			{
 				addTileSurface(
@@ -86,7 +86,7 @@ void Room::generate()
 							stoneTiles);
 					}
 
-					if (i < length - 1)
+					if (i < size.x - 1)
 					{
 						if (mapGrid[i + 1][j] != emptyTile)
 							addTileSurface(Vector3(i + 1, k, j),
@@ -102,7 +102,7 @@ void Room::generate()
 							stoneTiles);
 					}
 
-					if (j < depth - 1)
+					if (j < size.y - 1)
 					{
 						if (mapGrid[i][j + 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j + 1),
@@ -116,7 +116,7 @@ void Room::generate()
 						addTileSurface(Vector3(i, k, j),
 						TileSurfaceFace::Right,
 						stoneTiles);
-					if (i == length - 1)
+					if (i == size.x - 1)
 						addTileSurface(Vector3(i + 1, k, j),
 						TileSurfaceFace::Left,
 						stoneTiles);
@@ -124,7 +124,7 @@ void Room::generate()
 						addTileSurface(Vector3(i, k, j),
 						TileSurfaceFace::Front,
 						stoneTiles);
-					if (j == depth - 1)
+					if (j == size.y - 1)
 						addTileSurface(Vector3(i, k, j + 1),
 						TileSurfaceFace::Back,
 						stoneTiles);
@@ -134,20 +134,17 @@ void Room::generate()
 		}
 	}
 
-	mesh->addData(m_meshData);
+	m_mesh->addData(m_meshData);
 
-	mesh->generate();
+	addComponent<MeshRenderer>(m_mesh, material);
 
-	addComponent<MeshRenderer>(mesh, material);
+	m_generated = true;
 }
 
 void Room::addTileSurface(const Vector3& position,
                           TileSurfaceFace face,
                           const TileId& tilePos)
 {
-	if (!mesh)
-		mesh = new Mesh();
-
 	const f32 tileWidth = 1.0f / 16.0f;
 	const f32 tileHeight = 1.0f / 16.0f;
 

@@ -12,9 +12,6 @@ void FaceCamera::update(f32 dt)
 	Vector3 pos = parent->getGlobalTransform().position;
 	Vector3 camPos = camera->transform.position;
 
-	Matrix4 orienation = matrix4lookAt(camPos, pos, up);
-
-
-	parent->transform.orientation = conjugate(matrix4ToQuaternion(orienation));
+	parent->transform.orientation = conjugate(lookAt<Quaternion>(camPos, pos, up));
 }
 } // namespace Dunjun

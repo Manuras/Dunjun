@@ -9,6 +9,7 @@
 
 namespace Dunjun
 {
+class Renderer;
 enum class AtrribLocation : u32
 {
 	Position = 0,
@@ -53,7 +54,6 @@ public:
 	void addData(const Data& data);
 
 	void generate() const;
-	void draw() const;
 
 	inline void destroy() const
 	{
@@ -62,6 +62,10 @@ public:
 	}
 
 private:
+	friend class Renderer;
+
+	void draw() const;
+
 	Data m_data;
 
 	mutable b32 m_generated;
