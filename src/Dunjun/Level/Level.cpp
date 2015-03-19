@@ -15,19 +15,131 @@ void Level::placeRooms()
 	if (material == nullptr)
 	{
 		std::cout << "Level::placeRooms material == nullptr\n";
-		throw std::runtime_error("Level::placeRooms material == nullptr");
 		return;
 	}
 
-	for (int i = 0; i < 8; i++)
+	//m_random.setSeed(1);
+
+	const int w = 8;
+	const int h = 8;
+	const Room::Size size(8, 8);
+
+	bool grid[w][h] = {{false}};
+
+	grid[w / 2][h / 2] = true;
+
+	// 2 Random walks from center;
+	for (int r = 0; r < 2; r++)
 	{
-		for (int j = 0; j < 8; j++)
+		int x = w / 2;
+		int y = h / 2;
+
+		int prevX = w / 2;
+		int prevY = h / 2;
+		// random walk from center
+		for (int n = 0; n < 6; n++)
 		{
-			auto room = make_unique<Room>(m_random, Room::Size(8, 8));
+			int d = m_random.getInt(0, 3);
 
-			room->transform.position.x = 8 * i;
-			room->transform.position.z = 8 * j;
+			switch (d)
+			{
+			case 0: // right
+				x++;
+				break;
+			case 1: // up
+				y++;
+				break;
+			case 2: // left
+				x--;
+				break;
+			case 3: // down
+				y--;
+				break;
+			}
 
+			if (x < 0)
+				x = 0;
+			if (y < 0)
+				y = 0;
+			if (x > w - 1)
+				x = w - 1;
+			if (y > h - 1)
+				y = h - 1;
+
+			if (grid[x][y])
+			{
+				x = prevX;
+				y = prevY;
+				continue;
+			}
+
+			grid[x][y] = true;
+			prevX = x;
+			prevY = y;
+		}
+	}
+
+	// random off shoots
+	{
+		for (int shoot = 0; shoot < 5; shoot++)
+		{
+			while (true)
+			{
+				int x = m_random.getInt(0, w - 1);
+				int y = m_random.getInt(0, h - 1);
+
+				if (grid[x][y])
+				{
+					int d = m_random.getInt(0, 3);
+
+					switch (d)
+					{
+					case 0: // right
+						x++;
+						break;
+					case 1: // up
+						y++;
+						break;
+					case 2: // left
+						x--;
+						break;
+					case 3: // down
+						y--;
+						break;
+					}
+
+					if (x < 0)
+						x = 0;
+					if (y < 0)
+						y = 0;
+					if (x > w - 1)
+						x = w - 1;
+					if (y > h - 1)
+						y = h - 1;
+
+					if (grid[x][y])
+						continue;
+
+					grid[x][y] = true;
+					break;
+
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < w; i++)
+	{
+		for (int j = 0; j < h; j++)
+		{
+			if (grid[i][j] == false)
+				continue;
+
+			auto room = make_unique<Room>(m_random, size);
+
+			room->transform.position.x = size.x * i;
+			room->transform.position.z = size.y * j;
+		
 			room->material = material;
 			room->generate();
 

@@ -49,10 +49,12 @@ void Room::generate()
 			mapGrid[i][j] = emptyTile;
 	}
 
+	TileId tile = colorfulTiles[m_random.getInt(0, colorfulTiles.size() - 1)];
+
 	for (int i = 0; i < size.x; i++)
 	{
 		for (int j = 0; j < size.y; j++)
-			mapGrid[i][j] = lightWoodTile;
+			mapGrid[i][j] = tile;
 	}
 
 	int height = 3;
@@ -64,9 +66,9 @@ void Room::generate()
 			if (mapGrid[i][j] != emptyTile)
 			{
 				addTileSurface(
-				    Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
+					Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
 			}
-#if 1 // Build Walls
+#if 0 // Build Walls
 			else
 			{
 				addTileSurface(

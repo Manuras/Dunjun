@@ -155,9 +155,9 @@ INTERNAL void loadInstances()
 		auto player = make_unique<SceneNode>();
 
 		player->name = "player";
-		player->transform.position = {4, 0.5, 4};
+		player->transform.position = {4 * 8, 0.5, 4 * 8};
 		player->addComponent<MeshRenderer>(g_sprite);
-		player->addComponent<FaceCamera>(g_cameraWorld);
+		player->addComponent<FaceCamera>(g_cameraPlayer);
 
 		g_player = player.get();
 
@@ -178,10 +178,15 @@ INTERNAL void loadInstances()
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 
 	// Init Camera
-	g_cameraPlayer.transform.position = {-4, 7, 14};
-	g_cameraPlayer.lookAt({4, 0, 0});
+	g_cameraPlayer.transform.position = {-3, 3, 3};
+	g_cameraPlayer.lookAt({0, 0, 0});
 
-	g_cameraPlayer.projectionType = ProjectionType::Perspective;
+/*	g_cameraPlayer.transform.position = g_player->transform.position;
+	g_cameraPlayer.transform.position.x -= 3;
+	g_cameraPlayer.transform.position.y += 10;
+	g_cameraPlayer.transform.position.z += 3;
+
+	*/g_cameraPlayer.projectionType = ProjectionType::Perspective;
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
 	g_cameraPlayer.orthoScale = 8;
 
@@ -343,11 +348,11 @@ INTERNAL void update(f32 dt)
 
 	g_cameraPlayer.transform.position.x =
 	    lerp(g_cameraPlayer.transform.position.x,
-	         g_player->transform.position.x - 5,
+	         g_player->transform.position.x,
 	         10.0f * dt);
 	g_cameraPlayer.transform.position.z =
 	    lerp(g_cameraPlayer.transform.position.z,
-	         g_player->transform.position.z + 12,
+	         g_player->transform.position.z,
 	         10.0f * dt);
 
 	// g_camera.transform.position.x = player.transform.position.x;
