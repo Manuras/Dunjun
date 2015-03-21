@@ -156,8 +156,9 @@ INTERNAL void loadInstances()
 
 		player->name = "player";
 		player->transform.position = {4 * 8, 0.5, 4 * 8};
+		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
 		player->addComponent<MeshRenderer>(g_sprite);
-		player->addComponent<FaceCamera>(g_cameraPlayer);
+		//player->addComponent<FaceCamera>(g_cameraPlayer);
 
 		g_player = player.get();
 
@@ -178,15 +179,10 @@ INTERNAL void loadInstances()
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 
 	// Init Camera
-	g_cameraPlayer.transform.position = {-3, 3, 3};
-	g_cameraPlayer.lookAt({0, 0, 0});
+	g_cameraPlayer.transform.position = {3, 2, 3};
+	g_cameraPlayer.transform.orientation = angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
 
-/*	g_cameraPlayer.transform.position = g_player->transform.position;
-	g_cameraPlayer.transform.position.x -= 3;
-	g_cameraPlayer.transform.position.y += 10;
-	g_cameraPlayer.transform.position.z += 3;
 
-	*/g_cameraPlayer.projectionType = ProjectionType::Perspective;
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
 	g_cameraPlayer.orthoScale = 8;
 

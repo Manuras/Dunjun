@@ -65,9 +65,11 @@ public:
 		u16 y = 0;
 	};
 
+	GLOBAL const s32 Height = 3;
+
 	explicit Room(Random& random, const Room::Size& size);
 
-	virtual ~Room();
+	virtual ~Room() override;
 
 	const Room::Size size;
 	const Material* material;

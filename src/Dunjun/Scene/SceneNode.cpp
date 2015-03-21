@@ -5,14 +5,18 @@
 
 namespace Dunjun
 {
-namespace
+namespace Impl
 {
-GLOBAL usize idCount = 0;
-} // namespace (anonymous)
+inline usize getUniqueSceneNodeID()
+{
+	LOCAL_PERSIST usize lastID = 0;
+	return lastID++;
+}
+} // namespace Impl
 
 SceneNode::SceneNode()
 : m_children()
-, id(idCount++)
+, id(Impl::getUniqueSceneNodeID())
 , name("")
 , transform()
 , parent(nullptr)
@@ -65,7 +69,6 @@ SceneNode* SceneNode::findChildById(usize id) const
 	return nullptr;
 }
 
-
 SceneNode* SceneNode::findChildByName(const std::string& name) const
 {
 	for (const UPtr& child : m_children)
@@ -91,22 +94,16 @@ void SceneNode::onStart()
 {
 	onStartCurrent();
 	onStartChildren();
-	for (auto& group : m_groupedComponents)
-	{
-		for (auto& component : group.second)
-			component->onStart();
-	}
+	for (auto& component : m_components)
+		component->onStart();
 }
 
 void SceneNode::update(f32 dt)
 {
 	updateCurrent(dt);
 	updateChildren(dt);
-	for (auto& group : m_groupedComponents)
-	{
-		for (auto& component : group.second)
-			component->update(dt);
-	}
+	for (auto& component : m_components)
+		component->update(dt);
 }
 
 void SceneNode::draw(Renderer& renderer, Transform t) const
@@ -118,11 +115,8 @@ void SceneNode::draw(Renderer& renderer, Transform t) const
 
 	drawCurrent(renderer, t);
 	drawChildren(renderer, t);
-	for (auto& group : m_groupedComponents)
-	{
-		for (auto& component : group.second)
-			component->draw(renderer, t);
-	}
+	for (auto& component : m_components)
+		component->draw(renderer, t);
 }
 
 void SceneNode::onStartCurrent()
@@ -157,16 +151,4 @@ void SceneNode::drawChildren(Renderer& renderer, Transform t) const
 	for (const UPtr& child : m_children)
 		child->draw(renderer, t);
 }
-
-SceneNode* SceneNode::addComponent(NodeComponent::UPtr component)
-{
-	component->parent = this;
-
-	const std::type_index id(typeid(*component));
-
-	m_groupedComponents[id].push_back(std::move(component));
-
-	return this;
-}
-
 } // namespace Dunjun

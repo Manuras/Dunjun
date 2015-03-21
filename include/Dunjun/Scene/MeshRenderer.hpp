@@ -24,7 +24,7 @@ public:
 	{
 	}
 
-	virtual void draw(Renderer& renderer, Transform t) const
+	virtual void draw(Renderer& renderer, Transform t) const override
 	{
 		if (!material || !mesh)
 			return;

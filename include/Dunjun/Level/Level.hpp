@@ -21,7 +21,7 @@ public:
 	Material* material;
 
 private:
-	void placeRooms();
+	void placeRooms(int floor);
 
 	Random m_random;
 	std::vector<Room> m_rooms;

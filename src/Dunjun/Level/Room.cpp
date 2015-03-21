@@ -57,8 +57,6 @@ void Room::generate()
 			mapGrid[i][j] = tile;
 	}
 
-	int height = 3;
-
 	for (int i = 0; i < size.x; i++)
 	{
 		for (int j = 0; j < size.y; j++)
@@ -67,15 +65,17 @@ void Room::generate()
 			{
 				addTileSurface(
 					Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
+				addTileSurface(
+					Vector3(i, 3, j), TileSurfaceFace::Down, stoneTiles);
 			}
-#if 0 // Build Walls
+#if 1 // Build Walls
 			else
 			{
 				addTileSurface(
-					Vector3(i, height, j), TileSurfaceFace::Up, stoneTiles);
+					Vector3(i, Height, j), TileSurfaceFace::Up, stoneTiles);
 			}
 
-			for (int k = 0; k < height; k++)
+			for (int k = 0; k < Height; k++)
 			{
 				if (mapGrid[i][j] == emptyTile)
 				{

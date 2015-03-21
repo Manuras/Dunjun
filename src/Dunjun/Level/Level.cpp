@@ -8,9 +8,15 @@ Level::Level()
 {
 }
 
-void Level::generate() { placeRooms(); }
+void Level::generate()
+{
+	placeRooms(-1);
+	placeRooms(0);
+	placeRooms(1);
 
-void Level::placeRooms()
+}
+
+void Level::placeRooms(int floor)
 {
 	if (material == nullptr)
 	{
@@ -18,7 +24,7 @@ void Level::placeRooms()
 		return;
 	}
 
-	//m_random.setSeed(1);
+	// m_random.setSeed(1);
 
 	const int w = 8;
 	const int h = 8;
@@ -41,41 +47,44 @@ void Level::placeRooms()
 		{
 			int d = m_random.getInt(0, 3);
 
-			switch (d)
+			for (int l = 0; l < 4; l++)
 			{
-			case 0: // right
-				x++;
-				break;
-			case 1: // up
-				y++;
-				break;
-			case 2: // left
-				x--;
-				break;
-			case 3: // down
-				y--;
-				break;
+				switch (d)
+				{
+				case 0: // right
+					x++;
+					break;
+				case 1: // up
+					y++;
+					break;
+				case 2: // left
+					x--;
+					break;
+				case 3: // down
+					y--;
+					break;
+				}
+
+				if (x < 0)
+					x = 0;
+				if (y < 0)
+					y = 0;
+				if (x > w - 1)
+					x = w - 1;
+				if (y > h - 1)
+					y = h - 1;
+
+				if (grid[x][y])
+				{
+					x = prevX;
+					y = prevY;
+					continue;
+				}
+
+				grid[x][y] = true;
+				prevX = x;
+				prevY = y;
 			}
-
-			if (x < 0)
-				x = 0;
-			if (y < 0)
-				y = 0;
-			if (x > w - 1)
-				x = w - 1;
-			if (y > h - 1)
-				y = h - 1;
-
-			if (grid[x][y])
-			{
-				x = prevX;
-				y = prevY;
-				continue;
-			}
-
-			grid[x][y] = true;
-			prevX = x;
-			prevY = y;
 		}
 	}
 
@@ -122,7 +131,6 @@ void Level::placeRooms()
 
 					grid[x][y] = true;
 					break;
-
 				}
 			}
 		}
@@ -138,8 +146,9 @@ void Level::placeRooms()
 			auto room = make_unique<Room>(m_random, size);
 
 			room->transform.position.x = size.x * i;
+			room->transform.position.y = Room::Height * floor;
 			room->transform.position.z = size.y * j;
-		
+
 			room->material = material;
 			room->generate();
 
