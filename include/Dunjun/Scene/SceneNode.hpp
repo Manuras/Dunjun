@@ -12,13 +12,11 @@
 
 #include <array>
 #include <bitset>
-#include <map>
 #include <memory>
 #include <string>
-#include <vector>
 #include <deque>
-#include <typeinfo>
-#include <typeindex>
+
+#include <algorithm>
 
 namespace Dunjun
 {
@@ -47,8 +45,6 @@ class SceneNode : public Drawable, private NonCopyable
 {
 public:
 	using UPtr = std::unique_ptr<SceneNode>;
-	using GroupedComponentMap =
-	    std::map<std::type_index, std::vector<NodeComponent::UPtr>>;
 
 	GLOBAL const usize MaxComponents = 32;
 	using ComponentBitset = std::bitset<MaxComponents>;
@@ -104,8 +100,8 @@ public:
 		return *reinterpret_cast<ComponentType*>(ptr);
 	}
 
-
-	const usize id;
+	using ID = u64;
+	const ID id;
 	std::string name;
 	Transform transform;
 	ReadOnly<SceneNode*, SceneNode> parent;
@@ -127,7 +123,7 @@ protected:
 
 	std::deque<UPtr> m_children;
 
-	std::vector<NodeComponent::UPtr> m_components;
+	std::deque<NodeComponent::UPtr> m_components;
 	ComponentArray m_componentArray;
 	ComponentBitset m_componentBitset;
 };

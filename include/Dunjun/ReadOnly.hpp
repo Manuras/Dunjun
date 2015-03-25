@@ -18,17 +18,17 @@ private:
 	friend Super;
 
 	ReadOnly()
-	: data()
+	: data{}
 	{
 	}
 
 	ReadOnly(const T& t)
-	: data(t)
+	: data{t}
 	{
 	}
 
 	ReadOnly(T&& t)
-	: data(std::move(t))
+	: data{std::move(t)}
 	{
 	}
 
@@ -40,8 +40,17 @@ private:
 
 	T* operator&() { return &data; }
 
-	// Does not `m_` prefix as it accessable within the Super class so it is not
-	// technically private for that class
+	template <class U>
+	U& operator*()
+	{
+		return *data;
+	}
+
+	bool operator==(const T& t) const { return data == t; }
+	bool operator!=(const T& t) const { return !operator==(t); }
+
+	// Does use not the `m_` prefix as it accessable within the Super class so
+	// it is not technically private for that class (friend)
 	// This will be the only exception to the private member variable prefix
 	// rule of `m_`
 	T data;

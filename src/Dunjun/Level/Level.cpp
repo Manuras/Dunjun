@@ -13,7 +13,6 @@ void Level::generate()
 	placeRooms(-1);
 	placeRooms(0);
 	placeRooms(1);
-
 }
 
 void Level::placeRooms(int floor)
@@ -65,14 +64,8 @@ void Level::placeRooms(int floor)
 					break;
 				}
 
-				if (x < 0)
-					x = 0;
-				if (y < 0)
-					y = 0;
-				if (x > w - 1)
-					x = w - 1;
-				if (y > h - 1)
-					y = h - 1;
+				x = Math::clamp(x, 0, w - 1);
+				y = Math::clamp(y, 0, h - 1);
 
 				if (grid[x][y])
 				{
@@ -117,14 +110,8 @@ void Level::placeRooms(int floor)
 						break;
 					}
 
-					if (x < 0)
-						x = 0;
-					if (y < 0)
-						y = 0;
-					if (x > w - 1)
-						x = w - 1;
-					if (y > h - 1)
-						y = h - 1;
+					x = Math::clamp(x, 0, w - 1);
+					y = Math::clamp(y, 0, h - 1);
 
 					if (grid[x][y])
 						continue;

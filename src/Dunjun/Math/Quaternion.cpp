@@ -1,4 +1,5 @@
 #include <Dunjun/Math/Quaternion.hpp>
+#include <Dunjun/Math/Functions.hpp>
 
 namespace Dunjun
 {
@@ -125,9 +126,9 @@ Vector3& Quaternion::vector() { return (Vector3&)(data); }
 f32 Quaternion::scalar() const { return w; }
 f32& Quaternion::scalar() { return w; }
 
-f32 Quaternion::lengthSquared() const { return x * x + y * y + z * z + w * w; }
+f32 lengthSquared(const Quaternion& q) { return dot(q, q); }
 
-f32 Quaternion::length() const { return std::sqrt(lengthSquared()); }
+f32 length(const Quaternion& q) { return Math::sqrt(lengthSquared(q)); }
 
 f32 dot(const Quaternion& a, const Quaternion& b)
 {
@@ -142,7 +143,7 @@ Quaternion cross(const Quaternion& a, const Quaternion& b)
 	                  a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z);
 }
 
-Quaternion normalize(const Quaternion& q) { return q * (1.0f / q.length()); }
+Quaternion normalize(const Quaternion& q) { return q * (1.0f / length(q)); }
 
 Quaternion conjugate(const Quaternion& q)
 {
@@ -164,7 +165,7 @@ Vector3 operator*(const Quaternion& q, const Vector3& v)
 	return (v + q.w * t + cross(q.vector(), t));
 }
 
-Radian angle(const Quaternion& q) { return Radian(2.0f * std::acos(q.w)); }
+Radian angle(const Quaternion& q) { return 2.0f * Math::acos(q.w); }
 
 Vector3 axis(const Quaternion& q)
 {
@@ -174,7 +175,7 @@ Vector3 axis(const Quaternion& q)
 	if (s2 <= 0.0f)
 		return Vector3(0, 0, 1);
 
-	f32 invs2 = 1.0f / std::sqrt(s2);
+	f32 invs2 = 1.0f / Math::sqrt(s2);
 
 	return q.vector() * invs2;
 }
@@ -185,10 +186,10 @@ Quaternion angleAxis(const Radian& angle, const Vector3& axis)
 
 	const Vector3 a = normalize(axis);
 
-	const f32 s = std::sin((f32)(0.5f * angle));
+	const f32 s = Math::sin(0.5f * angle);
 
 	q.vector() = a * s;
-	q.w = std::cos((f32)(0.5f * angle));
+	q.w = Math::cos(0.5f * angle);
 
 	return q;
 }
@@ -223,7 +224,7 @@ Matrix4 quaternionToMatrix4(const Quaternion& q)
 	return mat;
 }
 
-// NOTE(bill): Assumes matrix is only a rotational matrix and has no skew
+// NOTE(bill): Assumes matrix is only a rotational matrix and has no shear
 //             applied
 Quaternion matrix4ToQuaternion(const Matrix4& m)
 {
@@ -250,7 +251,7 @@ Quaternion matrix4ToQuaternion(const Matrix4& m)
 		biggestIndex = 3;
 	}
 
-	f32 biggestVal = std::sqrt(fourBiggestSquaredMinus1 + 1.0f) * 0.5f;
+	f32 biggestVal = Math::sqrt(fourBiggestSquaredMinus1 + 1.0f) * 0.5f;
 	f32 mult = 0.25f / biggestVal;
 
 	Quaternion q;
@@ -301,26 +302,36 @@ Quaternion matrix4ToQuaternion(const Matrix4& m)
 
 Radian roll(const Quaternion& q)
 {
-	return Radian(
-	    std::atan2(2.0f * q[0] * q[1] + q[2] * q[3],
-	               q[0] * q[0] + q[3] * q[3] - q[1] * q[1] - q[2] * q[2]));
+	return Math::atan2(2.0f * q[0] * q[1] + q[2] * q[3],
+	                   q[0] * q[0] + q[3] * q[3] - q[1] * q[1] - q[2] * q[2]);
 }
 
 Radian pitch(const Quaternion& q)
 {
-	return Radian(
-	    std::atan2(2.0f * q[1] * q[2] + q[3] * q[0],
-	               q[3] * q[3] - q[0] * q[0] - q[1] * q[1] + q[2] * q[2]));
+	return Math::atan2(2.0f * q[1] * q[2] + q[3] * q[0],
+	                   q[3] * q[3] - q[0] * q[0] - q[1] * q[1] + q[2] * q[2]);
 }
 
 Radian yaw(const Quaternion& q)
 {
-	return Radian(std::asin(-2.0f * (q[0] * q[2] - q[3] * q[1])));
+	return Math::asin(-2.0f * (q[0] * q[2] - q[3] * q[1]));
 }
 
 EulerAngles quaternionToEulerAngles(const Quaternion& q)
 {
 	return {pitch(q), yaw(q), roll(q)};
+}
+
+Quaternion eulerAnglesToQuaternion(const EulerAngles& e,
+                                   const Vector3& xAxis,
+                                   const Vector3& yAxis,
+                                   const Vector3& zAxis)
+{
+	Quaternion p = angleAxis(e.pitch, xAxis);
+	Quaternion y = angleAxis(e.pitch, yAxis);
+	Quaternion r = angleAxis(e.pitch, zAxis);
+
+	return y * p * r;
 }
 
 } // namespace Dunjun

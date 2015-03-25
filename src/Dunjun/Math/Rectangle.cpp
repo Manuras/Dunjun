@@ -1,7 +1,6 @@
 #include <Dunjun/Math/Rectangle.hpp>
 
-// TODO(bill): implement math functions
-#include <algorithm>
+#include <Dunjun/Math/Functions.hpp>
 
 namespace Dunjun
 {

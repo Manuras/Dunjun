@@ -1,7 +1,6 @@
 #ifndef DUNJUN_MATH_UNIT_HPP
 #define DUNJUN_MATH_UNIT_HPP
 
-#include <cmath>
 #include <chrono>
 
 namespace Dunjun

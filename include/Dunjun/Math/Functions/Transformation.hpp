@@ -7,9 +7,9 @@
 
 #include <Dunjun/Math/Angle.hpp>
 
-#include <cmath>
-
 namespace Dunjun
+{
+namespace Math
 {
 Matrix4 translate(const Vector3& v);
 Matrix4 rotate(const Radian& angle, const Vector3& v);
@@ -33,7 +33,7 @@ template <>
 Quaternion lookAt<Quaternion>(const Vector3& eye,
                               const Vector3& center,
                               const Vector3& up);
-
+} // namespace Math
 } // namespace Dunjun
 
 #endif

@@ -3,7 +3,6 @@
 
 #include <Dunjun/Types.hpp>
 #include <iostream>
-#include <cmath>
 
 namespace Dunjun
 {

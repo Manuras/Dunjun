@@ -1,8 +1,9 @@
 #include <Dunjun/Math/Vector2.hpp>
 
+#include <Dunjun/Math/Functions.hpp>
+
 namespace Dunjun
 {
-
 Vector2::Vector2()
 : x(0)
 , y(0)
@@ -127,7 +128,7 @@ f32 cross(const Vector2& a, const Vector2& b)
 
 f32 lengthSquared(const Vector2& a) { return dot(a, a); }
 
-f32 length(const Vector2& a) { return std::sqrt(lengthSquared(a)); }
+f32 length(const Vector2& a) { return Math::sqrt(lengthSquared(a)); }
 
 Vector2 normalize(const Vector2& a) { return a * (1.0f / length(a)); }
 

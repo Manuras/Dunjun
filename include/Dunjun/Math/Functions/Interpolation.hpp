@@ -4,10 +4,13 @@
 #include <Dunjun/Common.hpp>
 #include <Dunjun/Math/Quaternion.hpp>
 
-#include <cmath>
+#include <Dunjun/Math/Functions/Common.hpp>
 
 namespace Dunjun
 {
+namespace Math
+{
+// Linear Interpolation
 template <class T>
 inline T lerp(const T& x, const T& y, f32 t)
 {
@@ -16,6 +19,7 @@ inline T lerp(const T& x, const T& y, f32 t)
 	return x * (1.0f - t) + (y * t);
 }
 
+// Spherical Linear Interpolation
 inline Quaternion slerp(const Quaternion& x, const Quaternion& y, f32 t)
 {
 	assert(t >= 0.0f && t <= 1.0f);
@@ -42,14 +46,27 @@ inline Quaternion slerp(const Quaternion& x, const Quaternion& y, f32 t)
 	else
 	{
 
-		f32 angle = std::acos(cosTheta);
+		Radian angle = Math::acos(cosTheta);
 
-		result = std::sin(1.0f - t * angle) * x + std::sin(t * angle) * z;
-		result = result * (1.0f / std::sin(angle));
+		result = Math::sin(Radian(1.0f) - (t * angle)) * x +
+		         Math::sin(t * angle) * z;
+		result = result * (1.0f / Math::sin(angle));
 	}
 	return result;
 }
 
+// Shoemake's Quaternion Curves
+// Sqherical Cubic Interpolation
+inline Quaternion squad(const Quaternion& p,
+                        const Quaternion& a,
+                        const Quaternion& b,
+                        const Quaternion& q,
+                        f32 t)
+{
+	return slerp(slerp(p, q, t), slerp(a, b, t), 2.0f * t * (1.0f - t));
+}
+
+} // namespace Math
 } // namespace Dunjun
 
 #endif

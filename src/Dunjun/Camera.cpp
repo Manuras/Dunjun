@@ -18,7 +18,7 @@ Camera::Camera()
 void Camera::lookAt(const Vector3& position, const Vector3& up)
 {
 	transform.orientation =
-	    conjugate(Dunjun::lookAt<Quaternion>(transform.position, position, up));
+	    conjugate(Math::lookAt<Quaternion>(transform.position, position, up));
 }
 
 void Camera::offsetOrientation(const Radian& yaw, const Radian& pitch)
@@ -64,22 +64,23 @@ Matrix4 Camera::getProjection() const
 
 	if (projectionType == ProjectionType::Perspective)
 	{
-		proj =
-		    perspective(fieldOfView, viewportAspectRatio, nearPlane, farPlane);
+		proj = Math::perspective(
+		    fieldOfView, viewportAspectRatio, nearPlane, farPlane);
 	}
 	else if (projectionType == ProjectionType::InfinitePerspective)
 	{
-		proj = infinitePerspective(fieldOfView, viewportAspectRatio, nearPlane);
+		proj = Math::infinitePerspective(
+		    fieldOfView, viewportAspectRatio, nearPlane);
 	}
 	else if (projectionType == ProjectionType::Orthographic)
 	{
 		f32 distance = 0.5f * (farPlane - nearPlane);
-		proj = ortho(-orthoScale * viewportAspectRatio,
-		             orthoScale * viewportAspectRatio,
-		             -orthoScale,
-		             orthoScale,
-		             -distance,
-		             distance);
+		proj = Math::ortho(-orthoScale * viewportAspectRatio,
+		                   orthoScale * viewportAspectRatio,
+		                   -orthoScale,
+		                   orthoScale,
+		                   -distance,
+		                   distance);
 	}
 
 	return proj;
@@ -89,9 +90,9 @@ Matrix4 Camera::getView() const
 {
 	Matrix4 view;
 
-	view = scale(Vector3(1) / transform.scale) *
+	view = Math::scale(Vector3(1) / transform.scale) *
 	       quaternionToMatrix4(conjugate(transform.orientation)) *
-	       translate(-transform.position);
+	       Math::translate(-transform.position);
 
 	return view;
 }

@@ -7,9 +7,9 @@ namespace Dunjun
 {
 namespace Impl
 {
-inline usize getUniqueSceneNodeID()
+inline SceneNode::ID getUniqueSceneNodeID()
 {
-	LOCAL_PERSIST usize lastID = 0;
+	LOCAL_PERSIST SceneNode::ID lastID = 0;
 	return lastID++;
 }
 } // namespace Impl

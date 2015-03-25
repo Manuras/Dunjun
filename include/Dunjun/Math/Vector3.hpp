@@ -2,7 +2,6 @@
 #define DUNJUN_MATH_VECTOR3_HPP
 
 #include <Dunjun/Types.hpp>
-#include <cmath>
 
 #include <Dunjun/Math/Vector2.hpp>
 
