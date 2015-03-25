@@ -63,6 +63,10 @@ s16 abs(s16 x);
 s32 abs(s32 x);
 s64 abs(s64 x);
 
+Radian abs(const Radian& x);
+Degree abs(const Degree& x);
+
+
 
 template <class T>
 T clamp(const T& x, const T& lower, const T& upper)

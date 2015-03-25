@@ -3,8 +3,8 @@
 namespace Dunjun
 {
 Level::Level()
-: m_random()
-, m_rooms()
+: m_random(1337)
+, rooms()
 {
 }
 
@@ -164,9 +164,10 @@ void Level::placeRooms(int floor)
 						   southDoor,
 						   westDoor);
 
+			rooms.push_back(room.get());
+
 			attachChild(std::move(room));
 			roomCount++;
-
 		}
 	}
 

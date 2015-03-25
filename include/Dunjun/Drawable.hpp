@@ -4,7 +4,7 @@
 namespace Dunjun
 {
 class Renderer;
-class Transform;
+struct Transform;
 
 class Drawable
 {

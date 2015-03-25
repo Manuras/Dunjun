@@ -64,12 +64,12 @@ void Mesh::draw() const
 	if (!m_generated)
 		generate();
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
-
 	glEnableVertexAttribArray((u32)AtrribLocation::Position);
 	glEnableVertexAttribArray((u32)AtrribLocation::TexCoord);
 	glEnableVertexAttribArray((u32)AtrribLocation::Color);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
 	glVertexAttribPointer((u32)AtrribLocation::Position,
 	                      3,
@@ -93,12 +93,12 @@ void Mesh::draw() const
 
 	glDrawElements(m_drawType, m_drawCount, GL_UNSIGNED_INT, nullptr);
 
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glDisableVertexAttribArray((u32)AtrribLocation::Position);
 	glDisableVertexAttribArray((u32)AtrribLocation::TexCoord);
 	glDisableVertexAttribArray((u32)AtrribLocation::Color);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 } // namespace Dunjun

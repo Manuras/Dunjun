@@ -20,11 +20,13 @@ public:
 	Transform transform;
 	Material* material;
 
+	std::vector<Room*> rooms;
+
 private:
 	void placeRooms(int floor);
 
 	Random m_random;
-	std::vector<Room> m_rooms;
+
 };
 } // namespace Dunjun
 

@@ -189,6 +189,8 @@ INTERNAL void loadInstances()
 
 	g_cameraPlayer.projectionType = ProjectionType::Orthographic;
 
+	g_currentCamera = &g_cameraWorld;
+
 	g_rootNode.onStart();
 }
 
@@ -359,30 +361,45 @@ INTERNAL void update(f32 dt)
 		g_cameraWorld.viewportAspectRatio = aspectRatio;
 	}
 
+	if (Input::isKeyPressed(Input::Key::Num1))
+		g_currentCamera = &g_cameraPlayer;
+	else if (Input::isKeyPressed(Input::Key::Num2))
 	{
-		if (Input::isKeyPressed(Input::Key::Num1))
-			g_currentCamera = &g_cameraPlayer;
-		else if (Input::isKeyPressed(Input::Key::Num2))
-		{
-			g_cameraWorld.transform = g_cameraPlayer.transform;
-			g_currentCamera = &g_cameraWorld;
-		}
-
-		// g_cameraPlayer.projectionType = ProjectionType::Perspective;
-		// const Matrix4 pp = g_cameraPlayer.getProjection();
-		// g_cameraPlayer.projectionType = ProjectionType::Orthographic;
-		// const Matrix4 op = g_cameraPlayer.getProjection();
-
-		// LOCAL_PERSIST f32 time = 0;
-		// time += dt;
-		//
-		// f32 w = 0.3f;
-		// f32 t = (f32)(Math::sin(w * time)* Math::sin(w * time));
-
-		// t = Math::pow(t, 0.3f);
-
-		// g_projTest = lerp(pp, op, 0.95f);
+		g_cameraWorld.transform = g_cameraPlayer.transform;
+		g_currentCamera = &g_cameraWorld;
 	}
+
+#if 0
+	for (auto& room : g_level->rooms)
+	{
+		Vector3 roomPos = room->transform.position;
+		roomPos.x += room->size.x / 2;
+		roomPos.z += room->size.y / 2;
+		const Vector3 playerPos = g_cameraWorld.transform.position;
+
+		const Vector3 dp = roomPos - playerPos;
+
+		const f32 dist = length(dp);
+
+		// Distance Culling
+		if (dist < 50)
+		{
+			const Vector3 f = g_cameraWorld.forward();
+
+			f32 cosTheta = dot(f, normalize(dp));
+
+			Radian theta = Math::acos(cosTheta);
+
+			// Cone/(bad) Frustum Culling
+			if (Math::abs(theta) <= 1.1f * g_cameraWorld.fieldOfView || dist < 10)
+				room->visible = true;
+			else
+				room->visible = false;
+		}
+		else
+			room->visible = false;
+	}
+#endif
 }
 
 INTERNAL void render()
