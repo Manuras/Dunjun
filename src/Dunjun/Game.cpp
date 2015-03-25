@@ -154,7 +154,7 @@ INTERNAL void loadInstances()
 		auto player = make_unique<SceneNode>();
 
 		player->name = "player";
-		player->transform.position = {4 * 8, 0.5, 4 * 8};
+		player->transform.position = {4, 0.5, 4};
 		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
 		player->addComponent<MeshRenderer>(g_sprite);
 		//player->addComponent<FaceCamera>(g_cameraWorld);

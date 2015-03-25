@@ -18,7 +18,10 @@ Room::Room(Random& random, const Room::Size& size)
 
 Room::~Room() { delete m_mesh; }
 
-void Room::generate()
+void Room::generate(bool northDoor,
+                    bool eastDoor,
+                    bool southDoor,
+                    bool westDoor)
 {
 	if (m_generated)
 		return;
@@ -64,72 +67,119 @@ void Room::generate()
 			if (mapGrid[i][j] != emptyTile)
 			{
 				addTileSurface(
-					Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
+				    Vector3(i, 0, j), TileSurfaceFace::Up, mapGrid[i][j]);
 				addTileSurface(
-					Vector3(i, 3, j), TileSurfaceFace::Down, stoneTiles);
+				    Vector3(i, 3, j), TileSurfaceFace::Down, stoneTiles);
 			}
 #if 1 // Build Walls
 			else
 			{
 				addTileSurface(
-					Vector3(i, Height, j), TileSurfaceFace::Up, stoneTiles);
+				    Vector3(i, Height, j), TileSurfaceFace::Up, stoneTiles);
 			}
 
 			for (int k = 0; k < Height; k++)
 			{
 				if (mapGrid[i][j] == emptyTile)
 				{
-
 					if (i > 0)
 					{
 						if (mapGrid[i - 1][j] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							TileSurfaceFace::Left,
-							stoneTiles);
+							               TileSurfaceFace::Left,
+							               stoneTiles);
 					}
 
 					if (i < size.x - 1)
 					{
 						if (mapGrid[i + 1][j] != emptyTile)
 							addTileSurface(Vector3(i + 1, k, j),
-							TileSurfaceFace::Right,
-							stoneTiles);
+							               TileSurfaceFace::Right,
+							               stoneTiles);
 					}
 
 					if (j > 0)
 					{
 						if (mapGrid[i][j - 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j),
-							TileSurfaceFace::Back,
-							stoneTiles);
+							               TileSurfaceFace::Back,
+							               stoneTiles);
 					}
 
 					if (j < size.y - 1)
 					{
 						if (mapGrid[i][j + 1] != emptyTile)
 							addTileSurface(Vector3(i, k, j + 1),
-							TileSurfaceFace::Front,
-							stoneTiles);
+							               TileSurfaceFace::Front,
+							               stoneTiles);
 					}
 				}
 				else
 				{
 					if (i == 0)
-						addTileSurface(Vector3(i, k, j),
-						TileSurfaceFace::Right,
-						stoneTiles);
-					if (i == size.x - 1)
-						addTileSurface(Vector3(i + 1, k, j),
-						TileSurfaceFace::Left,
-						stoneTiles);
+					{
+						if (westDoor)
+						{
+							if (j != size.y / 2)
+								addTileSurface(Vector3(i, k, j),
+								               TileSurfaceFace::Right,
+								               stoneTiles);
+						}
+						else
+						{
+							addTileSurface(Vector3(i, k, j),
+							               TileSurfaceFace::Right,
+							               stoneTiles);
+						}
+					}
+					else if (i == size.x - 1)
+					{
+						if (eastDoor)
+						{
+							if (j != size.y / 2)
+								addTileSurface(Vector3(i + 1, k, j),
+								               TileSurfaceFace::Left,
+								               stoneTiles);
+						}
+						else
+						{
+							addTileSurface(Vector3(i + 1, k, j),
+							               TileSurfaceFace::Left,
+							               stoneTiles);
+						}
+					}
 					if (j == 0)
-						addTileSurface(Vector3(i, k, j),
-						TileSurfaceFace::Front,
-						stoneTiles);
-					if (j == size.y - 1)
-						addTileSurface(Vector3(i, k, j + 1),
-						TileSurfaceFace::Back,
-						stoneTiles);
+					{
+						if (northDoor)
+						{
+							if (i != size.x / 2)
+								addTileSurface(Vector3(i, k, j),
+								TileSurfaceFace::Front,
+								stoneTiles);
+						}
+						else
+						{
+							addTileSurface(Vector3(i, k, j),
+										   TileSurfaceFace::Front,
+										   stoneTiles);
+						}
+					}
+					else if (j == size.y - 1)
+					{
+						if (southDoor)
+						{
+							if (i != size.x / 2)
+								addTileSurface(Vector3(i, k, j + 1),
+								TileSurfaceFace::Back,
+								stoneTiles);
+						}
+						else
+						{
+							addTileSurface(Vector3(i, k, j + 1),
+										   TileSurfaceFace::Back,
+										   stoneTiles);
+						}
+					}
 				}
 			}
 #endif

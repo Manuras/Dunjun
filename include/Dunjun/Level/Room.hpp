@@ -67,14 +67,18 @@ public:
 
 	GLOBAL const s32 Height = 3;
 
-	explicit Room(Random& random, const Room::Size& size);
+	explicit Room(Random& random,
+				  const Room::Size& size);
 
 	virtual ~Room() override;
 
 	const Room::Size size;
 	const Material* material;
 
-	void generate();
+	void generate(bool northDoor,
+				  bool eastDoor,
+				  bool southDoor,
+				  bool westDoor);
 
 protected:
 	void addTileSurface(const Vector3& position,
