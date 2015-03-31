@@ -1,13 +1,13 @@
 # Dunjun #
-This project will be documenting and demonstrating the development of making a game from scratch*! Every step of the game development process and every line of code will be explained thoroughly.
+This project will be documenting and demonstrating the development of making a game from scratch<sup>1</sup>! Every step of the game development process and every line of code will be explained thoroughly.
 
-The game will be a 3D rogue-like-*like* dungeon crawler style game. More will be revealed about the game as the project persists.
+The game will be a 3D randomly generated, perma-death, dungeon crawler style game. More will be revealed about the game as the project persists.
 
 YouTube Channel: [GingerGames](https://youtube.com/c/GingerGames)
 
 GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
-**With minimal libraries such as GLFW, GLEW, and the STB libraries.*
+<sup>1</sup>*With minimal libraries such as GLFW, GLEW, and the STB libraries.*
 
 ## YouTube Playlists ##
 
@@ -104,8 +104,8 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [051 - Random Walk Level Generation](https://www.youtube.com/watch?v=WWi_PKwyCd0&)
 * [052 - SceneNode Optimization & Many Room Levels](https://www.youtube.com/watch?v=eIyGimZZwmQ)
 * [053](https://www.youtube.com/watch?v=2GzueWyIW4M)
-	- a - Math Library
-	- b - Doorways for Adjacent Rooms
+	- [a - Math Library](https://www.youtube.com/watch?v=2GzueWyIW4)
+	- [b - Doorways for Adjacent Rooms](https://www.youtube.com/watch?v=2GzueWyIW4M&t=736)
 * [054 - Distance Culling and Cone Culling](https://www.youtube.com/watch?v=CNWzlDofqJc)
 * 055 - Batch Rendering - Sorting by Material
 
@@ -123,13 +123,16 @@ No! In fact, the game design has been made to require *complex concepts* which e
 
 ### Are the accompanying videos just recordings of someone programming? ###
 
-No! 99%* of the programming for the game is recorded in the videos; every step of the game development process and every line of code will be explained thoroughly.
+No! 99%<sup>1</sup> of the programming for the game is recorded in the videos; every step of the game development process and every line of code will be explained thoroughly.
 
-**Some of the code will not programmed in the videos but this will mostly be bug fixes or minor changes to the code that can be explained quickly.*
+<sup>1</sup>*Some of the code will not programmed in the videos but this will mostly be bug fixes or minor changes to the code that can be explained quickly.*
 
 ### What platforms will this game support? ###
 
-This game will support Windows, Mac OS X, and Linux.
+This game will support Windows, Mac OS X<sup>1</sup>, and Linux<sup>2</sup>.
+
+<sup>1</sup>*OS X 10.8+.*
+<sup>2</sup>*Including Steam OS.*
 
 ### I have a problem with X... ###
 
@@ -156,7 +159,9 @@ Before we can begin, you need to make sure you have all the things you will need
 
 At the moment, only Windows is supported through the Visual Studio solution. Mac OS X and Linux will implemented later when needed/wanted.
 
-Most of the code should compile on Mac OS X and Linux with probably only a few minor changes.
+Most of the code should compile on Mac OS X and Linux with probably only a few minor changes<sup>1</sup>.
+
+<sup>1</sup>_XInput is required (at the moment) for gamepad control however, GLFW does support joystick so that could be used a workaround for the moment._
 
 ## Supported Platforms ##
 
@@ -176,6 +181,7 @@ Platforms:
 
 * C++ compiler with decent C++11 support
 	- If Visual Studio, please use *at least* MSVC 12.
+	- Clang is preferred to GCC on other platforms but not necessary.
 
 ### Libraries ###
 
@@ -219,7 +225,6 @@ namespace Inner
 } // namespace Dunjun
 ```
 
-
 ### Using and Typedef ###
 
 In C++11, `using` is a superset of `typedef`. `using` is preferred in this style guide.
@@ -253,8 +258,8 @@ Shorthand for smart pointers (`std::unique_ptr`, `std::shared_ptr`, `std::weak_p
 * SPtr -> shared_ptr
 * WPtr -> weak_ptr
 
-Do not use `auto_ptr`, use `unique_ptr` as it is much better and `auto_ptr` is depreciated.
-`std::shared_ptr`s are to be use sparingly.
+Do not use `std::auto_ptr`, use `std::unique_ptr` as it is much better and `std::auto_ptr` is depreciated.
+`std::shared_ptr`s and `std::weak_ptr`s are to be use sparingly.
 
 Example:
 
@@ -264,6 +269,8 @@ class Bar
 public:
 	using UPtr = std::unique_ptr<Bar>;
 	using SPtr = std::shared_ptr<Bar>;
+	using WPtr = std::weak_ptr<Bar>;
+
 	...
 };
 ```
@@ -277,21 +284,27 @@ camelCase (e.g. temp, m\_world, s\_time)
 ### Variable Prefixes ###
 
 * m_ for protected/private member variables
-* s_ for static variables
+* s_ for static/local persist variables
 * g_ for global variables (*should* never be used! (except on a few rare occasions but if done so, place them within a namespace, at least!))
 
 
 Example:
 
 ```c++
-extern int g_thingy;
+GLOBAL f32 g_globalVar;
+extern int g_externVar;
 
 class Foo
 {
-	GLOBAL unsigned long s_time;
+	void func()
+	{
+		LOCAL\_PERSIST u64 s_localVar;
+
+		...
+	}
 
 private:
-	char m_letter;
+	char m_memberVar;
 };
 ```
 
@@ -353,7 +366,7 @@ GLOBAL int g_thingy;
 
 INTERNAL void doSomething()
 {
-	LOCAL_PERSIST char buffer[10];
+	LOCAL\_PERSIST char s\_buffer[10];
 
 	...
 }
@@ -364,15 +377,14 @@ INTERNAL void doSomething()
 * TODO      - todo
 * NOTE      - note to reader (can be used in conjunction with TODO)
 * IMPORTANT - important (can be used in conjunction with TODO or NOTE)
-* FIXME     - fix as soon as possible (does not work as intended)
+* FIXME     - fix as soon as possible (does not work as intended/not at all)
 * HACK      - don't use in production (similar to FIXME but still works)
 
 Example:
 
 ```c++
 // TODO(fred) IMPORTANT(fred): This is some example text for a todo that is
-//                             important. It also spans multiple lines.
-//                             This annotation was written by `fred` as
-//                             indicated next to the annotation
+//     important. It also spans multiple lines. This annotation was written
+//     by `fred` as indicated next to the annotation.
 
 ```
