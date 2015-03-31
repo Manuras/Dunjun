@@ -5,8 +5,7 @@
 #include <Dunjun/ReadOnly.hpp>
 #include <Dunjun/Transform.hpp>
 #include <Dunjun/NonCopyable.hpp>
-#include <Dunjun/Renderer.hpp>
-#include <Dunjun/Drawable.hpp>
+#include <Dunjun/Scene/SceneRenderer.hpp>
 
 #include <Dunjun/Scene/NodeComponent.hpp>
 
@@ -41,7 +40,7 @@ inline ComponentID getComponentTypeID()
 	return typeID;
 }
 
-class SceneNode : public Drawable, private NonCopyable
+class SceneNode : private NonCopyable
 {
 public:
 	using UPtr = std::unique_ptr<SceneNode>;
@@ -108,9 +107,9 @@ public:
 	bool visible = true;
 
 protected:
-	friend class Renderer;
+	friend class SceneRenderer;
 
-	void draw(Renderer& renderer, Transform t = Transform()) const;
+	void draw(SceneRenderer& renderer, Transform t = Transform()) const;
 
 	virtual void onStartCurrent();
 	void onStartChildren();
@@ -118,8 +117,8 @@ protected:
 	virtual void updateCurrent(f32 dt);
 	void updateChildren(f32 dt);
 
-	virtual void drawCurrent(Renderer& renderer, Transform t) const;
-	void drawChildren(Renderer& renderer, Transform t) const;
+	virtual void drawCurrent(SceneRenderer& renderer, Transform t) const;
+	void drawChildren(SceneRenderer& renderer, Transform t) const;
 
 	std::deque<UPtr> m_children;
 

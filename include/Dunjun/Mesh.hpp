@@ -9,7 +9,7 @@
 
 namespace Dunjun
 {
-class Renderer;
+class SceneRenderer;
 enum class AtrribLocation : u32
 {
 	Position = 0,
@@ -62,7 +62,7 @@ public:
 	}
 
 private:
-	friend class Renderer;
+	friend class SceneRenderer;
 
 	void draw() const;
 

@@ -18,6 +18,8 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [Quaternions and Rotations in 3D](https://www.youtube.com/playlist?list=PL93bFkoCMJsmLfAhNyeXzhH-POMvBAn6y)
 * [Camera and Input](https://www.youtube.com/playlist?list=PL93bFkoCMJslgYPipJ-6k7jwRxlO6fyha)
 * [Mesh Creation](https://www.youtube.com/playlist?list=PL93bFkoCMJskXMQcGKayIfx50sIAepgz8)
+* [Level Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni)
+* [Scene Graphs and Component Based Design](https://www.youtube.com/playlist?list=PL93bFkoCMJslkX7gQb56j4phER1FmTRCV)
 
 ## Episode List ##
 
@@ -78,7 +80,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [033 - Finish Billboards and Start Mesh](https://www.youtube.com/watch?v=6MNVfDS59m0)
 * [034 - Materials and Meshes](https://www.youtube.com/watch?v=Fkl4qeuHT2A)
 
-### Level Generation ###
+### [Level Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni) ###
 
 * [035 - Textured Tiled Room](https://www.youtube.com/watch?v=TMr1hDw6BoE)
 * [036 - Add Tile Surfaces and Random Tile Sets](https://www.youtube.com/watch?v=DhDtvNRFLkA)
@@ -91,20 +93,21 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [043 - Non-Overlapping Rooms](https://www.youtube.com/watch?v=qUskLwsedAo)
 * [044 - Code Review](https://www.youtube.com/watch?v=ChGR0LVsF2g)
 
-### Scene Graphs and Component Based Design###
+### [Scene Graphs and Component Based Design](https://www.youtube.com/playlist?list=PL93bFkoCMJslkX7gQb56j4phER1FmTRCV) ###
 
 * [045 - Scene Graphs and SceneNodes](https://www.youtube.com/watch?v=nC34SQ3X_JY)
 * [046 - Component Based Design and NodeComponent](https://www.youtube.com/watch?v=uvu4Z2ntyO8)
 * [047 - Renderer and FaceCamera Component](https://www.youtube.com/watch?v=WLwd84Fu3TU)
-* 048 - Passing SceneNodes to the Renderer
-* 049 - Room SceneNodes
-* 050 - Drawables and Level SceneNode
-* 051 - Random Walk Level Generation
-* 052 - SceneNode Optimization & Many Room Levels
-* 053
+* [048 - Passing SceneNodes to the Renderer](https://www.youtube.com/watch?v=vPviA28caBU)
+* [049 - Room SceneNodes](https://www.youtube.com/watch?v=uiIbkzPmvlg)
+* [050 - Drawables and Level SceneNode](https://www.youtube.com/watch?v=4ujU1ioQJDk)
+* [051 - Random Walk Level Generation](https://www.youtube.com/watch?v=WWi_PKwyCd0&)
+* [052 - SceneNode Optimization & Many Room Levels](https://www.youtube.com/watch?v=eIyGimZZwmQ)
+* [053](https://www.youtube.com/watch?v=2GzueWyIW4M)
 	- a - Math Library
 	- b - Doorways for Adjacent Rooms
-
+* [054 - Distance Culling and Cone Culling](https://www.youtube.com/watch?v=CNWzlDofqJc)
+* 055 - Batch Rendering - Sorting by Material
 
 ## Contact ##
 

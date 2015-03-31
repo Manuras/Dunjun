@@ -5,6 +5,8 @@
 
 #include <Dunjun/Scene/NodeComponent.hpp>
 
+#include <Dunjun/Scene/SceneRenderer.hpp>
+
 #include <Dunjun/Scene/MeshRenderer.hpp>
 #include <Dunjun/Scene/FaceCamera.hpp>
 

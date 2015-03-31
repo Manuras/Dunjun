@@ -2,7 +2,7 @@
 #define DUNJUN_SCENE_MESHRENDERER_HPP
 
 #include <Dunjun/Scene/NodeComponent.hpp>
-#include <Dunjun/Renderer.hpp>
+#include <Dunjun/Scene/SceneRenderer.hpp>
 #include <Dunjun/Material.hpp>
 #include <Dunjun/Mesh.hpp>
 #include <Dunjun/ModelAsset.hpp>
@@ -24,19 +24,16 @@ public:
 	{
 	}
 
-	virtual void draw(Renderer& renderer, Transform t) const override
+	virtual void draw(SceneRenderer& renderer, Transform t) const override
 	{
 		if (!material || !mesh)
 			return;
 
-		renderer.setMaterial(material);
-		renderer.setUniforms(t);
-
-		renderer.draw(mesh);
+		renderer.addModelInstance(*this, t);
 	}
 
-	const Mesh* mesh;
 	const Material* material;
+	const Mesh* mesh;
 };
 } // namespace Dunjun
 

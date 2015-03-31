@@ -13,7 +13,6 @@
 #include <Dunjun/ModelAsset.hpp>
 
 #include <Dunjun/Scene.hpp>
-#include <Dunjun/Renderer.hpp>
 
 #include <Dunjun/Level/Level.hpp>
 
@@ -48,7 +47,7 @@ GLOBAL ModelAsset g_sprite;
 GLOBAL SceneNode g_rootNode;
 GLOBAL SceneNode* g_player;
 
-GLOBAL Renderer g_renderer;
+GLOBAL SceneRenderer g_renderer;
 
 GLOBAL std::map<std::string, Material> g_materials;
 GLOBAL std::map<std::string, Mesh*> g_meshes;
@@ -413,8 +412,9 @@ INTERNAL void render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	g_renderer.reset();
-	g_renderer.setCamera(*g_currentCamera);
+	g_renderer.currentCamera = g_currentCamera;
 	g_renderer.draw(g_rootNode);
+	g_renderer.renderAll();
 
 	Window::swapBuffers();
 }
