@@ -30,6 +30,7 @@ namespace Dunjun
 		currentCamera = nullptr;
 
 		m_modelInstances.clear();
+		m_pointsLights.clear();
 	}
 
 	void SceneRenderer::draw(const SceneNode& node, Transform t)
@@ -47,6 +48,11 @@ namespace Dunjun
 	{
 		if (meshRenderer.parent->visible) // Just in case
 			m_modelInstances.push_back({&meshRenderer, t});
+	}
+
+	void SceneRenderer::addPointLight(const PointLight* light)
+	{
+		m_pointsLights.push_back(light);
 	}
 
 	void SceneRenderer::renderAll()
@@ -71,6 +77,8 @@ namespace Dunjun
 			{
 				m_currentShaders->setUniform("u_camera", currentCamera->getMatrix());
 				m_currentShaders->setUniform("u_tex", (u32)0);
+				m_currentShaders->setUniform("u_light.position", m_pointsLights[0]->position);
+				m_currentShaders->setUniform("u_light.intensities", m_pointsLights[0]->intensities);
 			}
 			setTexture(inst.meshRenderer->material->texture);
 

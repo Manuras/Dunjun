@@ -4,6 +4,7 @@
 #include <Dunjun/Material.hpp>
 #include <Dunjun/Camera.hpp>
 #include <Dunjun/ModelAsset.hpp>
+#include <Dunjun/Scene/Lighting.hpp>
 
 #include <vector>
 
@@ -33,6 +34,8 @@ public:
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
+	
+	void addPointLight(const PointLight* light);
 
 	void renderAll();
 
@@ -45,6 +48,7 @@ private:
 	bool setTexture(const Texture* texture);
 
 	std::vector<ModelInstance> m_modelInstances;
+	std::vector<const PointLight*> m_pointsLights;
 
 	const Material* m_currentMaterial = nullptr;
 	const ShaderProgram* m_currentShaders = nullptr;

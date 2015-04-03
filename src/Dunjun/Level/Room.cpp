@@ -186,6 +186,7 @@ void Room::generate(bool northDoor,
 		}
 	}
 
+	m_meshData.generateNormals();
 	m_mesh->addData(m_meshData);
 
 	addComponent<MeshRenderer>(m_mesh, material);

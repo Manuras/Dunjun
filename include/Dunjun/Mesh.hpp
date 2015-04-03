@@ -15,6 +15,7 @@ enum class AtrribLocation : u32
 	Position = 0,
 	TexCoord = 1,
 	Color = 2,
+	Normal = 3,
 };
 
 class Mesh
@@ -44,6 +45,8 @@ public:
 
 			return *this;
 		}
+
+		void generateNormals();
 	};
 
 	Mesh();

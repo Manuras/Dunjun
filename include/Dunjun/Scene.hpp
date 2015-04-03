@@ -10,4 +10,7 @@
 #include <Dunjun/Scene/MeshRenderer.hpp>
 #include <Dunjun/Scene/FaceCamera.hpp>
 
+
+#include <Dunjun/Scene/Lighting.hpp>
+
 #endif 

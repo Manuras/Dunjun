@@ -54,6 +54,8 @@ GLOBAL std::map<std::string, Mesh*> g_meshes;
 
 GLOBAL Level* g_level;
 
+GLOBAL PointLight g_light;
+
 namespace Game
 {
 INTERNAL void handleInput()
@@ -100,6 +102,8 @@ INTERNAL void loadShaders()
 	g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
 	                                    "a_texCoord");
 	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal, "a_normal");
+
 
 	if (!g_defaultShader->link())
 		throw std::runtime_error(g_defaultShader->errorLog);
@@ -133,6 +137,7 @@ INTERNAL void loadSpriteAsset()
 	    .append({-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f});
 
 	meshData.addFace(0, 1, 2).addFace(2, 3, 0);
+	meshData.generateNormals();
 
 	g_meshes["sprite"] = new Mesh(meshData);
 
@@ -173,6 +178,9 @@ INTERNAL void loadInstances()
 
 		g_rootNode.attachChild(std::move(level));
 	}
+
+	g_light.position = {4, 1.5, 4};
+	g_light.intensities = {10, 10, 10};
 
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 
@@ -342,6 +350,10 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
+	g_light.position.x = 4.0f + 3.0f*Math::cos(1.0f * Radian(Input::getTime()));
+	g_light.position.z = 4.0f + 3.0f*Math::sin(1.0f * Radian(Input::getTime()));
+
+
 	g_cameraPlayer.transform.position.x =
 		Math::lerp(g_cameraPlayer.transform.position.x,
 	         g_player->transform.position.x,
@@ -414,6 +426,9 @@ INTERNAL void render()
 	g_renderer.reset();
 	g_renderer.currentCamera = g_currentCamera;
 	g_renderer.draw(g_rootNode);
+
+	g_renderer.addPointLight(&g_light);
+
 	g_renderer.renderAll();
 
 	Window::swapBuffers();

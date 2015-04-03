@@ -130,6 +130,7 @@
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
     <ClInclude Include="include\Dunjun\ReadOnly.hpp" />
+    <ClInclude Include="include\Dunjun\Scene\Lighting.hpp" />
     <ClInclude Include="include\Dunjun\Scene\SceneRenderer.hpp" />
     <ClInclude Include="include\Dunjun\Scene.hpp" />
     <ClInclude Include="include\Dunjun\Scene\FaceCamera.hpp" />
