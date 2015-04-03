@@ -18,6 +18,8 @@ attribute vec2 a_texCoord;
 attribute vec3 a_color;
 attribute vec3 a_normal;
 
+varying vec3 v_position_ws;
+
 varying vec3 v_position;
 varying vec2 v_texCoord;
 varying vec3 v_color;
@@ -36,5 +38,7 @@ void main()
 	// v' = proj * view * transform * v;
 	vec3 pos = a_position;
 	pos = u_transform.position + quaternionRotate(u_transform.orientation, u_transform.scale * pos);
+	v_position_ws = pos;
+
 	gl_Position = u_camera * vec4(pos, 1.0);
 }

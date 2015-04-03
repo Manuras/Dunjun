@@ -350,8 +350,9 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
-	g_light.position.x = 4.0f + 3.0f*Math::cos(1.0f * Radian(Input::getTime()));
-	g_light.position.z = 4.0f + 3.0f*Math::sin(1.0f * Radian(Input::getTime()));
+	g_light.position.x = 4.0f + 1.0f*Math::cos(1.0f * Radian(Input::getTime()));
+	g_light.position.y = 0.5f;
+	g_light.position.z = 4.0f + 1.0f*Math::sin(1.0f * Radian(Input::getTime()));
 
 
 	g_cameraPlayer.transform.position.x =

@@ -37,7 +37,7 @@ namespace Dunjun
 	{
 		node.draw(*this, t);
 	}
-	
+
 	void SceneRenderer::draw(const Mesh* mesh) const
 	{
 		if (mesh)
@@ -76,9 +76,20 @@ namespace Dunjun
 			if (setShaders(inst.meshRenderer->material->shaders))
 			{
 				m_currentShaders->setUniform("u_camera", currentCamera->getMatrix());
+				m_currentShaders->setUniform("u_cameraPosition", currentCamera->transform.position);
+
 				m_currentShaders->setUniform("u_tex", (u32)0);
+
 				m_currentShaders->setUniform("u_light.position", m_pointsLights[0]->position);
 				m_currentShaders->setUniform("u_light.intensities", m_pointsLights[0]->intensities);
+				m_currentShaders->setUniform("u_light.ambient", m_pointsLights[0]->ambient);
+
+				m_currentShaders->setUniform("u_light.attenuation.constant", m_pointsLights[0]->attenuation.constant);
+				m_currentShaders->setUniform("u_light.attenuation.linear", m_pointsLights[0]->attenuation.linear);
+				m_currentShaders->setUniform("u_light.attenuation.quadratic", m_pointsLights[0]->attenuation.quadratic);
+
+
+
 			}
 			setTexture(inst.meshRenderer->material->texture);
 
