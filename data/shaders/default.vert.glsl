@@ -16,17 +16,22 @@ vec3 quaternionRotate(vec4 q, vec3 v)
 attribute vec3 a_position;
 attribute vec2 a_texCoord;
 attribute vec3 a_color;
+attribute vec3 a_normal;
 
+varying vec3 v_position;
 varying vec2 v_texCoord;
 varying vec3 v_color;
+varying vec3 v_normal;
 
 uniform mat4 u_camera;
 uniform Transform u_transform = {vec3(0), vec4(0, 0, 0, 1), vec3(1)};
 
 void main()
 {
-	v_color = a_color;
+	v_position = a_position;
 	v_texCoord = a_texCoord.st;
+	v_color = a_color;
+	v_normal = a_normal;
 
 	// v' = proj * view * transform * v;
 	vec3 pos = a_position;
