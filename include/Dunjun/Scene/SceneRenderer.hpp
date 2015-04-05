@@ -45,7 +45,7 @@ public:
 
 private:
 	bool setShaders(const ShaderProgram* shaders);
-	bool setTexture(const Texture* texture);
+	bool setTexture(const Texture* texture, GLuint position);
 
 	std::vector<ModelInstance> m_modelInstances;
 	std::vector<const PointLight*> m_pointsLights;

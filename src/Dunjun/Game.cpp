@@ -111,21 +111,21 @@ INTERNAL void loadShaders()
 INTERNAL void loadMaterials()
 {
 	g_materials["default"].shaders = g_defaultShader;
-	g_materials["default"].texture = new Texture();
-	g_materials["default"].texture->loadFromFile("data/textures/default.png");
+	g_materials["default"].diffuseMap = new Texture();
+	g_materials["default"].diffuseMap->loadFromFile("data/textures/default.png");
 
 	g_materials["cat"].shaders = g_defaultShader;
-	g_materials["cat"].texture = new Texture();
-	g_materials["cat"].texture->loadFromFile("data/textures/kitten.jpg");
+	g_materials["cat"].diffuseMap = new Texture();
+	g_materials["cat"].diffuseMap->loadFromFile("data/textures/kitten.jpg");
 
 	g_materials["stone"].shaders = g_defaultShader;
-	g_materials["stone"].texture = new Texture();
-	g_materials["stone"].texture->loadFromFile("data/textures/stone.png",
+	g_materials["stone"].diffuseMap = new Texture();
+	g_materials["stone"].diffuseMap->loadFromFile("data/textures/stone.png",
 	                                           TextureFilter::Nearest);
 
 	g_materials["terrain"].shaders = g_defaultShader;
-	g_materials["terrain"].texture = new Texture();
-	g_materials["terrain"].texture->loadFromFile("data/textures/terrain.png",
+	g_materials["terrain"].diffuseMap = new Texture();
+	g_materials["terrain"].diffuseMap->loadFromFile("data/textures/terrain.png",
 	                                             TextureFilter::Nearest);
 }
 INTERNAL void loadSpriteAsset()
@@ -141,7 +141,7 @@ INTERNAL void loadSpriteAsset()
 
 	g_meshes["sprite"] = new Mesh(meshData);
 
-	g_sprite.material = &g_materials["cat"];
+	g_sprite.material = g_materials["cat"];
 	g_sprite.mesh = g_meshes["sprite"];
 }
 
@@ -171,7 +171,7 @@ INTERNAL void loadInstances()
 	{
 		auto level = make_unique<Level>();
 
-		level->material = &g_materials["terrain"];
+		level->material = g_materials["terrain"];
 		level->generate();
 
 		g_level = level.get();

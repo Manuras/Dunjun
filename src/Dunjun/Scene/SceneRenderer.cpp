@@ -64,16 +64,16 @@ namespace Dunjun
 			const auto& A = a.meshRenderer->material;
 			const auto& B = b.meshRenderer->material;
 
-			if (A->shaders == B->shaders)
-				return A->texture < B->texture;
+			if (A.shaders == B.shaders)
+				return A.diffuseMap < B.diffuseMap;
 			else
-				return A->shaders < B->shaders;
+				return A.shaders < B.shaders;
 		});
 
 
 		for (const auto& inst : m_modelInstances)
 		{
-			if (setShaders(inst.meshRenderer->material->shaders))
+			if (setShaders(inst.meshRenderer->material.shaders))
 			{
 				m_currentShaders->setUniform("u_camera", currentCamera->getMatrix());
 				m_currentShaders->setUniform("u_cameraPosition", currentCamera->transform.position);
@@ -91,7 +91,7 @@ namespace Dunjun
 
 
 			}
-			setTexture(inst.meshRenderer->material->texture);
+			setTexture(inst.meshRenderer->material.diffuseMap, 0);
 
 			m_currentShaders->setUniform("u_transform", inst.transform);
 
@@ -116,13 +116,13 @@ namespace Dunjun
 		return false;
 	}
 
-	bool SceneRenderer::setTexture(const Texture* texture)
+	bool SceneRenderer::setTexture(const Texture* texture, GLuint position)
 	{
 		if (texture != m_currentTexture)
 		{
 			m_currentTexture = texture;
 
-			Texture::bind(m_currentTexture, 0);
+			Texture::bind(m_currentTexture, position);
 
 			return true;
 		}

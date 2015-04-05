@@ -17,9 +17,9 @@ void Level::generate()
 
 void Level::placeRooms(int floor)
 {
-	if (material == nullptr)
+	if (material.shaders == nullptr)
 	{
-		std::cout << "Level::placeRooms material == nullptr\n";
+		std::cout << "Level::placeRooms material.shaders == nullptr\n";
 		return;
 	}
 
