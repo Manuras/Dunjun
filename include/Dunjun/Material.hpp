@@ -11,7 +11,7 @@ struct Material
 {
 	/* What a final material will look like
 		shaders
-		
+
 		diffuse / albedo
 			- map
 			- color
@@ -38,9 +38,9 @@ struct Material
 	ShaderProgram* shaders = nullptr;
 
 	Texture* diffuseMap = nullptr;
-	Color diffuseColor = Color(0xFFFFFFFF);
+	Color diffuseColor = Color(0xFF, 0xFF, 0xFF);
 
-	Color specularColor = Color(0xFFFFFFFF);
+	Color specularColor = Color(0xFF, 0xFF, 0xFF);
 	f32 specularExponent = 80.0f;
 
 };

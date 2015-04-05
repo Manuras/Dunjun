@@ -312,4 +312,15 @@ void ShaderProgram::setUniform(const std::string& name, const Transform& t) cons
 	setUniform(name + ".orientation", t.orientation);
 	setUniform(name + ".scale", t.scale);
 }
+
+void ShaderProgram::setUniform(const std::string& name, const Color& c) const
+{
+	f32 r, g, b, a;
+	r = c.r / 255.0f;
+	g = c.g / 255.0f;
+	b = c.b / 255.0f;
+	a = c.a / 255.0f;
+
+	setUniform(name, r, g, b, a);
+}
 } // namespace Dunjun

@@ -8,6 +8,7 @@
 
 #include <Dunjun/Math.hpp>
 #include <Dunjun/Transform.hpp>
+#include <Dunjun/Color.hpp>
 
 #include <map>
 #include <string>
@@ -54,6 +55,8 @@ public:
 	void setUniform(const std::string& name, const Matrix4& m) const;
 	void setUniform(const std::string& name, const Quaternion& t) const;
 	void setUniform(const std::string& name, const Transform& t) const;
+	void setUniform(const std::string& name, const Color& c) const;
+
 
 	ReadOnly<GLuint, ShaderProgram> object;
 	ReadOnly<bool, ShaderProgram> isLinked;

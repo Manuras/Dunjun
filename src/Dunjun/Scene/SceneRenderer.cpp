@@ -75,21 +75,35 @@ namespace Dunjun
 		{
 			if (setShaders(inst.meshRenderer->material.shaders))
 			{
+				const Material& material = inst.meshRenderer->material;
+
 				m_currentShaders->setUniform("u_camera", currentCamera->getMatrix());
 				m_currentShaders->setUniform("u_cameraPosition", currentCamera->transform.position);
 
-				m_currentShaders->setUniform("u_tex", (u32)0);
+				m_currentShaders->setUniform("u_material.diffuseMap", (u32)0);
+				m_currentShaders->setUniform("u_material.diffuseColor", material.diffuseColor);
+				m_currentShaders->setUniform("u_material.specularColor", material.specularColor);
+				m_currentShaders->setUniform("u_material.specularExponent", material.specularExponent);
 
-				m_currentShaders->setUniform("u_light.position", m_pointsLights[0]->position);
-				m_currentShaders->setUniform("u_light.intensities", m_pointsLights[0]->intensities);
-				m_currentShaders->setUniform("u_light.ambient", m_pointsLights[0]->ambient);
+				const PointLight* light = m_pointsLights[0];
+				light->calculateRange();
 
-				m_currentShaders->setUniform("u_light.attenuation.constant", m_pointsLights[0]->attenuation.constant);
-				m_currentShaders->setUniform("u_light.attenuation.linear", m_pointsLights[0]->attenuation.linear);
-				m_currentShaders->setUniform("u_light.attenuation.quadratic", m_pointsLights[0]->attenuation.quadratic);
+				Vector3 lightIntensities;
+
+				lightIntensities.r = light->color.r / 255.0f;
+				lightIntensities.g = light->color.g / 255.0f;
+				lightIntensities.b = light->color.b / 255.0f;
+				lightIntensities *= light->brightness;
 
 
+				m_currentShaders->setUniform("u_light.position", light->position);
+				m_currentShaders->setUniform("u_light.intensities", lightIntensities);
 
+				m_currentShaders->setUniform("u_light.attenuation.constant", light->attenuation.constant);
+				m_currentShaders->setUniform("u_light.attenuation.linear", light->attenuation.linear);
+				m_currentShaders->setUniform("u_light.attenuation.quadratic", light->attenuation.quadratic);
+
+				m_currentShaders->setUniform("u_light.range", light->range);
 			}
 			setTexture(inst.meshRenderer->material.diffuseMap, 0);
 

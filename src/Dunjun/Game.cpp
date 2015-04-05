@@ -180,7 +180,8 @@ INTERNAL void loadInstances()
 	}
 
 	g_light.position = {4, 1.5, 4};
-	g_light.intensities = {10, 10, 10};
+	g_light.brightness = 10.0f;
+	g_light.calculateRange();
 
 	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
 
