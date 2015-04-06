@@ -8,7 +8,7 @@ namespace Dunjun
 Room::Room(Random& random, const Room::Size& size)
 : SceneNode()
 , size(size)
-, material()
+, material(nullptr)
 , m_mesh(nullptr)
 , m_random(random)
 , m_generated(false)

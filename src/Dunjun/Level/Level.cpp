@@ -17,9 +17,14 @@ void Level::generate()
 
 void Level::placeRooms(int floor)
 {
-	if (material.shaders == nullptr)
+	if (material == nullptr)
 	{
-		std::cout << "Level::placeRooms material.shaders == nullptr\n";
+		std::cout << "Level::placeRooms material == nullptr\n";
+		return;
+	}
+	else if (material->shaders == nullptr)
+	{
+		std::cout << "Level::placeRooms material->shaders == nullptr\n";
 		return;
 	}
 
@@ -148,7 +153,7 @@ void Level::placeRooms(int floor)
 			bool eastDoor  = false;
 			bool southDoor = false;
 			bool westDoor  = false;
-				
+
 			if (i != 0 && grid[i - 1][j])
 				westDoor = true;
 			if (i != w - 1 && grid[i + 1][j])

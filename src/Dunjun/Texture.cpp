@@ -27,21 +27,21 @@ INTERNAL GLenum getInteralFormat(ImageFormat format, bool srgb)
 }
 
 Texture::Texture()
-: object(0)
+: m_object(0)
 , width(0)
 , height(0)
 {
-	glGenTextures(1, &object);
+	glGenTextures(1, &m_object);
 }
 
 Texture::Texture(const Image& image,
                  TextureFilter minMagFilter,
                  TextureWrapMode wrapMode)
-: object(0)
+: m_object(0)
 , width(image.width)
 , height(image.height)
 {
-	glGenTextures(1, &object);
+	glGenTextures(1, &m_object);
 
 	if (!loadFromImage(image, minMagFilter, wrapMode))
 		throw std::runtime_error("Could not create texture from image.");
@@ -69,8 +69,8 @@ bool Texture::loadFromImage(const Image& image,
 	width = image.width;
 	height = image.height;
 
-	glGenTextures(1, &object);
-	glBindTexture(GL_TEXTURE_2D, object);
+	glGenTextures(1, &m_object);
+	glBindTexture(GL_TEXTURE_2D, m_object);
 	glTexParameteri(
 	    GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapMode));
 	glTexParameteri(
@@ -95,7 +95,7 @@ bool Texture::loadFromImage(const Image& image,
 	return true;
 }
 
-Texture::~Texture() { glDeleteTextures(1, &object); }
+Texture::~Texture() { glDeleteTextures(1, &m_object); }
 
 void Texture::bind(const Texture* tex, GLuint position)
 {
@@ -111,7 +111,7 @@ void Texture::bind(const Texture* tex, GLuint position)
 
 	glEnable(GL_TEXTURE_2D);
 	if (tex)
-		glBindTexture(GL_TEXTURE_2D, (tex->object ? tex->object : 0));
+		glBindTexture(GL_TEXTURE_2D, (tex->m_object ? tex->m_object : 0));
 	else
 		glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);

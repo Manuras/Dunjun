@@ -23,6 +23,8 @@ enum class TextureWrapMode : GLint
 	MirroredRepeat = GL_MIRRORED_REPEAT,
 };
 
+class RenderTexture;
+
 class Texture : private NonCopyable
 {
 public:
@@ -42,9 +44,13 @@ public:
 
 	GLOBAL void bind(const Texture* tex, GLuint position);
 
-	ReadOnly<GLuint, Texture> object;
-	ReadOnly<GLsizei, Texture> width;
-	ReadOnly<GLsizei, Texture> height;
+	GLsizei width;
+	GLsizei height;
+
+private:
+	friend class RenderTexture;
+
+	GLuint m_object;
 };
 } // namespace Dunjun
 

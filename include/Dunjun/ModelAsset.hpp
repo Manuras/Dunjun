@@ -8,7 +8,7 @@ namespace Dunjun
 {
 struct ModelAsset
 {
-	Material material;
+	Material* material;
 	const Mesh* mesh;
 };
 } // namespace Dunjun

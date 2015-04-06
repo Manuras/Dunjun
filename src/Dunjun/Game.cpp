@@ -5,6 +5,8 @@
 #include <Dunjun/Window.hpp>
 #include <Dunjun/Input.hpp>
 
+#include <Dunjun/RenderTexture.hpp>
+
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
 
@@ -42,6 +44,8 @@ GLOBAL Camera g_cameraWorld;
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
 GLOBAL ShaderProgram* g_defaultShader;
+GLOBAL ShaderProgram* g_passthroughShader;
+
 GLOBAL ModelAsset g_sprite;
 
 GLOBAL SceneNode g_rootNode;
@@ -102,8 +106,8 @@ INTERNAL void loadShaders()
 	g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
 	                                    "a_texCoord");
 	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal, "a_normal");
-
+	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal,
+	                                    "a_normal");
 
 	if (!g_defaultShader->link())
 		throw std::runtime_error(g_defaultShader->errorLog);
@@ -112,7 +116,8 @@ INTERNAL void loadMaterials()
 {
 	g_materials["default"].shaders = g_defaultShader;
 	g_materials["default"].diffuseMap = new Texture();
-	g_materials["default"].diffuseMap->loadFromFile("data/textures/default.png");
+	g_materials["default"].diffuseMap->loadFromFile(
+	    "data/textures/default.png");
 
 	g_materials["cat"].shaders = g_defaultShader;
 	g_materials["cat"].diffuseMap = new Texture();
@@ -121,12 +126,12 @@ INTERNAL void loadMaterials()
 	g_materials["stone"].shaders = g_defaultShader;
 	g_materials["stone"].diffuseMap = new Texture();
 	g_materials["stone"].diffuseMap->loadFromFile("data/textures/stone.png",
-	                                           TextureFilter::Nearest);
+	                                              TextureFilter::Nearest);
 
 	g_materials["terrain"].shaders = g_defaultShader;
 	g_materials["terrain"].diffuseMap = new Texture();
 	g_materials["terrain"].diffuseMap->loadFromFile("data/textures/terrain.png",
-	                                             TextureFilter::Nearest);
+	                                                TextureFilter::Nearest);
 }
 INTERNAL void loadSpriteAsset()
 {
@@ -141,14 +146,11 @@ INTERNAL void loadSpriteAsset()
 
 	g_meshes["sprite"] = new Mesh(meshData);
 
-	g_sprite.material = g_materials["cat"];
+	g_sprite.material = &g_materials["cat"];
 	g_sprite.mesh = g_meshes["sprite"];
 }
 
-INTERNAL void generateWorld()
-{
-	g_rootNode.onStart();
-}
+INTERNAL void generateWorld() { g_rootNode.onStart(); }
 
 INTERNAL void loadInstances()
 {
@@ -159,9 +161,10 @@ INTERNAL void loadInstances()
 
 		player->name = "player";
 		player->transform.position = {4, 0.5, 4};
-		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
+		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0}) *
+		                                angleAxis(Degree(-30), {1, 0, 0});
 		player->addComponent<MeshRenderer>(g_sprite);
-		//player->addComponent<FaceCamera>(g_cameraWorld);
+		// player->addComponent<FaceCamera>(g_cameraWorld);
 
 		g_player = player.get();
 
@@ -171,7 +174,7 @@ INTERNAL void loadInstances()
 	{
 		auto level = make_unique<Level>();
 
-		level->material = g_materials["terrain"];
+		level->material = &g_materials["terrain"];
 		level->generate();
 
 		g_level = level.get();
@@ -187,8 +190,8 @@ INTERNAL void loadInstances()
 
 	// Init Camera
 	g_cameraPlayer.transform.position = {3, 2, 3};
-	g_cameraPlayer.transform.orientation = angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
-
+	g_cameraPlayer.transform.orientation =
+	    angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
 
 	g_cameraPlayer.fieldOfView = Degree(50.0f);
 	g_cameraPlayer.orthoScale = 8;
@@ -351,19 +354,20 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
-	g_light.position.x = 4.0f + 1.0f*Math::cos(1.0f * Radian(Input::getTime()));
+	g_light.position.x =
+	    4.0f + 1.0f * Math::cos(1.0f * Radian(Input::getTime()));
 	g_light.position.y = 0.5f;
-	g_light.position.z = 4.0f + 1.0f*Math::sin(1.0f * Radian(Input::getTime()));
-
+	g_light.position.z =
+	    4.0f + 1.0f * Math::sin(1.0f * Radian(Input::getTime()));
 
 	g_cameraPlayer.transform.position.x =
-		Math::lerp(g_cameraPlayer.transform.position.x,
-	         g_player->transform.position.x,
-	         10.0f * dt);
+	    Math::lerp(g_cameraPlayer.transform.position.x,
+	               g_player->transform.position.x,
+	               10.0f * dt);
 	g_cameraPlayer.transform.position.z =
-		Math::lerp(g_cameraPlayer.transform.position.z,
-	         g_player->transform.position.z,
-	         10.0f * dt);
+	    Math::lerp(g_cameraPlayer.transform.position.z,
+	               g_player->transform.position.z,
+	               10.0f * dt);
 
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =
@@ -417,12 +421,29 @@ INTERNAL void update(f32 dt)
 
 INTERNAL void render()
 {
+	LOCAL_PERSIST RenderTexture* rt = new RenderTexture();
+
+	rt->create(64, 64, RenderTexture::ColorAndDepth);
+	rt->setActive(true);
 	{
-		Vector2 fbSize = Window::getFramebufferSize();
-		glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
+		glViewport(0, 0, rt->width, rt->height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		g_renderer.reset();
+		g_renderer.currentCamera = g_currentCamera;
+		g_renderer.draw(g_rootNode);
+
+		g_renderer.addPointLight(&g_light);
+
+		g_renderer.renderAll();
 	}
+	rt->setActive(false);
+
+	g_materials["cat"].diffuseMap = &rt->colorTexture;
+
+	Vector2 fbSize = Window::getFramebufferSize();
+	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
-	// glClearColor(0.5f, 0.69f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	g_renderer.reset();

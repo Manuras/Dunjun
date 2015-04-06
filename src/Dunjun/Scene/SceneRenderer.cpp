@@ -61,8 +61,8 @@ namespace Dunjun
 		std::sort(std::begin(m_modelInstances), std::end(m_modelInstances),
 				  [](const ModelInstance& a, const ModelInstance& b) -> bool
 		{
-			const auto& A = a.meshRenderer->material;
-			const auto& B = b.meshRenderer->material;
+			const auto& A = *a.meshRenderer->material;
+			const auto& B = *b.meshRenderer->material;
 
 			if (A.shaders == B.shaders)
 				return A.diffuseMap < B.diffuseMap;
@@ -73,10 +73,9 @@ namespace Dunjun
 
 		for (const auto& inst : m_modelInstances)
 		{
-			if (setShaders(inst.meshRenderer->material.shaders))
+			const Material& material = *inst.meshRenderer->material;
+			if (setShaders(material.shaders))
 			{
-				const Material& material = inst.meshRenderer->material;
-
 				m_currentShaders->setUniform("u_camera", currentCamera->getMatrix());
 				m_currentShaders->setUniform("u_cameraPosition", currentCamera->transform.position);
 
@@ -105,7 +104,7 @@ namespace Dunjun
 
 				m_currentShaders->setUniform("u_light.range", light->range);
 			}
-			setTexture(inst.meshRenderer->material.diffuseMap, 0);
+			setTexture(material.diffuseMap, 0);
 
 			m_currentShaders->setUniform("u_transform", inst.transform);
 
