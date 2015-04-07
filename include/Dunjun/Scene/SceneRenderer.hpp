@@ -5,6 +5,7 @@
 #include <Dunjun/Camera.hpp>
 #include <Dunjun/ModelAsset.hpp>
 #include <Dunjun/Scene/Lighting.hpp>
+#include <Dunjun/RenderTexture.hpp>
 #include <Dunjun/GBuffer.hpp>
 
 #include <deque>
@@ -38,20 +39,14 @@ public:
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
-
 	void addPointLight(const PointLight* light);
 
 	void renderAll();
 
 	void deferredGeometryPass();
-
+	void deferredLightPass();
 
 	void setCamera(const Camera& camera);
-
-	const Camera* currentCamera = nullptr;
-
-	std::deque<ModelInstance> modelInstances;
-	std::deque<const PointLight*> pointsLights;
 
 	inline void createGBuffer(u32 width, u32 height)
 	{
@@ -72,7 +67,17 @@ public:
 		return *m_gBuffer.get();
 	}
 
+	const Camera* camera = nullptr;
+
 	const ShaderProgram* geometryPassShaders = nullptr;
+	const ShaderProgram* pointLightShaders = nullptr;
+
+	const Mesh* quad;
+
+	std::unique_ptr<RenderTexture> lightingTexture;
+
+	std::deque<ModelInstance> modelInstances;
+	std::deque<const PointLight*> pointsLights;
 
 private:
 	bool setShaders(const ShaderProgram* shaders);

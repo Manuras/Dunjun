@@ -266,5 +266,7 @@
     <None Include="data\shaders\texPass.vert.glsl" />
     <None Include="data\shaders\deferredGeometryPass.vert.glsl" />
     <None Include="data\shaders\deferredGeometryPass.frag.glsl" />
+    <None Include="data\shaders\deferredLightPass.vert.glsl" />
+    <None Include="data\shaders\deferredPointLight.frag.glsl" />
   </ItemGroup>
 </Project>

@@ -45,10 +45,10 @@ GLOBAL Camera g_cameraWorld;
 
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
-GLOBAL ShaderProgram* g_defaultShader;
-GLOBAL ShaderProgram* g_texPassShader;
-GLOBAL ShaderProgram* g_deferredGeometryPassShader;
-
+GLOBAL std::unique_ptr<ShaderProgram> g_defaultShaders;
+GLOBAL std::unique_ptr<ShaderProgram> g_texPassShaders;
+GLOBAL std::unique_ptr<ShaderProgram> g_deferredGeometryPassShaders;
+GLOBAL std::unique_ptr<ShaderProgram> g_pointLightShaders;
 
 GLOBAL ModelAsset g_sprite;
 
@@ -62,7 +62,7 @@ GLOBAL std::map<std::string, Mesh*> g_meshes;
 
 GLOBAL Level* g_level;
 
-GLOBAL PointLight g_light;
+GLOBAL std::vector<PointLight> g_lights;
 
 namespace Game
 {
@@ -98,100 +98,133 @@ INTERNAL void handleInput()
 INTERNAL void loadShaders()
 {
 	{
-		g_defaultShader = new ShaderProgram();
-		if (!g_defaultShader->attachShaderFromFile(
+		g_defaultShaders = make_unique<ShaderProgram>();
+		if (!g_defaultShaders->attachShaderFromFile(
 			ShaderType::Vertex, "data/shaders/default.vert.glsl"))
-			throw std::runtime_error(g_defaultShader->errorLog);
+			throw std::runtime_error(g_defaultShaders->errorLog);
 
-		if (!g_defaultShader->attachShaderFromFile(
+		if (!g_defaultShaders->attachShaderFromFile(
 			ShaderType::Fragment, "data/shaders/default.frag.glsl"))
-			throw std::runtime_error(g_defaultShader->errorLog);
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Position,
+			throw std::runtime_error(g_defaultShaders->errorLog);
+		g_defaultShaders->bindAttribLocation((u32)AtrribLocation::Position,
 											"a_position");
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+		g_defaultShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
 											"a_texCoord");
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal,
+		g_defaultShaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+		g_defaultShaders->bindAttribLocation((u32)AtrribLocation::Normal,
 											"a_normal");
 
-		if (!g_defaultShader->link())
-			throw std::runtime_error(g_defaultShader->errorLog);
+		if (!g_defaultShaders->link())
+			throw std::runtime_error(g_defaultShaders->errorLog);
 	}
 	{
-		g_texPassShader = new ShaderProgram();
-		if (!g_texPassShader->attachShaderFromFile(
+		g_texPassShaders = make_unique<ShaderProgram>();
+		if (!g_texPassShaders->attachShaderFromFile(
 		        ShaderType::Vertex, "data/shaders/texPass.vert.glsl"))
-			throw std::runtime_error(g_texPassShader->errorLog);
+			throw std::runtime_error(g_texPassShaders->errorLog);
 
-		if (!g_texPassShader->attachShaderFromFile(
+		if (!g_texPassShaders->attachShaderFromFile(
 		        ShaderType::Fragment, "data/shaders/texPass.frag.glsl"))
-			throw std::runtime_error(g_texPassShader->errorLog);
-		g_texPassShader->bindAttribLocation((u32)AtrribLocation::Position,
+			throw std::runtime_error(g_texPassShaders->errorLog);
+		g_texPassShaders->bindAttribLocation((u32)AtrribLocation::Position,
 		                                    "a_position");
-		g_texPassShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+		g_texPassShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
 		                                    "a_texCoord");
 
-		if (!g_texPassShader->link())
-			throw std::runtime_error(g_texPassShader->errorLog);
+		if (!g_texPassShaders->link())
+			throw std::runtime_error(g_texPassShaders->errorLog);
 	}
 	{
-		g_deferredGeometryPassShader = new ShaderProgram();
-		if (!g_deferredGeometryPassShader->attachShaderFromFile(
+		g_deferredGeometryPassShaders = make_unique<ShaderProgram>();
+		if (!g_deferredGeometryPassShaders->attachShaderFromFile(
 			ShaderType::Vertex, "data/shaders/deferredGeometryPass.vert.glsl"))
-			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
+			throw std::runtime_error(g_deferredGeometryPassShaders->errorLog);
 
-		if (!g_deferredGeometryPassShader->attachShaderFromFile(
+		if (!g_deferredGeometryPassShaders->attachShaderFromFile(
 			ShaderType::Fragment, "data/shaders/deferredGeometryPass.frag.glsl"))
-			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
-		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Position,
+			throw std::runtime_error(g_deferredGeometryPassShaders->errorLog);
+		g_deferredGeometryPassShaders->bindAttribLocation((u32)AtrribLocation::Position,
 											"a_position");
-		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+		g_deferredGeometryPassShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
 											"a_texCoord");
-		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Normal,
+		g_deferredGeometryPassShaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+		g_deferredGeometryPassShaders->bindAttribLocation((u32)AtrribLocation::Normal,
 											"a_normal");
 
-		if (!g_deferredGeometryPassShader->link())
-			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
+		if (!g_deferredGeometryPassShaders->link())
+			throw std::runtime_error(g_deferredGeometryPassShaders->errorLog);
+	}
+	{
+		g_pointLightShaders = make_unique<ShaderProgram>();
+		if (!g_pointLightShaders->attachShaderFromFile(
+			ShaderType::Vertex, "data/shaders/deferredLightPass.vert.glsl"))
+			throw std::runtime_error(g_pointLightShaders->errorLog);
+
+		if (!g_pointLightShaders->attachShaderFromFile(
+			ShaderType::Fragment, "data/shaders/deferredPointLight.frag.glsl"))
+			throw std::runtime_error(g_pointLightShaders->errorLog);
+		g_pointLightShaders->bindAttribLocation((u32)AtrribLocation::Position,
+											"a_position");
+		g_pointLightShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
+											"a_texCoord");
+
+		if (!g_pointLightShaders->link())
+			throw std::runtime_error(g_pointLightShaders->errorLog);
 	}
 }
 INTERNAL void loadMaterials()
 {
-	g_materials["default"].shaders = g_defaultShader;
+	g_materials["default"].shaders = g_defaultShaders.get();
 	g_materials["default"].diffuseMap = new Texture();
 	g_materials["default"].diffuseMap->loadFromFile(
 	    "data/textures/default.png");
 
-	g_materials["cat"].shaders = g_defaultShader;
+	g_materials["cat"].shaders = g_defaultShaders.get();
 	g_materials["cat"].diffuseMap = new Texture();
 	g_materials["cat"].diffuseMap->loadFromFile("data/textures/kitten.jpg");
 	g_materials["cat"].specularExponent = 100000;
 
-	g_materials["stone"].shaders = g_defaultShader;
+	g_materials["stone"].shaders = g_defaultShaders.get();
 	g_materials["stone"].diffuseMap = new Texture();
 	g_materials["stone"].diffuseMap->loadFromFile("data/textures/stone.png",
 	                                              TextureFilter::Nearest);
 
-	g_materials["terrain"].shaders = g_defaultShader;
+	g_materials["terrain"].shaders = g_defaultShaders.get();
 	g_materials["terrain"].diffuseMap = new Texture();
 	g_materials["terrain"].diffuseMap->loadFromFile("data/textures/terrain.png",
 	                                                TextureFilter::Nearest);
 }
 INTERNAL void loadSpriteAsset()
 {
-	Mesh::Data meshData;
-	meshData.vertices.append({-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f})
-	    .append({+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f})
-	    .append({+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f})
-	    .append({-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f});
+	{
+		Mesh::Data meshData;
+		meshData.vertices //
+			.append({-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f})
+			.append({+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f})
+			.append({+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f})
+			.append({-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f});
 
-	meshData.addFace(0, 1, 2).addFace(2, 3, 0);
-	meshData.generateNormals();
+		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
+		meshData.generateNormals();
 
-	g_meshes["sprite"] = new Mesh(meshData);
+		g_meshes["sprite"] = new Mesh(meshData);
 
-	g_sprite.material = &g_materials["cat"];
-	g_sprite.mesh = g_meshes["sprite"];
+		g_sprite.material = &g_materials["cat"];
+		g_sprite.mesh = g_meshes["sprite"];
+	}
+	{
+		Mesh::Data meshData;
+		meshData.vertices //
+			.append({-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f})
+			.append({+1.0f, -1.0f, 0.0f}, {1.0f, 0.0f})
+			.append({+1.0f, +1.0f, 0.0f}, {1.0f, 1.0f})
+			.append({-1.0f, +1.0f, 0.0f}, {0.0f, 1.0f});
+
+		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
+		meshData.generateNormals();
+
+		g_meshes["quad"] = new Mesh(meshData);
+	}
 }
 
 INTERNAL void generateWorld() { g_rootNode.onStart(); }
@@ -225,9 +258,23 @@ INTERNAL void loadInstances()
 		g_rootNode.attachChild(std::move(level));
 	}
 
-	g_light.position = {4, 1.5, 4};
-	g_light.brightness = 10.0f;
-	g_light.calculateRange();
+	Random random;
+	for (int i = 0; i < 50; i++)
+	{
+		PointLight light;
+		light.position.x = random.getFloat(-15, 15);
+		light.position.y = random.getFloat(0.5, 2.5);
+		light.position.z = random.getFloat(-15, 15);
+
+		light.brightness = 0.4;
+
+		light.color.r = random.getInt(50, 255);
+		light.color.g = random.getInt(50, 255);
+		light.color.b = random.getInt(50, 255);
+
+
+		g_lights.push_back(light);
+	}
 
 	// Init Camera
 	g_cameraPlayer.transform.position = {5, 2, 5};
@@ -395,10 +442,6 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
-	g_light.position.x = 5.0f;
-	g_light.position.y = 0.5f;
-	g_light.position.z = 5.0f;
-
 	g_cameraPlayer.transform.position.x =
 	    Math::lerp(g_cameraPlayer.transform.position.x,
 	               g_player->transform.position.x,
@@ -460,33 +503,25 @@ INTERNAL void update(f32 dt)
 
 INTERNAL void render()
 {
-	LOCAL_PERSIST RenderTexture* rt = new RenderTexture();
-
 	g_renderer.reset();
 	g_renderer.clearAll();
 	g_renderer.addSceneGraph(g_rootNode);
-	g_renderer.addPointLight(&g_light);
-	g_renderer.currentCamera = g_currentCamera;
-	g_renderer.geometryPassShaders = g_deferredGeometryPassShader;
+
+	for (const auto& light : g_lights)
+		g_renderer.addPointLight(&light);
+
+	g_renderer.camera = g_currentCamera;
+	g_renderer.geometryPassShaders = g_deferredGeometryPassShaders.get();
+	g_renderer.pointLightShaders = g_pointLightShaders.get();
+	g_renderer.quad = g_meshes["quad"];
 
 	Vector2 fbSize = Window::getFramebufferSize();
-
-	rt->create(fbSize.x, fbSize.y);
-	RenderTexture::bind(rt);
-	{
-		glViewport(0, 0, rt->width, rt->height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		g_renderer.renderAll();
-
-		glFlush();
-	}
-	RenderTexture::unbind(rt);
-	g_renderer.reset();
 
 	g_renderer.createGBuffer(fbSize.x, fbSize.y);
 
 	g_renderer.deferredGeometryPass();
+
+	g_renderer.deferredLightPass();
 
 
 
@@ -497,13 +532,13 @@ INTERNAL void render()
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	g_texPassShader->use();
-	g_texPassShader->setUniform("u_tex", 0);
-	g_texPassShader->setUniform("u_scale", Vector3(2.0f));
+	g_texPassShaders->use();
+	g_texPassShaders->setUniform("u_tex", 0);
+	g_texPassShaders->setUniform("u_scale", Vector3(1.0f));
 
-	Texture::bind(&rt->colorTexture, 0);
+	Texture::bind(&g_renderer.lightingTexture->colorTexture, 0);
 
-	g_renderer.draw(g_meshes["sprite"]);
+	g_renderer.draw(g_meshes["quad"]);
 
 	Window::swapBuffers();
 }
@@ -580,6 +615,9 @@ void run()
 
 void cleanup()
 {
+	for (auto& mesh : g_meshes)
+		delete mesh.second;
+
 	Input::cleanup();
 	Window::cleanup();
 }
