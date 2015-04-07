@@ -264,5 +264,7 @@
     <None Include="TODO.md" />
     <None Include="data\shaders\texPass.frag.glsl" />
     <None Include="data\shaders\texPass.vert.glsl" />
+    <None Include="data\shaders\deferredGeometryPass.vert.glsl" />
+    <None Include="data\shaders\deferredGeometryPass.frag.glsl" />
   </ItemGroup>
 </Project>

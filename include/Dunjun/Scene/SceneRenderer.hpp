@@ -5,8 +5,11 @@
 #include <Dunjun/Camera.hpp>
 #include <Dunjun/ModelAsset.hpp>
 #include <Dunjun/Scene/Lighting.hpp>
+#include <Dunjun/GBuffer.hpp>
 
 #include <deque>
+
+#include <Dunjun/Window.hpp>
 
 namespace Dunjun
 {
@@ -40,9 +43,36 @@ public:
 
 	void renderAll();
 
+	void deferredGeometryPass();
+
+
 	void setCamera(const Camera& camera);
 
 	const Camera* currentCamera = nullptr;
+
+	std::deque<ModelInstance> modelInstances;
+	std::deque<const PointLight*> pointsLights;
+
+	inline void createGBuffer(u32 width, u32 height)
+	{
+		if (m_gBuffer == nullptr)
+			m_gBuffer = make_unique<GBuffer>();
+
+		m_gBuffer->create(width, height);
+	}
+
+	inline GBuffer& getGBuffer()
+	{
+		if (m_gBuffer == nullptr)
+		{
+			auto fbSize = Window::getFramebufferSize();
+			createGBuffer(fbSize.x, fbSize.y);
+		}
+
+		return *m_gBuffer.get();
+	}
+
+	const ShaderProgram* geometryPassShaders = nullptr;
 
 private:
 	bool setShaders(const ShaderProgram* shaders);
@@ -52,8 +82,9 @@ private:
 	const ShaderProgram* m_currentShaders = nullptr;
 	const Texture* m_currentTexture = nullptr;
 
-	std::deque<ModelInstance> m_modelInstances;
-	std::deque<const PointLight*> m_pointsLights;
+	std::unique_ptr<GBuffer> m_gBuffer = nullptr;
+
+
 };
 } // namespace Dunjun
 

@@ -25,7 +25,7 @@ public:
 
 	Texture diffuse;  // diffuse color (rgb)
 	Texture specular; // specular color (rgb), smootness (a)
-	Texture world;    // world normal (rgb)
+	Texture normal;    // world normal (rgb)
 	// TODO(bill): emission RT
 	// Texture emission;
 	Texture depth;

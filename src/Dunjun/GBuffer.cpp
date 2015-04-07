@@ -53,8 +53,8 @@ namespace Dunjun
 						 (GLsizei)h,
 						 0,
 						 format,
-						 GL_UNSIGNED_BYTE,
-						 0);
+						 type,
+						 nullptr);
 			tex.width = w;
 			tex.height = h;
 
@@ -70,12 +70,13 @@ namespace Dunjun
 									tex.m_object,
 									0);
 
-			drawBuffers.push_back(attactment);
+			if (attactment != GL_DEPTH_ATTACHMENT_EXT)
+				drawBuffers.push_back(attactment);
 		};
 
-		addRT(diffuse, GL_COLOR_ATTACHMENT0_EXT, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-		addRT(specular, GL_COLOR_ATTACHMENT1_EXT, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-		addRT(world, GL_COLOR_ATTACHMENT2_EXT, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+		addRT(diffuse, GL_COLOR_ATTACHMENT0_EXT, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
+		addRT(specular, GL_COLOR_ATTACHMENT1_EXT, GL_RGBA8, GL_RGB, GL_UNSIGNED_BYTE);
+		addRT(normal, GL_COLOR_ATTACHMENT2_EXT, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
 		addRT(depth, GL_DEPTH_ATTACHMENT_EXT, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 
 		glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
@@ -91,13 +92,11 @@ namespace Dunjun
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 		return true;
-
 	}
 
 	void GBuffer::bind(const GBuffer* b)
 	{
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, b != nullptr ? b->fbo : 0);
-
 	}
 
 	void GBuffer::unbind(const GBuffer* b)

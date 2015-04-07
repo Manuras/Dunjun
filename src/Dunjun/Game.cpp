@@ -47,6 +47,8 @@ GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
 GLOBAL ShaderProgram* g_defaultShader;
 GLOBAL ShaderProgram* g_texPassShader;
+GLOBAL ShaderProgram* g_deferredGeometryPassShader;
+
 
 GLOBAL ModelAsset g_sprite;
 
@@ -131,6 +133,26 @@ INTERNAL void loadShaders()
 
 		if (!g_texPassShader->link())
 			throw std::runtime_error(g_texPassShader->errorLog);
+	}
+	{
+		g_deferredGeometryPassShader = new ShaderProgram();
+		if (!g_deferredGeometryPassShader->attachShaderFromFile(
+			ShaderType::Vertex, "data/shaders/deferredGeometryPass.vert.glsl"))
+			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
+
+		if (!g_deferredGeometryPassShader->attachShaderFromFile(
+			ShaderType::Fragment, "data/shaders/deferredGeometryPass.frag.glsl"))
+			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
+		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Position,
+											"a_position");
+		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+											"a_texCoord");
+		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+		g_deferredGeometryPassShader->bindAttribLocation((u32)AtrribLocation::Normal,
+											"a_normal");
+
+		if (!g_deferredGeometryPassShader->link())
+			throw std::runtime_error(g_deferredGeometryPassShader->errorLog);
 	}
 }
 INTERNAL void loadMaterials()
@@ -373,11 +395,9 @@ INTERNAL void update(f32 dt)
 		}
 	}
 
-	g_light.position.x =
-	    4.0f + 1.0f * Math::cos(1.0f * Radian(Input::getTime()));
+	g_light.position.x = 5.0f;
 	g_light.position.y = 0.5f;
-	g_light.position.z =
-	    4.0f + 1.0f * Math::sin(1.0f * Radian(Input::getTime()));
+	g_light.position.z = 5.0f;
 
 	g_cameraPlayer.transform.position.x =
 	    Math::lerp(g_cameraPlayer.transform.position.x,
@@ -441,14 +461,13 @@ INTERNAL void update(f32 dt)
 INTERNAL void render()
 {
 	LOCAL_PERSIST RenderTexture* rt = new RenderTexture();
-	LOCAL_PERSIST GBuffer* gb = new GBuffer();
-
 
 	g_renderer.reset();
 	g_renderer.clearAll();
 	g_renderer.addSceneGraph(g_rootNode);
 	g_renderer.addPointLight(&g_light);
 	g_renderer.currentCamera = g_currentCamera;
+	g_renderer.geometryPassShaders = g_deferredGeometryPassShader;
 
 	Vector2 fbSize = Window::getFramebufferSize();
 
@@ -464,24 +483,15 @@ INTERNAL void render()
 	}
 	RenderTexture::unbind(rt);
 	g_renderer.reset();
-	g_renderer.currentCamera = g_currentCamera;
 
-	gb->create(fbSize.x, fbSize.y);
-	GBuffer::bind(gb);
-	{
-		glViewport(0, 0, rt->width, rt->height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	g_renderer.createGBuffer(fbSize.x, fbSize.y);
 
-		g_renderer.renderAll();
-
-		glFlush();
-	}
-	GBuffer::unbind(gb);
+	g_renderer.deferredGeometryPass();
 
 
 
 
-	g_materials["cat"].diffuseMap = &gb->diffuse;
+	g_materials["cat"].diffuseMap = &g_renderer.getGBuffer().diffuse;
 
 	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
