@@ -30,8 +30,6 @@ bool RenderTexture::create(u32 w,
 	width = w;
 	height = h;
 
-	glGenFramebuffersEXT(1, &fbo);
-
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo.data);
 
 	GLuint depthRenderBuffer;
@@ -107,7 +105,7 @@ bool RenderTexture::create(u32 w,
 	if (type.data & Color)
 		drawBuffers.push_back(GL_COLOR_ATTACHMENT0_EXT);
 	if (type.data & Depth)
-		drawBuffers.push_back(GL_DEPTH_COMPONENT);
+		drawBuffers.push_back(GL_DEPTH_ATTACHMENT);
 
 	glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
 
@@ -124,31 +122,14 @@ bool RenderTexture::create(u32 w,
 	return true;
 }
 
-void RenderTexture::setActive(bool active)
+void RenderTexture::bind(const RenderTexture* rt)
 {
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, active ? fbo.data : 0);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rt != nullptr ? rt->fbo : 0);
 }
 
-void RenderTexture::flush() { glFlush(); }
-
-void RenderTexture::bindTexture(TextureType type, GLuint position) const
+void RenderTexture::unbind(const RenderTexture* rt)
 {
-	if (position > 31)
-	{
-		std::cerr << "Textures can only be bount to position [0 ... 31]\n";
-		std::cerr << "Will bind to position [31]" << std::endl;
-		position = 31;
-	}
-
-	if (colorTexture.m_object && type == Color)
-		Texture::bind(&colorTexture, position);
-	else if (depthTexture.m_object && type == Depth)
-		Texture::bind(&depthTexture, position);
-	else if (colorTexture.m_object && depthTexture.m_object &&
-	         type == ColorAndDepth)
-		Texture::bind(&depthTexture, position);
-	else
-		Texture::bind(nullptr, position);
+	glFlush(); // Flush just in case
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
-
 } // namespace Dunjun

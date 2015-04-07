@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="src\Dunjun\Camera.cpp" />
     <ClCompile Include="src\Dunjun\Game.cpp" />
+    <ClCompile Include="src\Dunjun\GBuffer.cpp" />
     <ClCompile Include="src\Dunjun\Image.cpp" />
     <ClCompile Include="src\Dunjun\Input.cpp" />
     <ClCompile Include="src\Dunjun\Level\Level.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="include\Dunjun\Color.hpp" />
     <ClInclude Include="include\Dunjun\Common.hpp" />
     <ClInclude Include="include\Dunjun\Game.hpp" />
+    <ClInclude Include="include\Dunjun\GBuffer.hpp" />
     <ClInclude Include="include\Dunjun\RenderTexture.hpp" />
     <ClInclude Include="include\Dunjun\Image.hpp" />
     <ClInclude Include="include\Dunjun\Input.hpp" />
@@ -154,6 +156,8 @@
     <None Include="data\shaders\default.frag.glsl" />
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="cloc.bat" />
+    <None Include="data\shaders\texPass.frag.glsl" />
+    <None Include="data\shaders\texPass.vert.glsl" />
     <None Include="License.md" />
     <None Include="misc\cloc.bat" />
     <None Include="misc\Iridis Blue.vssettings" />

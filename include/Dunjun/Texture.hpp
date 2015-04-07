@@ -23,8 +23,6 @@ enum class TextureWrapMode : GLint
 	MirroredRepeat = GL_MIRRORED_REPEAT,
 };
 
-class RenderTexture;
-
 class Texture : private NonCopyable
 {
 public:
@@ -49,6 +47,7 @@ public:
 
 private:
 	friend class RenderTexture;
+	friend class GBuffer;
 
 	GLuint m_object;
 };

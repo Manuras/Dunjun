@@ -28,12 +28,15 @@ namespace Dunjun
 		m_currentMaterial = nullptr;
 
 		currentCamera = nullptr;
+	}
 
+	void SceneRenderer::clearAll()
+	{
 		m_modelInstances.clear();
 		m_pointsLights.clear();
 	}
 
-	void SceneRenderer::draw(const SceneNode& node, Transform t)
+	void SceneRenderer::addSceneGraph(const SceneNode& node, Transform t)
 	{
 		node.draw(*this, t);
 	}
@@ -69,7 +72,6 @@ namespace Dunjun
 			else
 				return A.shaders < B.shaders;
 		});
-
 
 		for (const auto& inst : m_modelInstances)
 		{
@@ -110,7 +112,6 @@ namespace Dunjun
 
 			draw(inst.meshRenderer->mesh);
 		}
-
 	}
 
 	bool SceneRenderer::setShaders(const ShaderProgram* shaders)

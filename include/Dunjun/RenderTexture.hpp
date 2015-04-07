@@ -22,14 +22,12 @@ public:
 
 	bool create(u32 width,
 	            u32 height,
-	            TextureType type,
+	            TextureType type = ColorAndDepth,
 	            TextureFilter minMagFilter = TextureFilter::Linear,
 	            TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge);
 
-	void setActive(bool active = true);
-	void flush();
-
-	void bindTexture(TextureType type, GLuint position) const;
+	GLOBAL void bind(const RenderTexture* rt);
+	GLOBAL void unbind(const RenderTexture* rt);
 
 	ReadOnly<u32, RenderTexture> width;
 	ReadOnly<u32, RenderTexture> height;

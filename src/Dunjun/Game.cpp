@@ -6,6 +6,8 @@
 #include <Dunjun/Input.hpp>
 
 #include <Dunjun/RenderTexture.hpp>
+#include <Dunjun/GBuffer.hpp>
+
 
 #include <Dunjun/Clock.hpp>
 #include <Dunjun/TickCounter.hpp>
@@ -44,7 +46,7 @@ GLOBAL Camera g_cameraWorld;
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
 GLOBAL ShaderProgram* g_defaultShader;
-GLOBAL ShaderProgram* g_passthroughShader;
+GLOBAL ShaderProgram* g_texPassShader;
 
 GLOBAL ModelAsset g_sprite;
 
@@ -93,24 +95,43 @@ INTERNAL void handleInput()
 
 INTERNAL void loadShaders()
 {
-	g_defaultShader = new ShaderProgram();
-	if (!g_defaultShader->attachShaderFromFile(
-	        ShaderType::Vertex, "data/shaders/default.vert.glsl"))
-		throw std::runtime_error(g_defaultShader->errorLog);
+	{
+		g_defaultShader = new ShaderProgram();
+		if (!g_defaultShader->attachShaderFromFile(
+			ShaderType::Vertex, "data/shaders/default.vert.glsl"))
+			throw std::runtime_error(g_defaultShader->errorLog);
 
-	if (!g_defaultShader->attachShaderFromFile(
-	        ShaderType::Fragment, "data/shaders/default.frag.glsl"))
-		throw std::runtime_error(g_defaultShader->errorLog);
-	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Position,
-	                                    "a_position");
-	g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
-	                                    "a_texCoord");
-	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-	g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal,
-	                                    "a_normal");
+		if (!g_defaultShader->attachShaderFromFile(
+			ShaderType::Fragment, "data/shaders/default.frag.glsl"))
+			throw std::runtime_error(g_defaultShader->errorLog);
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Position,
+											"a_position");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+											"a_texCoord");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+		g_defaultShader->bindAttribLocation((u32)AtrribLocation::Normal,
+											"a_normal");
 
-	if (!g_defaultShader->link())
-		throw std::runtime_error(g_defaultShader->errorLog);
+		if (!g_defaultShader->link())
+			throw std::runtime_error(g_defaultShader->errorLog);
+	}
+	{
+		g_texPassShader = new ShaderProgram();
+		if (!g_texPassShader->attachShaderFromFile(
+		        ShaderType::Vertex, "data/shaders/texPass.vert.glsl"))
+			throw std::runtime_error(g_texPassShader->errorLog);
+
+		if (!g_texPassShader->attachShaderFromFile(
+		        ShaderType::Fragment, "data/shaders/texPass.frag.glsl"))
+			throw std::runtime_error(g_texPassShader->errorLog);
+		g_texPassShader->bindAttribLocation((u32)AtrribLocation::Position,
+		                                    "a_position");
+		g_texPassShader->bindAttribLocation((u32)AtrribLocation::TexCoord,
+		                                    "a_texCoord");
+
+		if (!g_texPassShader->link())
+			throw std::runtime_error(g_texPassShader->errorLog);
+	}
 }
 INTERNAL void loadMaterials()
 {
@@ -122,6 +143,7 @@ INTERNAL void loadMaterials()
 	g_materials["cat"].shaders = g_defaultShader;
 	g_materials["cat"].diffuseMap = new Texture();
 	g_materials["cat"].diffuseMap->loadFromFile("data/textures/kitten.jpg");
+	g_materials["cat"].specularExponent = 100000;
 
 	g_materials["stone"].shaders = g_defaultShader;
 	g_materials["stone"].diffuseMap = new Texture();
@@ -160,9 +182,8 @@ INTERNAL void loadInstances()
 		auto player = make_unique<SceneNode>();
 
 		player->name = "player";
-		player->transform.position = {4, 0.5, 4};
-		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0}) *
-		                                angleAxis(Degree(-30), {1, 0, 0});
+		player->transform.position = {2, 0.5, 2};
+		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0});
 		player->addComponent<MeshRenderer>(g_sprite);
 		// player->addComponent<FaceCamera>(g_cameraWorld);
 
@@ -186,10 +207,8 @@ INTERNAL void loadInstances()
 	g_light.brightness = 10.0f;
 	g_light.calculateRange();
 
-	// a.transform.orientation = angleAxis(Degree(45), {0, 0, 1});
-
 	// Init Camera
-	g_cameraPlayer.transform.position = {3, 2, 3};
+	g_cameraPlayer.transform.position = {5, 2, 5};
 	g_cameraPlayer.transform.orientation =
 	    angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
 
@@ -422,37 +441,59 @@ INTERNAL void update(f32 dt)
 INTERNAL void render()
 {
 	LOCAL_PERSIST RenderTexture* rt = new RenderTexture();
+	LOCAL_PERSIST GBuffer* gb = new GBuffer();
 
-	rt->create(64, 64, RenderTexture::ColorAndDepth);
-	rt->setActive(true);
+
+	g_renderer.reset();
+	g_renderer.clearAll();
+	g_renderer.addSceneGraph(g_rootNode);
+	g_renderer.addPointLight(&g_light);
+	g_renderer.currentCamera = g_currentCamera;
+
+	Vector2 fbSize = Window::getFramebufferSize();
+
+	rt->create(fbSize.x, fbSize.y);
+	RenderTexture::bind(rt);
 	{
 		glViewport(0, 0, rt->width, rt->height);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		g_renderer.reset();
-		g_renderer.currentCamera = g_currentCamera;
-		g_renderer.draw(g_rootNode);
+		g_renderer.renderAll();
 
-		g_renderer.addPointLight(&g_light);
+		glFlush();
+	}
+	RenderTexture::unbind(rt);
+	g_renderer.reset();
+	g_renderer.currentCamera = g_currentCamera;
+
+	gb->create(fbSize.x, fbSize.y);
+	GBuffer::bind(gb);
+	{
+		glViewport(0, 0, rt->width, rt->height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		g_renderer.renderAll();
+
+		glFlush();
 	}
-	rt->setActive(false);
+	GBuffer::unbind(gb);
 
-	g_materials["cat"].diffuseMap = &rt->colorTexture;
 
-	Vector2 fbSize = Window::getFramebufferSize();
+
+
+	g_materials["cat"].diffuseMap = &gb->diffuse;
+
 	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	g_renderer.reset();
-	g_renderer.currentCamera = g_currentCamera;
-	g_renderer.draw(g_rootNode);
+	g_texPassShader->use();
+	g_texPassShader->setUniform("u_tex", 0);
+	g_texPassShader->setUniform("u_scale", Vector3(2.0f));
 
-	g_renderer.addPointLight(&g_light);
+	Texture::bind(&rt->colorTexture, 0);
 
-	g_renderer.renderAll();
+	g_renderer.draw(g_meshes["sprite"]);
 
 	Window::swapBuffers();
 }

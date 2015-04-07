@@ -6,7 +6,7 @@
 #include <Dunjun/ModelAsset.hpp>
 #include <Dunjun/Scene/Lighting.hpp>
 
-#include <vector>
+#include <deque>
 
 namespace Dunjun
 {
@@ -28,13 +28,14 @@ public:
 	{
 	}
 
-	void reset();
+	void reset(); // Reset all pointers
+	void clearAll(); // clear all containers
 
-	void draw(const SceneNode& node, Transform t = Transform());
+	void addSceneGraph(const SceneNode& node, Transform t = Transform());
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
-	
+
 	void addPointLight(const PointLight* light);
 
 	void renderAll();
@@ -47,12 +48,12 @@ private:
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, GLuint position);
 
-	std::vector<ModelInstance> m_modelInstances;
-	std::vector<const PointLight*> m_pointsLights;
-
 	const Material* m_currentMaterial = nullptr;
 	const ShaderProgram* m_currentShaders = nullptr;
 	const Texture* m_currentTexture = nullptr;
+
+	std::deque<ModelInstance> m_modelInstances;
+	std::deque<const PointLight*> m_pointsLights;
 };
 } // namespace Dunjun
 
