@@ -18,8 +18,9 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [Quaternions and Rotations in 3D](https://www.youtube.com/playlist?list=PL93bFkoCMJsmLfAhNyeXzhH-POMvBAn6y)
 * [Camera and Input](https://www.youtube.com/playlist?list=PL93bFkoCMJslgYPipJ-6k7jwRxlO6fyha)
 * [Mesh Creation](https://www.youtube.com/playlist?list=PL93bFkoCMJskXMQcGKayIfx50sIAepgz8)
-* [Level Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni)
+* [Model Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni)
 * [Scene Graphs and Component Based Design](https://www.youtube.com/playlist?list=PL93bFkoCMJslkX7gQb56j4phER1FmTRCV)
+* Lighting and Deferred Rendering
 
 ## Episode List ##
 
@@ -80,7 +81,7 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [033 - Finish Billboards and Start Mesh](https://www.youtube.com/watch?v=6MNVfDS59m0)
 * [034 - Materials and Meshes](https://www.youtube.com/watch?v=Fkl4qeuHT2A)
 
-### [Level Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni) ###
+### [Model Generation](https://www.youtube.com/playlist?list=PL93bFkoCMJskkGve-UUx9l7_adMAI9Vni) ###
 
 * [035 - Textured Tiled Room](https://www.youtube.com/watch?v=TMr1hDw6BoE)
 * [036 - Add Tile Surfaces and Random Tile Sets](https://www.youtube.com/watch?v=DhDtvNRFLkA)
@@ -107,7 +108,19 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 	- [a - Math Library](https://www.youtube.com/watch?v=2GzueWyIW4)
 	- [b - Doorways for Adjacent Rooms](https://www.youtube.com/watch?v=2GzueWyIW4M&t=736)
 * [054 - Distance Culling and Cone Culling](https://www.youtube.com/watch?v=CNWzlDofqJc)
-* 055 - Batch Rendering - Sorting by Material
+* [055 - Batch Rendering - Sorting by Material](https://www.youtube.com/watch?v=2xJXXbacL_8)
+
+### Lighting and Deferred Rendering ###
+
+* [056 - Diffuse Point Lighting](https://www.youtube.com/watch?v=vdRyBV4E4QY)
+* [057 - Point Light Implementation](https://www.youtube.com/watch?v=47lrKz_hAsE)
+* [058 - Ambience, Specularity, and Attenuation](https://www.youtube.com/watch?v=eNBq3hTi104)
+* [059 - Limit Light Range and Material Structure](https://www.youtube.com/watch?v=P2qFvrkdulU)
+* [060 - GLSL Material and Light Range Calculation](https://www.youtube.com/watch?v=McKbxvSYuLg)
+* [061 - RenderTexture](https://www.youtube.com/watch?v=AjPYDwmSMeY)
+* 062 - Deferred Shading & GBuffer
+* 063 - Deferred Geometry Pass
+* 064 - Deferred Point Lighting
 
 ## Contact ##
 
@@ -129,10 +142,11 @@ No! 99%<sup>1</sup> of the programming for the game is recorded in the videos; e
 
 ### What platforms will this game support? ###
 
-This game will support Windows, Mac OS X<sup>1</sup>, and Linux<sup>2</sup>.
+This game will support Windows, Mac OS X<sup>1</sup>, and Linux<sup>2</sup><sup>3</sup>.
 
 <sup>1</sup>*OS X 10.8+.*
 <sup>2</sup>*Including Steam OS.*
+<sup>3</sup>*Most likely Debian based systems only.*
 
 ### I have a problem with X... ###
 
