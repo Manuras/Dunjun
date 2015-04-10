@@ -64,6 +64,9 @@ inline T pseudo_cast(const U& x)
 	std::memcpy(&to, &x, (sizeof(T) < sizeof(U)) ? sizeof(T) : sizeof(U));
 	return to;
 }
+
+std::string resourcePath();
+
 } // namespace Dunjun
 
 #endif

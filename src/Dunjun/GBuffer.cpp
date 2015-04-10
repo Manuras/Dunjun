@@ -96,7 +96,7 @@ namespace Dunjun
 
 	void GBuffer::bind(const GBuffer* b)
 	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, b != nullptr ? b->fbo : 0);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, b != nullptr ? (int)b->fbo : 0);
 	}
 
 	void GBuffer::unbind(const GBuffer* b)

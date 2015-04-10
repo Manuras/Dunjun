@@ -62,13 +62,16 @@ namespace Dunjun
 		std::sort(std::begin(modelInstances), std::end(modelInstances),
 				  [](const ModelInstance& a, const ModelInstance& b) -> bool
 		{
-			const auto& A = *a.meshRenderer->material;
-			const auto& B = *b.meshRenderer->material;
+			const auto* A = a.meshRenderer->material;
+			const auto* B = b.meshRenderer->material;
 
-			if (A.shaders == B.shaders)
-				return A.diffuseMap < B.diffuseMap;
-			else
-				return A.shaders < B.shaders;
+			if (A != B)
+			{
+				if (A->shaders == B->shaders)
+					return A->diffuseMap < B->diffuseMap;
+				return A->shaders < B->shaders;
+			}
+			return false;
 		});
 
 		for (const auto& inst : modelInstances)
@@ -118,18 +121,47 @@ namespace Dunjun
 		std::sort(std::begin(modelInstances), std::end(modelInstances),
 				  [](const ModelInstance& a, const ModelInstance& b) -> bool
 		{
-			const auto& A = *a.meshRenderer->material;
-			const auto& B = *b.meshRenderer->material;
+			const auto* A = a.meshRenderer->material;
+			const auto* B = b.meshRenderer->material;
 
-			if (A.shaders == B.shaders)
-				return A.diffuseMap < B.diffuseMap;
-			else
-				return A.shaders < B.shaders;
+			if (A != B && A && B)
+			{
+				if (A->shaders == B->shaders)
+					return A->diffuseMap < B->diffuseMap;
+				return A->shaders < B->shaders;
+			}
+			return false;
 		});
 
-		GBuffer::bind(&getGBuffer());
+		if (geometryPassShaders == nullptr)
 		{
-			glViewport(0, 0, getGBuffer().width, getGBuffer().height);
+			geometryPassShaders = new ShaderProgram();
+
+			if (!geometryPassShaders->attachShaderFromFile(
+				ShaderType::Vertex, "data/shaders/deferredGeometryPass.vert.glsl"))
+				throw std::runtime_error(geometryPassShaders->errorLog);
+
+			if (!geometryPassShaders->attachShaderFromFile(
+				ShaderType::Fragment, "data/shaders/deferredGeometryPass.frag.glsl"))
+				throw std::runtime_error(geometryPassShaders->errorLog);
+			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Position,
+												"a_position");
+			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
+												"a_texCoord");
+			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
+			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Normal,
+												"a_normal");
+
+			if (!geometryPassShaders->link())
+				throw std::runtime_error(geometryPassShaders->errorLog);
+		}
+
+		assert(geometryPassShaders != nullptr);
+	
+
+		GBuffer::bind(getGBuffer());
+		{
+			glViewport(0, 0, getGBuffer()->width, getGBuffer()->height);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			geometryPassShaders->use();
@@ -138,14 +170,17 @@ namespace Dunjun
 			geometryPassShaders->setUniform("u_cameraPosition", camera->transform.position);
 			for (const auto& inst : modelInstances)
 			{
-				const Material& material = *inst.meshRenderer->material;
+				if (inst.meshRenderer->material == nullptr)
+					continue;
+
+
 				{
-					geometryPassShaders->setUniform("u_material.diffuseMap", (u32)0);
-					geometryPassShaders->setUniform("u_material.diffuseColor", material.diffuseColor);
-					geometryPassShaders->setUniform("u_material.specularColor", material.specularColor);
-					geometryPassShaders->setUniform("u_material.specularExponent", material.specularExponent);
+					geometryPassShaders->setUniform("u_material.diffuseMap", (int)0);
+					geometryPassShaders->setUniform("u_material.diffuseColor", inst.meshRenderer->material->diffuseColor);
+					geometryPassShaders->setUniform("u_material.specularColor", inst.meshRenderer->material->specularColor);
+					geometryPassShaders->setUniform("u_material.specularExponent", inst.meshRenderer->material->specularExponent);
 				}
-				setTexture(material.diffuseMap, 0);
+				setTexture(inst.meshRenderer->material->diffuseMap, 0);
 
 				geometryPassShaders->setUniform("u_transform", inst.transform);
 
@@ -154,7 +189,7 @@ namespace Dunjun
 
 			glFlush();
 		}
-		GBuffer::unbind(&getGBuffer());
+		GBuffer::bind(nullptr);
 	}
 
 	void SceneRenderer::deferredLightPass()
@@ -162,16 +197,17 @@ namespace Dunjun
 		assert(pointLightShaders != nullptr);
 
 		if (lightingTexture == nullptr)
-			lightingTexture = make_unique<RenderTexture>();
+			lightingTexture = new RenderTexture();
 
-		lightingTexture->create(getGBuffer().width, getGBuffer().height, RenderTexture::Color);
+		lightingTexture->create(getGBuffer()->width, getGBuffer()->height, RenderTexture::Color);
 
-		Texture::bind(&getGBuffer().diffuse,  0);
-		Texture::bind(&getGBuffer().specular, 1);
-		Texture::bind(&getGBuffer().normal,   2);
-		Texture::bind(&getGBuffer().depth,    3);
+		Texture::bind(&getGBuffer()->diffuse,  0);
+		Texture::bind(&getGBuffer()->specular, 1);
+		Texture::bind(&getGBuffer()->normal,   2);
+		Texture::bind(&getGBuffer()->depth,    3);
+		
 
-		RenderTexture::bind(lightingTexture.get());
+		RenderTexture::bind(lightingTexture);
 		{
 			glClearColor(0, 0, 0, 0);
 			glViewport(0, 0, lightingTexture->width, lightingTexture->height);
@@ -185,7 +221,9 @@ namespace Dunjun
 
 			pointLightShaders->setUniform("u_cameraInverse", inverse(camera->getMatrix()));
 
-
+			glDepthMask(GL_FALSE);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
 			for (const PointLight* light : pointsLights)
 			{
 				light->calculateRange();
@@ -206,20 +244,19 @@ namespace Dunjun
 				pointLightShaders->setUniform("u_light.attenuation.quadratic", light->attenuation.quadratic);
 
 				pointLightShaders->setUniform("u_light.range", light->range);
-
-				glDepthMask(GL_FALSE);
-				glEnable(GL_BLEND);
-				glBlendFunc(GL_ONE, GL_ONE);
-
+				
 				draw(quad);
-
-				glDisable(GL_BLEND);
-				glDepthMask(GL_TRUE);
 			}
+			glDisable(GL_BLEND);
+			glDepthMask(GL_TRUE);
 
 			pointLightShaders->stopUsing();
 		}
-		RenderTexture::unbind(lightingTexture.get());
+		RenderTexture::bind(nullptr);
+
+
+
+		
 	}
 
 	bool SceneRenderer::setShaders(const ShaderProgram* shaders)

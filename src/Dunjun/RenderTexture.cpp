@@ -124,7 +124,7 @@ bool RenderTexture::create(u32 w,
 
 void RenderTexture::bind(const RenderTexture* rt)
 {
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rt != nullptr ? rt->fbo : 0);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rt != nullptr ? (int)rt->fbo : 0);
 }
 
 void RenderTexture::unbind(const RenderTexture* rt)

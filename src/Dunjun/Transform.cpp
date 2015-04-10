@@ -47,7 +47,7 @@ Transform& operator/=(Transform& ws, const Transform& ps)
 // TODO(bill): inverse of Transform without division trick
 Transform inverse(const Transform& t)
 {
-	const Transform i;
+	const Transform i = Transform();
 	return i / t;
 }
 

@@ -30,6 +30,8 @@ public:
 
 	virtual ~SceneRenderer()
 	{
+		delete lightingTexture;
+		delete m_gBuffer;
 	}
 
 	void reset(); // Reset all pointers
@@ -51,12 +53,12 @@ public:
 	inline void createGBuffer(u32 width, u32 height)
 	{
 		if (m_gBuffer == nullptr)
-			m_gBuffer = make_unique<GBuffer>();
+			m_gBuffer = new GBuffer();
 
 		m_gBuffer->create(width, height);
 	}
 
-	inline GBuffer& getGBuffer()
+	inline GBuffer* getGBuffer()
 	{
 		if (m_gBuffer == nullptr)
 		{
@@ -64,17 +66,17 @@ public:
 			createGBuffer(fbSize.x, fbSize.y);
 		}
 
-		return *m_gBuffer.get();
+		return m_gBuffer;
 	}
 
 	const Camera* camera = nullptr;
 
-	const ShaderProgram* geometryPassShaders = nullptr;
+	ShaderProgram* geometryPassShaders = nullptr;
 	const ShaderProgram* pointLightShaders = nullptr;
 
 	const Mesh* quad;
 
-	std::unique_ptr<RenderTexture> lightingTexture;
+	RenderTexture* lightingTexture;
 
 	std::deque<ModelInstance> modelInstances;
 	std::deque<const PointLight*> pointsLights;
@@ -87,7 +89,7 @@ private:
 	const ShaderProgram* m_currentShaders = nullptr;
 	const Texture* m_currentTexture = nullptr;
 
-	std::unique_ptr<GBuffer> m_gBuffer = nullptr;
+	GBuffer* m_gBuffer = nullptr;
 
 
 };

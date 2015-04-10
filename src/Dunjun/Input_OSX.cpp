@@ -1,35 +1,14 @@
+#include <Dunjun/Config.hpp>
+#ifdef DUNJUN_SYSTEM_OSX
 #include <Dunjun/Input.hpp>
 
 #include <Dunjun/Window.hpp>
 #include <Dunjun/Game.hpp>
 
-#define VC_EXTRALEAN
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_MEAN_AND_LEAN
-#include <Windows.h>
-
-#include <Xinput.h>
-
-#include <array>
-
 namespace Dunjun
 {
 namespace Input
 {
-GLOBAL std::array<XINPUT_STATE, Gamepad_Count> g_gamepadStates;
-
-//// TODO(bill): scroll without callback?
-// GLOBAL f64 g_scrollX = 0;
-// GLOBAL f64 g_scrollY = 0;
-
-// INTERNAL void
-//    scrollCallback(GLFWwindow* window, f64 offsetX, f64 offsetY)
-//{
-//	g_scrollX += offsetX;
-//	g_scrollY += offsetY;
-
-//	printf("%f, %f\n\n", g_scrollX, g_scrollY);
-//}
 
 void setup()
 {
@@ -37,7 +16,7 @@ void setup()
 
 	for (int i = 0; i < Gamepad_Count; i++)
 	{
-		memset(&g_gamepadStates[i], 0, sizeof(XINPUT_STATE));
+		// memset(&g_gamepadStates[i], 0, sizeof(XINPUT_STATE));
 		if (isGamepadPresent((GamepadId)i))
 			setGamepadVibration((GamepadId)i, 0, 0);
 	}
@@ -80,7 +59,6 @@ bool isKeyPressed(Key key)
 {
 	int code = 0;
 
-	// NOTE(bill) IMPORTANT(bill): Do not use clang-format on this code
 	switch (key)
 	{
 	default:
@@ -453,28 +431,24 @@ void updateGamepads()
 
 bool isGamepadPresent(GamepadId gamepadId)
 {
-	if (gamepadId < Gamepad_Count)
-		return XInputGetState(gamepadId, &g_gamepadStates[gamepadId]) == 0;
-	return false;
+	return glfwJoystickPresent(GLFW_JOYSTICK_1 + (int)gamepadId);
 }
 
 GamepadAxes getGamepadAxes(GamepadId gamepadId)
 {
 	GamepadAxes axes;
 
-	axes.leftTrigger = g_gamepadStates[gamepadId].Gamepad.bLeftTrigger / 255.0f;
-	axes.rightTrigger =
-	    g_gamepadStates[gamepadId].Gamepad.bRightTrigger / 255.0f;
+	int count = 0;
+	const f32* glfwAxes = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + (int)gamepadId, &count);
 
-	axes.leftThumbstick.x =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbLX / 32767.0f;
-	axes.leftThumbstick.y =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbLY / 32767.0f;
-
-	axes.rightThumbstick.x =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbRX / 32767.0f;
-	axes.rightThumbstick.y =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbRY / 32767.0f;
+	if (count >= 3)
+	{
+		axes.leftThumbstick = Vector2(glfwAxes[0], glfwAxes[1]);
+		axes.rightThumbstick = Vector2(glfwAxes[2], glfwAxes[3]);
+		// TODO(bill): get the trigger values for an xbox controller on OSX
+		axes.leftTrigger = 0.0f;
+		axes.rightTrigger = 0.0f;
+	}
 
 	return axes;
 }
@@ -483,48 +457,29 @@ GamepadButtons getGamepadButtons(GamepadId gamepadId)
 {
 	GamepadButtons buttons((usize)XboxButton::Count);
 
-	buttons[(int)XboxButton::DpadUp] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_UP) != 0;
-	buttons[(int)XboxButton::DpadDown] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_DOWN) != 0;
-	buttons[(int)XboxButton::DpadLeft] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_LEFT) != 0;
-	buttons[(int)XboxButton::DpadRight] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
+	// TODO(bill): Get Gamepad button values for OSX
 
-	buttons[(int)XboxButton::Start] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_START) !=
-	    0;
-	buttons[(int)XboxButton::Back] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_BACK) !=
-	    0;
+	int count = 0;
+	const u8* glfwButtons = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + (int)gamepadId, &count);
 
-	buttons[(int)XboxButton::LeftThumb] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_LEFT_THUMB) != 0;
-	buttons[(int)XboxButton::RightThumb] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
+	buttons[(int)XboxButton::DpadUp] = false;
+	buttons[(int)XboxButton::DpadDown] = false;
+	buttons[(int)XboxButton::DpadLeft] = false;
+	buttons[(int)XboxButton::DpadRight] = false;
 
-	buttons[(int)XboxButton::LeftShoulder] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
-	buttons[(int)XboxButton::RightShoulder] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
+	buttons[(int)XboxButton::Start] = glfwButtons[9];
+	buttons[(int)XboxButton::Back] = glfwButtons[8];
 
-	buttons[(int)XboxButton::A] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
-	buttons[(int)XboxButton::B] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0;
-	buttons[(int)XboxButton::X] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0;
-	buttons[(int)XboxButton::Y] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0;
+	buttons[(int)XboxButton::LeftThumb] = glfwButtons[10];
+	buttons[(int)XboxButton::RightThumb] = glfwButtons[11];
+
+	buttons[(int)XboxButton::LeftShoulder] = glfwButtons[6];
+	buttons[(int)XboxButton::RightShoulder] = glfwButtons[7];
+
+	buttons[(int)XboxButton::A] = glfwButtons[2];
+	buttons[(int)XboxButton::B] = glfwButtons[1];
+	buttons[(int)XboxButton::X] = glfwButtons[3];
+	buttons[(int)XboxButton::Y] = glfwButtons[0];
 
 	return buttons;
 }
@@ -541,12 +496,7 @@ std::string getGamepadName(GamepadId gamepadId)
 
 void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor)
 {
-	XINPUT_VIBRATION vibration;
-
-	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotor * 0xFFFF);
-	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotor * 0xFFFF);
-
-	XInputSetState((u32)gamepadId, &vibration);
+	// TODO(bill): Set Gamepad vibration for OSX
 }
 
 // Clipboard
@@ -562,3 +512,5 @@ void setClipboardString(const std::string& str)
 
 } // namespace Input
 } // namespace Dunjun
+
+#endif

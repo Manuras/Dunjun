@@ -52,7 +52,7 @@ public:
 
 	inline Vertex& operator[](usize index) { return m_vertices[index]; }
 
-	inline const usize size() const { return m_vertices.size(); }
+	inline usize size() const { return m_vertices.size(); }
 
 private:
 	std::vector<Vertex> m_vertices;

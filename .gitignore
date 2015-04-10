@@ -60,6 +60,7 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
+*.o
 
 # Chutzpah Test files
 _Chutzpah*
@@ -183,6 +184,12 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
+
+# =========================
+# Sublime Text
+# =========================
+
+*.sublime-*
 
 # =========================
 # Operating System Files
