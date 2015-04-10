@@ -142,11 +142,12 @@ No! 99%<sup>1</sup> of the programming for the game is recorded in the videos; e
 
 ### What platforms will this game support? ###
 
-This game will support Windows, Mac OS X<sup>1</sup>, and Linux<sup>2</sup><sup>3</sup>.
+This game will support Windows<sup>1</sup>, Mac OS X<sup>2</sup>, and Linux<sup>3</sup><sup>4</sup>.
 
-<sup>1</sup>*OS X 10.8+.*
-<sup>2</sup>*Including Steam OS.*
-<sup>3</sup>*Most likely Debian based systems only.*
+<sup>1</sup>*XP and Above*
+<sup>2</sup>*OS X 10.8+.*
+<sup>3</sup>*Including Steam OS.*
+<sup>4</sup>*Most likely Debian based systems only.*
 
 ### I have a problem with X... ###
 

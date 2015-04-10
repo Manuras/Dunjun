@@ -94,12 +94,12 @@ struct EulerAngles
 	Radian roll;
 };
 
-inline Radian roll(const Quaternion& q);
-inline Radian pitch(const Quaternion& q);
-inline Radian yaw(const Quaternion& q);
+Radian roll(const Quaternion& q);
+Radian pitch(const Quaternion& q);
+Radian yaw(const Quaternion& q);
 
-inline EulerAngles quaternionToEulerAngles(const Quaternion& q);
-inline Quaternion eulerAnglesToQuaternion(const EulerAngles& e,
+EulerAngles quaternionToEulerAngles(const Quaternion& q);
+Quaternion eulerAnglesToQuaternion(const EulerAngles& e,
                                           const Vector3& xAxis = {1, 0, 0},
                                           const Vector3& yAxis = {0, 1, 0},
                                           const Vector3& zAxis = {0, 0, 1});

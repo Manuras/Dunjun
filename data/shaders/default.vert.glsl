@@ -26,7 +26,7 @@ varying vec3 v_color;
 varying vec3 v_normal;
 
 uniform mat4 u_camera;
-uniform Transform u_transform = {vec3(0), vec4(0, 0, 0, 1), vec3(1)};
+uniform Transform u_transform;
 
 void main()
 {

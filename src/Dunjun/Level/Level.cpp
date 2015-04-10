@@ -175,7 +175,5 @@ void Level::placeRooms(int floor)
 			roomCount++;
 		}
 	}
-
-	std::cout << roomCount << std::endl;
 }
 } // namespace Dunjun

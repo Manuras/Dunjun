@@ -45,10 +45,10 @@ GLOBAL Camera g_cameraWorld;
 
 GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
 
-GLOBAL std::unique_ptr<ShaderProgram> g_defaultShaders;
-GLOBAL std::unique_ptr<ShaderProgram> g_texPassShaders;
-GLOBAL std::unique_ptr<ShaderProgram> g_deferredGeometryPassShaders;
-GLOBAL std::unique_ptr<ShaderProgram> g_pointLightShaders;
+GLOBAL ShaderProgram* g_defaultShaders;
+GLOBAL ShaderProgram* g_texPassShaders;
+GLOBAL ShaderProgram* g_deferredGeometryPassShaders;
+GLOBAL ShaderProgram* g_pointLightShaders;
 
 GLOBAL ModelAsset g_sprite;
 
@@ -98,7 +98,7 @@ INTERNAL void handleInput()
 INTERNAL void loadShaders()
 {
 	{
-		g_defaultShaders = make_unique<ShaderProgram>();
+		g_defaultShaders = new ShaderProgram();
 		if (!g_defaultShaders->attachShaderFromFile(
 			ShaderType::Vertex, "data/shaders/default.vert.glsl"))
 			throw std::runtime_error(g_defaultShaders->errorLog);
@@ -118,7 +118,7 @@ INTERNAL void loadShaders()
 			throw std::runtime_error(g_defaultShaders->errorLog);
 	}
 	{
-		g_texPassShaders = make_unique<ShaderProgram>();
+		g_texPassShaders = new ShaderProgram();
 		if (!g_texPassShaders->attachShaderFromFile(
 		        ShaderType::Vertex, "data/shaders/texPass.vert.glsl"))
 			throw std::runtime_error(g_texPassShaders->errorLog);
@@ -135,7 +135,8 @@ INTERNAL void loadShaders()
 			throw std::runtime_error(g_texPassShaders->errorLog);
 	}
 	{
-		g_deferredGeometryPassShaders = make_unique<ShaderProgram>();
+		g_deferredGeometryPassShaders = new ShaderProgram();
+
 		if (!g_deferredGeometryPassShaders->attachShaderFromFile(
 			ShaderType::Vertex, "data/shaders/deferredGeometryPass.vert.glsl"))
 			throw std::runtime_error(g_deferredGeometryPassShaders->errorLog);
@@ -153,9 +154,10 @@ INTERNAL void loadShaders()
 
 		if (!g_deferredGeometryPassShaders->link())
 			throw std::runtime_error(g_deferredGeometryPassShaders->errorLog);
+
 	}
 	{
-		g_pointLightShaders = make_unique<ShaderProgram>();
+		g_pointLightShaders = new ShaderProgram();
 		if (!g_pointLightShaders->attachShaderFromFile(
 			ShaderType::Vertex, "data/shaders/deferredLightPass.vert.glsl"))
 			throw std::runtime_error(g_pointLightShaders->errorLog);
@@ -174,22 +176,22 @@ INTERNAL void loadShaders()
 }
 INTERNAL void loadMaterials()
 {
-	g_materials["default"].shaders = g_defaultShaders.get();
+	g_materials["default"].shaders = g_defaultShaders;
 	g_materials["default"].diffuseMap = new Texture();
 	g_materials["default"].diffuseMap->loadFromFile(
 	    "data/textures/default.png");
 
-	g_materials["cat"].shaders = g_defaultShaders.get();
+	g_materials["cat"].shaders = g_defaultShaders;
 	g_materials["cat"].diffuseMap = new Texture();
 	g_materials["cat"].diffuseMap->loadFromFile("data/textures/kitten.jpg");
 	g_materials["cat"].specularExponent = 100000;
 
-	g_materials["stone"].shaders = g_defaultShaders.get();
+	g_materials["stone"].shaders = g_defaultShaders;
 	g_materials["stone"].diffuseMap = new Texture();
 	g_materials["stone"].diffuseMap->loadFromFile("data/textures/stone.png",
 	                                              TextureFilter::Nearest);
 
-	g_materials["terrain"].shaders = g_defaultShaders.get();
+	g_materials["terrain"].shaders = g_defaultShaders;
 	g_materials["terrain"].diffuseMap = new Texture();
 	g_materials["terrain"].diffuseMap->loadFromFile("data/textures/terrain.png",
 	                                                TextureFilter::Nearest);
@@ -511,9 +513,14 @@ INTERNAL void render()
 		g_renderer.addPointLight(&light);
 
 	g_renderer.camera = g_currentCamera;
-	g_renderer.geometryPassShaders = g_deferredGeometryPassShaders.get();
-	g_renderer.pointLightShaders = g_pointLightShaders.get();
+	g_renderer.geometryPassShaders = g_deferredGeometryPassShaders;
+	g_renderer.pointLightShaders = g_pointLightShaders;
 	g_renderer.quad = g_meshes["quad"];
+
+	if (g_renderer.geometryPassShaders  == nullptr)
+	{
+		assert(false);
+	}
 
 	Vector2 fbSize = Window::getFramebufferSize();
 
@@ -523,10 +530,7 @@ INTERNAL void render()
 
 	g_renderer.deferredLightPass();
 
-
-
-
-	g_materials["cat"].diffuseMap = &g_renderer.getGBuffer().diffuse;
+	g_materials["cat"].diffuseMap = &g_renderer.getGBuffer()->diffuse;
 
 	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
@@ -617,6 +621,11 @@ void cleanup()
 {
 	for (auto& mesh : g_meshes)
 		delete mesh.second;
+
+	delete g_defaultShaders;
+	delete g_texPassShaders;
+	delete g_deferredGeometryPassShaders;
+	delete g_pointLightShaders;
 
 	Input::cleanup();
 	Window::cleanup();

@@ -1,0 +1,54 @@
+find-recursive =                                                               \
+	$(wildcard $1/$2)                                                          \
+	$(foreach f,$(wildcard $1/*/.),                                            \
+		$(call find-recursive,$(patsubst %/.,%,$f),$2))
+
+CC = clang++
+CFLAGS = -std=c++11 -stdlib=libc++                                             \
+         -Wextra                                                               \
+         -Wno-unused-function                                                  \
+         -Wno-unused-parameter                                                 \
+         -Wno-unused-variable                                                  \
+         -Wfatal-errors                                                        \
+         -Wno-overloaded-virtual                                               \
+         -Wsign-compare
+         #-Werror -Wextra -pedantic-errors to check for extra stuff
+
+# define any directories containing header files other than /usr/include
+INCLUDES = -Iinclude                                                           \
+           -I/usr/local/include                                                \
+           -Iexternal/stb-master/include
+LFLAGS =
+LIBS = -L/usr/local/lib                                                        \
+       -F/Library/Frameworks                                                   \
+       -framework Cocoa -framework OpenGL -framework IOKit                     \
+       -framework CoreFoundation                                               \
+       -lglew -lglfw
+
+# define the CPP source files
+SRCS = $(call find-recursive,src,*.cpp)
+OBJS = $(SRCS:.cpp=.o)
+
+MAIN = ./Dunjun
+
+.PHONY: depend clean
+
+all: $(MAIN)
+	@echo Dunjun has been compiled
+
+$(MAIN): $(OBJS) $(BUILD_NUMBER_FILE)
+	$(CC) $(CFLAGS) $(BUILD_NUMBER_LDFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS)     \
+	$(LFLAGS) $(LIBS)
+
+# this is a suffix replacement rule for building .o's from .cpp's
+# it uses automatic variables $<: the name of the prerequisite of
+# the rule(a .cpp file) and $@: the name of the target of the rule (a .o file)
+# (see the gnu make manual section about automatic variables)
+.cpp.o:
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
+
+clean:
+	$(RM) $(call find-recursive,src,*.o) *~ $(MAIN)
+
+depend: $(SRCS)
+	makedepend $(INCLUDES) $^

@@ -1,12 +1,14 @@
 #include <Dunjun/ShaderProgram.hpp>
 
+#include <Dunjun/Common.hpp>
+
 #include <fstream>
+#include <iostream>
 
 namespace Dunjun
 {
 // TODO(bill): Customize to be specific for shader files
-//             #include <> & #include ""
-//             // comments
+// #include <> & #include ""
 INTERNAL std::string stringFromFile(const std::string& filename)
 {
 	std::ifstream file;
@@ -77,7 +79,11 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 	if (status == GL_FALSE)
 	{
-		std::string msg("Compile failure in shader: \n");
+		std::string msg;
+		if (type == ShaderType::Vertex)
+			msg = "Compile failure in vertex shader: \n";
+		else if (type == ShaderType::Fragment)
+			msg = "Compile failure in fragment shader: \n";
 
 		GLint infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
