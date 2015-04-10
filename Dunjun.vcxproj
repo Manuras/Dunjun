@@ -75,10 +75,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Dunjun\Camera.cpp" />
+    <ClCompile Include="src\Dunjun\Common_OSX.cpp" />
+    <ClCompile Include="src\Dunjun\Common_Win32.cpp" />
     <ClCompile Include="src\Dunjun\Game.cpp" />
     <ClCompile Include="src\Dunjun\GBuffer.cpp" />
     <ClCompile Include="src\Dunjun\Image.cpp" />
-    <ClCompile Include="src\Dunjun\Input.cpp" />
+    <ClCompile Include="src\Dunjun\Input_OSX.cpp" />
+    <ClCompile Include="src\Dunjun\Input_Win32.cpp" />
     <ClCompile Include="src\Dunjun\Level\Level.cpp" />
     <ClCompile Include="src\Dunjun\Level\Room.cpp" />
     <ClCompile Include="src\Dunjun\Math\Constants.cpp" />
@@ -163,6 +166,7 @@
     <None Include="data\shaders\texPass.frag.glsl" />
     <None Include="data\shaders\texPass.vert.glsl" />
     <None Include="License.md" />
+    <None Include="Makefile_OSX" />
     <None Include="misc\cloc.bat" />
     <None Include="misc\Iridis Blue.vssettings" />
     <None Include="misc\shell.bat" />
@@ -170,6 +174,7 @@
     <None Include="misc\static_check.bat" />
     <None Include="misc\todo_check.bat" />
     <None Include="ReadMe.md" />
+    <None Include="ReadMe_OSX.md" />
     <None Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
