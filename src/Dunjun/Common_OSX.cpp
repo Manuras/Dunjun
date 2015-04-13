@@ -1,3 +1,4 @@
+#include <Dunjun/Config.hpp>
 #ifdef DUNJUN_SYSTEM_OSX
 #include <Dunjun/Common.hpp>
 

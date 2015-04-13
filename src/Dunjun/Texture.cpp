@@ -69,7 +69,6 @@ bool Texture::loadFromImage(const Image& image,
 	width = image.width;
 	height = image.height;
 
-	glGenTextures(1, &m_object);
 	glBindTexture(GL_TEXTURE_2D, m_object);
 	glTexParameteri(
 	    GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapMode));
@@ -95,7 +94,11 @@ bool Texture::loadFromImage(const Image& image,
 	return true;
 }
 
-Texture::~Texture() { glDeleteTextures(1, &m_object); }
+Texture::~Texture()
+{
+	if (m_object)
+		glDeleteTextures(1, &m_object);
+}
 
 void Texture::bind(const Texture* tex, GLuint position)
 {

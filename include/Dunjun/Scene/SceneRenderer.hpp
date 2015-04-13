@@ -71,9 +71,6 @@ public:
 
 	const Camera* camera = nullptr;
 
-	ShaderProgram* geometryPassShaders = nullptr;
-	const ShaderProgram* pointLightShaders = nullptr;
-
 	const Mesh* quad;
 
 	RenderTexture* lightingTexture;

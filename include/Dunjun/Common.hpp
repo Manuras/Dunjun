@@ -15,14 +15,6 @@
 #define INTERNAL static      // internal linkage
 #define LOCAL_PERSIST static // local persisting variables
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 namespace Dunjun
 {
 namespace
@@ -66,7 +58,5 @@ inline T pseudo_cast(const U& x)
 }
 
 std::string resourcePath();
-
 } // namespace Dunjun
-
 #endif

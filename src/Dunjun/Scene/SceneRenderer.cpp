@@ -3,6 +3,8 @@
 #include <Dunjun/Scene/SceneNode.hpp>
 #include <Dunjun/Scene/MeshRenderer.hpp>
 
+#include <Dunjun/ResourceHolders.hpp>
+
 
 #include <string>
 
@@ -133,41 +135,17 @@ namespace Dunjun
 			return false;
 		});
 
-		if (geometryPassShaders == nullptr)
-		{
-			geometryPassShaders = new ShaderProgram();
-
-			if (!geometryPassShaders->attachShaderFromFile(
-				ShaderType::Vertex, "data/shaders/deferredGeometryPass.vert.glsl"))
-				throw std::runtime_error(geometryPassShaders->errorLog);
-
-			if (!geometryPassShaders->attachShaderFromFile(
-				ShaderType::Fragment, "data/shaders/deferredGeometryPass.frag.glsl"))
-				throw std::runtime_error(geometryPassShaders->errorLog);
-			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Position,
-												"a_position");
-			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
-												"a_texCoord");
-			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-			geometryPassShaders->bindAttribLocation((u32)AtrribLocation::Normal,
-												"a_normal");
-
-			if (!geometryPassShaders->link())
-				throw std::runtime_error(geometryPassShaders->errorLog);
-		}
-
-		assert(geometryPassShaders != nullptr);
-	
+		auto& shaders = g_shaderHolder.get("deferredGeometryPass");
 
 		GBuffer::bind(getGBuffer());
 		{
 			glViewport(0, 0, getGBuffer()->width, getGBuffer()->height);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			geometryPassShaders->use();
+			shaders.use();
 
-			geometryPassShaders->setUniform("u_camera", camera->getMatrix());
-			geometryPassShaders->setUniform("u_cameraPosition", camera->transform.position);
+			shaders.setUniform("u_camera", camera->getMatrix());
+			shaders.setUniform("u_cameraPosition", camera->transform.position);
 			for (const auto& inst : modelInstances)
 			{
 				if (inst.meshRenderer->material == nullptr)
@@ -175,14 +153,14 @@ namespace Dunjun
 
 
 				{
-					geometryPassShaders->setUniform("u_material.diffuseMap", (int)0);
-					geometryPassShaders->setUniform("u_material.diffuseColor", inst.meshRenderer->material->diffuseColor);
-					geometryPassShaders->setUniform("u_material.specularColor", inst.meshRenderer->material->specularColor);
-					geometryPassShaders->setUniform("u_material.specularExponent", inst.meshRenderer->material->specularExponent);
+					shaders.setUniform("u_material.diffuseMap", (int)0);
+					shaders.setUniform("u_material.diffuseColor", inst.meshRenderer->material->diffuseColor);
+					shaders.setUniform("u_material.specularColor", inst.meshRenderer->material->specularColor);
+					shaders.setUniform("u_material.specularExponent", inst.meshRenderer->material->specularExponent);
 				}
 				setTexture(inst.meshRenderer->material->diffuseMap, 0);
 
-				geometryPassShaders->setUniform("u_transform", inst.transform);
+				shaders.setUniform("u_transform", inst.transform);
 
 				draw(inst.meshRenderer->mesh);
 			}
@@ -194,8 +172,6 @@ namespace Dunjun
 
 	void SceneRenderer::deferredLightPass()
 	{
-		assert(pointLightShaders != nullptr);
-
 		if (lightingTexture == nullptr)
 			lightingTexture = new RenderTexture();
 
@@ -213,13 +189,16 @@ namespace Dunjun
 			glViewport(0, 0, lightingTexture->width, lightingTexture->height);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			pointLightShaders->use();
-			pointLightShaders->setUniform("u_diffuse",  0);
-			pointLightShaders->setUniform("u_specular", 1);
-			pointLightShaders->setUniform("u_normal",   2);
-			pointLightShaders->setUniform("u_depth",    3);
 
-			pointLightShaders->setUniform("u_cameraInverse", inverse(camera->getMatrix()));
+			auto& shaders = g_shaderHolder.get("deferredPointLight");
+
+			shaders.use();
+			shaders.setUniform("u_diffuse",  0);
+			shaders.setUniform("u_specular", 1);
+			shaders.setUniform("u_normal",   2);
+			shaders.setUniform("u_depth",    3);
+
+			shaders.setUniform("u_cameraInverse", inverse(camera->getMatrix()));
 
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
@@ -236,27 +215,23 @@ namespace Dunjun
 				lightIntensities *= light->brightness;
 
 
-				pointLightShaders->setUniform("u_light.position", light->position);
-				pointLightShaders->setUniform("u_light.intensities", lightIntensities);
+				shaders.setUniform("u_light.position", light->position);
+				shaders.setUniform("u_light.intensities", lightIntensities);
 
-				pointLightShaders->setUniform("u_light.attenuation.constant", light->attenuation.constant);
-				pointLightShaders->setUniform("u_light.attenuation.linear", light->attenuation.linear);
-				pointLightShaders->setUniform("u_light.attenuation.quadratic", light->attenuation.quadratic);
+				shaders.setUniform("u_light.attenuation.constant", light->attenuation.constant);
+				shaders.setUniform("u_light.attenuation.linear", light->attenuation.linear);
+				shaders.setUniform("u_light.attenuation.quadratic", light->attenuation.quadratic);
 
-				pointLightShaders->setUniform("u_light.range", light->range);
+				shaders.setUniform("u_light.range", light->range);
 				
 				draw(quad);
 			}
 			glDisable(GL_BLEND);
 			glDepthMask(GL_TRUE);
 
-			pointLightShaders->stopUsing();
+			shaders.stopUsing();
 		}
 		RenderTexture::bind(nullptr);
-
-
-
-		
 	}
 
 	bool SceneRenderer::setShaders(const ShaderProgram* shaders)
