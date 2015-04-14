@@ -14,15 +14,4 @@ std::string resourcePath()
 		return std::string(executablePath) + "\\..\\";
 }
 } // namespace Dunjun
-
-#else
-#include <Dunjun/Common.hpp>
-
-namespace Dunjun
-{
-std::string resourcePath()
-{
-	return "";
-}
-} // namespace Dunjun
 #endif

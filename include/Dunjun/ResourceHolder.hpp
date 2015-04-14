@@ -42,12 +42,7 @@ public:
 
 	bool has(Identifier id)
 	{
-		auto found = std::find_if(m_resources.begin(),
-								  m_resources.end(),
-								  [&resource](std::unique_ptr<Resource>& res)
-		{
-			return res.get();
-		});
+		auto found = m_resources.find(id);
 
 		if (found != m_resources.end())
 			return true;
@@ -75,4 +70,4 @@ private:
 };
 } // namespace Dunjun
 
-#endif 
+#endif
