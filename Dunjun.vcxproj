@@ -49,7 +49,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)/external/glew-1.12.0/include;$(ProjectDir)/external/glfw-3.1.bin.WIN32/include;$(ProjectDir)/external/stb-master/include;$(ProjectDir)/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLEW_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_DEPRECATE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
     </ClCompile>
@@ -74,6 +74,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="external\stb-master\include\stb\stb_vorbis.c" />
     <ClCompile Include="src\Dunjun\Camera.cpp" />
     <ClCompile Include="src\Dunjun\ResourceHolders.cpp" />
     <ClCompile Include="src\Dunjun\Common_OSX.cpp" />
@@ -106,6 +107,23 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\stb-master\include\stb\stb.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_c_lexer.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_divide.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_dxt.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_easy_font.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_herringbone_wang_tile.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_image.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_image_resize.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_image_write.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_leakcheck.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_perlin.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_rect_pack.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_textedit.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_tilemap_editor.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_truetype.h" />
+    <ClInclude Include="external\stb-master\include\stb\stb_voxel_render.h" />
+    <ClInclude Include="external\stb-master\include\stb\stretchy_buffer.h" />
     <ClInclude Include="include\Dunjun\Camera.hpp" />
     <ClInclude Include="include\Dunjun\Clock.hpp" />
     <ClInclude Include="include\Dunjun\Color.hpp" />
@@ -169,6 +187,7 @@
     <None Include="data\shaders\deferredPointLight.frag.glsl" />
     <None Include="data\shaders\texPass.frag.glsl" />
     <None Include="data\shaders\texPass.vert.glsl" />
+    <None Include="external\stb-master\README.md" />
     <None Include="License.md" />
     <None Include="Makefile_OSX" />
     <None Include="misc\cloc.bat" />
