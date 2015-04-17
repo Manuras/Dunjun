@@ -32,8 +32,6 @@ Mesh::Mesh()
 , m_drawType(GL_TRIANGLES)
 , m_drawCount(0)
 {
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ibo);
 }
 
 Mesh::Mesh(const Data& data)
@@ -44,9 +42,6 @@ Mesh::Mesh(const Data& data)
 , m_drawType(data.drawType)
 , m_drawCount(data.indices.size())
 {
-	glGenBuffers(1, &m_vbo);
-	glGenBuffers(1, &m_ibo);
-
 	generate();
 }
 
@@ -62,6 +57,11 @@ void Mesh::generate() const
 {
 	if (m_generated)
 		return;
+
+	if (!m_vbo)
+		glGenBuffers(1, &m_vbo);
+	if (!m_ibo)
+		glGenBuffers(1, &m_ibo);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER,

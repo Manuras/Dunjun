@@ -93,114 +93,25 @@ INTERNAL void handleInput()
 
 INTERNAL void loadShaders()
 {
-	{
-		auto shaders = make_unique<ShaderProgram>();
-		if (!shaders->attachShaderFromFile(ShaderType::Vertex,
-		                                   "data/shaders/default.vert.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-
-		if (!shaders->attachShaderFromFile(ShaderType::Fragment,
-		                                   "data/shaders/default.frag.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-		shaders->bindAttribLocation((u32)AtrribLocation::Position,
-		                            "a_position");
-		shaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
-		                            "a_texCoord");
-		shaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-		shaders->bindAttribLocation((u32)AtrribLocation::Normal, "a_normal");
-
-		if (!shaders->link())
-			throw std::runtime_error(shaders->errorLog);
-
-		g_shaderHolder.insert("default", std::move(shaders));
-	}
-	{
-		auto shaders = make_unique<ShaderProgram>();
-		if (!shaders->attachShaderFromFile(ShaderType::Vertex,
-		                                   "data/shaders/texPass.vert.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-
-		if (!shaders->attachShaderFromFile(ShaderType::Fragment,
-		                                   "data/shaders/texPass.frag.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-		shaders->bindAttribLocation((u32)AtrribLocation::Position,
-		                            "a_position");
-		shaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
-		                            "a_texCoord");
-
-		if (!shaders->link())
-			throw std::runtime_error(shaders->errorLog);
-
-		g_shaderHolder.insert("texPass", std::move(shaders));
-	}
-	{
-		auto shaders = make_unique<ShaderProgram>();
-
-		if (!shaders->attachShaderFromFile(
-		        ShaderType::Vertex,
-		        "data/shaders/deferredGeometryPass.vert.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-
-		if (!shaders->attachShaderFromFile(
-		        ShaderType::Fragment,
-		        "data/shaders/deferredGeometryPass.frag.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-		shaders->bindAttribLocation((u32)AtrribLocation::Position,
-		                            "a_position");
-		shaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
-		                            "a_texCoord");
-		shaders->bindAttribLocation((u32)AtrribLocation::Color, "a_color");
-		shaders->bindAttribLocation((u32)AtrribLocation::Normal, "a_normal");
-
-		if (!shaders->link())
-			throw std::runtime_error(shaders->errorLog);
-
-		g_shaderHolder.insert("deferredGeometryPass", std::move(shaders));
-	}
-	{
-		auto shaders = make_unique<ShaderProgram>();
-		if (!shaders->attachShaderFromFile(
-		        ShaderType::Vertex, "data/shaders/deferredLightPass.vert.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-
-		if (!shaders->attachShaderFromFile(
-		        ShaderType::Fragment,
-		        "data/shaders/deferredPointLight.frag.glsl"))
-			throw std::runtime_error(shaders->errorLog);
-		shaders->bindAttribLocation((u32)AtrribLocation::Position,
-		                            "a_position");
-		shaders->bindAttribLocation((u32)AtrribLocation::TexCoord,
-		                            "a_texCoord");
-
-		if (!shaders->link())
-			throw std::runtime_error(shaders->errorLog);
-
-		g_shaderHolder.insert("deferredPointLight", std::move(shaders));
-	}
+	g_shaderHolder.insertFromFile("default",
+						          "data/shaders/default.vert.glsl",
+						          "data/shaders/default.frag.glsl");
+	g_shaderHolder.insertFromFile("texPass",
+								  "data/shaders/texPass.vert.glsl",
+								  "data/shaders/texPass.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredGeometryPass",
+								  "data/shaders/deferredGeometryPass.vert.glsl",
+								  "data/shaders/deferredGeometryPass.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredPointLight",
+								  "data/shaders/deferredLightPass.vert.glsl",
+								  "data/shaders/deferredPointLight.frag.glsl");
 }
 INTERNAL void loadMaterials()
 {
-	{
-		auto tex = make_unique<Texture>();
-		tex->loadFromFile("data/textures/default.png");
-		g_textureHolder.insert("default", std::move(tex));
-	}
-
-	{
-		auto tex = make_unique<Texture>();
-		tex->loadFromFile("data/textures/kitten.jpg");
-		g_textureHolder.insert("kitten", std::move(tex));
-	}
-	{
-		auto tex = make_unique<Texture>();
-		tex->loadFromFile("data/textures/stone.png", TextureFilter::Nearest);
-		g_textureHolder.insert("stone", std::move(tex));
-	}
-	{
-		auto tex = make_unique<Texture>();
-		tex->loadFromFile("data/textures/terrain.png", TextureFilter::Nearest);
-		g_textureHolder.insert("terrain", std::move(tex));
-	}
+	g_textureHolder.insertFromFile("default", "data/textures/default.png");
+	g_textureHolder.insertFromFile("kitten", "data/textures/kitten.jpg");
+	g_textureHolder.insertFromFile("stone", "data/textures/stone.png");
+	g_textureHolder.insertFromFile("terrain", "data/textures/terrain.png", TextureFilter::Nearest);
 
 	g_materials["default"].shaders = &g_shaderHolder.get("default");
 	g_materials["default"].diffuseMap = &g_textureHolder.get("default");
@@ -535,13 +446,14 @@ INTERNAL void render()
 
 	Vector2 fbSize = Window::getFramebufferSize();
 
-	g_renderer.createGBuffer(fbSize.x, fbSize.y);
+	g_renderer.gBuffer.create(fbSize.x, fbSize.y);
 
 	g_renderer.deferredGeometryPass();
 
 	g_renderer.deferredLightPass();
 
-	g_materials["cat"].diffuseMap = &g_renderer.getGBuffer()->diffuse;
+	// TODO(bill): texture blank
+	g_materials["cat"].diffuseMap = &g_renderer.gBuffer.diffuse;
 
 	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
@@ -551,7 +463,7 @@ INTERNAL void render()
 	g_shaderHolder.get("texPass").setUniform("u_tex", 0);
 	g_shaderHolder.get("texPass").setUniform("u_scale", Vector3(1.0f));
 
-	Texture::bind(&g_renderer.lightingTexture->colorTexture, 0);
+	Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
 
 	g_renderer.draw(g_meshes["quad"]);
 

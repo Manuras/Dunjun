@@ -30,8 +30,6 @@ public:
 
 	virtual ~SceneRenderer()
 	{
-		delete lightingTexture;
-		delete m_gBuffer;
 	}
 
 	void reset(); // Reset all pointers
@@ -50,30 +48,12 @@ public:
 
 	void setCamera(const Camera& camera);
 
-	inline void createGBuffer(u32 width, u32 height)
-	{
-		if (m_gBuffer == nullptr)
-			m_gBuffer = new GBuffer();
-
-		m_gBuffer->create(width, height);
-	}
-
-	inline GBuffer* getGBuffer()
-	{
-		if (m_gBuffer == nullptr)
-		{
-			auto fbSize = Window::getFramebufferSize();
-			createGBuffer(fbSize.x, fbSize.y);
-		}
-
-		return m_gBuffer;
-	}
-
 	const Camera* camera = nullptr;
 
 	const Mesh* quad;
 
-	RenderTexture* lightingTexture;
+	RenderTexture lightingTexture;
+	GBuffer gBuffer;
 
 	std::deque<ModelInstance> modelInstances;
 	std::deque<const PointLight*> pointsLights;
@@ -85,10 +65,6 @@ private:
 	const Material* m_currentMaterial = nullptr;
 	const ShaderProgram* m_currentShaders = nullptr;
 	const Texture* m_currentTexture = nullptr;
-
-	GBuffer* m_gBuffer = nullptr;
-
-
 };
 } // namespace Dunjun
 

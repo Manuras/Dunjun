@@ -31,7 +31,6 @@ Texture::Texture()
 , width(0)
 , height(0)
 {
-	glGenTextures(1, &m_object);
 }
 
 Texture::Texture(const Image& image,
@@ -41,8 +40,6 @@ Texture::Texture(const Image& image,
 , width(image.width)
 , height(image.height)
 {
-	glGenTextures(1, &m_object);
-
 	if (!loadFromImage(image, minMagFilter, wrapMode))
 		throw std::runtime_error("Could not create texture from image.");
 }
@@ -68,6 +65,9 @@ bool Texture::loadFromImage(const Image& image,
 
 	width = image.width;
 	height = image.height;
+
+	if (!m_object)
+		glGenTextures(1, &m_object);
 
 	glBindTexture(GL_TEXTURE_2D, m_object);
 	glTexParameteri(
@@ -113,10 +113,7 @@ void Texture::bind(const Texture* tex, GLuint position)
 	glClientActiveTexture(GL_TEXTURE0 + position);
 
 	glEnable(GL_TEXTURE_2D);
-	if (tex)
-		glBindTexture(GL_TEXTURE_2D, (tex->m_object ? tex->m_object : 0));
-	else
-		glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, (tex && tex->m_object) ? tex->m_object : 0);
 	glDisable(GL_TEXTURE_2D);
 }
 

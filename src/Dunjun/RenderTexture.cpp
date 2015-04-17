@@ -12,7 +12,6 @@ RenderTexture::RenderTexture()
 , depthTexture()
 , fbo(0)
 {
-	glGenFramebuffersEXT(1, &fbo);
 }
 
 RenderTexture::~RenderTexture() { glDeleteFramebuffersEXT(1, &fbo); }
@@ -30,9 +29,12 @@ bool RenderTexture::create(u32 w,
 	width = w;
 	height = h;
 
+	if (!fbo)
+		glGenFramebuffersEXT(1, &fbo);
+
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo.data);
 
-	GLuint depthRenderBuffer;
+	GLuint depthRenderBuffer = 0;
 	// The depth buffer
 	glGenRenderbuffersEXT(1, &depthRenderBuffer);
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthRenderBuffer);
@@ -47,6 +49,8 @@ bool RenderTexture::create(u32 w,
 
 	if (type.data & Color)
 	{
+		if (!colorTexture.m_object)
+			glGenTextures(1, &colorTexture.m_object);
 		glBindTexture(GL_TEXTURE_2D, (GLuint)colorTexture.m_object);
 		glTexImage2D(GL_TEXTURE_2D,
 		             0,
@@ -75,6 +79,8 @@ bool RenderTexture::create(u32 w,
 
 	if (type.data & Depth)
 	{
+		if (!depthTexture.m_object)
+			glGenTextures(1, &depthTexture.m_object);
 		glBindTexture(GL_TEXTURE_2D, (GLuint)depthTexture.m_object);
 		glTexImage2D(GL_TEXTURE_2D,
 		             0,

@@ -11,18 +11,21 @@ template <class Resource, class Identifier>
 class ResourceHolder
 {
 public:
-	void insert(Identifier id, std::unique_ptr<Resource> resource)
+	using IdentifierType = Identifier;
+	using ResourceType = Resource;
+	using ResourceUPtr = std::unique_ptr<Resource>;
+
+	void insert(Identifier id, ResourceUPtr resource)
 	{
 		auto inserted = m_resources.insert(std::make_pair(id, std::move(resource)));
-		assert(inserted.second); // just incase
+		//assert(inserted.second); // just incase
 	}
 
-	// TODO(bill): erase by Identifier
 	std::unique_ptr<Resource> erase(const Resource& resource)
 	{
 		auto found = std::find_if(m_resources.begin(),
 								  m_resources.end(),
-								  [&resource](std::unique_ptr<Resource>& res)
+								  [&resource](ResourceUPtr& res)
 		{
 			return res.get();
 		});
@@ -40,12 +43,31 @@ public:
 		return nullptr;
 	}
 
-	bool has(Identifier id)
+
+	std::unique_ptr<Resource> erase(Identifier id)
+	{
+		auto found = m_resources.find(id);
+
+		if (found != m_resources.end())
+		{
+			auto result = std::move(*found);
+
+			m_resources.erase(found);
+
+			return result;
+		}
+
+		// Resource not found
+		return nullptr;
+	}
+
+	bool exists(Identifier id)
 	{
 		auto found = m_resources.find(id);
 
 		if (found != m_resources.end())
 			return true;
+
 		return false;
 	}
 
@@ -65,8 +87,8 @@ public:
 		return *found->second;
 	}
 
-private:
-	std::map<Identifier, std::unique_ptr<Resource>> m_resources;
+protected:
+	std::map<Identifier, ResourceUPtr> m_resources;
 };
 } // namespace Dunjun
 

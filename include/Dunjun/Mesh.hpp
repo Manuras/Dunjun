@@ -73,8 +73,8 @@ private:
 
 	mutable b32 m_generated;
 
-	GLuint m_vbo;
-	GLuint m_ibo;
+	mutable GLuint m_vbo;
+	mutable GLuint m_ibo;
 	GLenum m_drawType;
 	GLint m_drawCount;
 };
