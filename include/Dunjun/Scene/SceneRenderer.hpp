@@ -50,8 +50,6 @@ public:
 
 	const Camera* camera = nullptr;
 
-	const Mesh* quad;
-
 	RenderTexture lightingTexture;
 	GBuffer gBuffer;
 

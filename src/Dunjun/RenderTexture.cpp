@@ -14,7 +14,11 @@ RenderTexture::RenderTexture()
 {
 }
 
-RenderTexture::~RenderTexture() { glDeleteFramebuffersEXT(1, &fbo); }
+RenderTexture::~RenderTexture()
+{
+	if (fbo)
+		glDeleteFramebuffersEXT(1, &fbo);
+}
 
 bool RenderTexture::create(u32 w,
                            u32 h,
@@ -52,15 +56,33 @@ bool RenderTexture::create(u32 w,
 		if (!colorTexture.m_object)
 			glGenTextures(1, &colorTexture.m_object);
 		glBindTexture(GL_TEXTURE_2D, (GLuint)colorTexture.m_object);
-		glTexImage2D(GL_TEXTURE_2D,
-		             0,
-		             GL_RGB,
-		             (GLsizei)width,
-		             (GLsizei)height,
-		             0,
-		             GL_RGB,
-		             GL_UNSIGNED_BYTE,
-		             0);
+		if (type.data & Lighting)
+		{
+			glTexImage2D(GL_TEXTURE_2D,
+			             0,
+			             GL_RGB10_A2, // TODO(bill): decide upon lighting
+			                          // resolution for each component
+									  // 8b/c too small
+									  // 32b/c too large
+			             (GLsizei)width,
+			             (GLsizei)height,
+			             0,
+			             GL_RGB,
+			             GL_FLOAT,
+			             0);
+		}
+		else
+		{
+			glTexImage2D(GL_TEXTURE_2D,
+						 0,
+						 GL_RGB,
+						 (GLsizei)width,
+						 (GLsizei)height,
+						 0,
+						 GL_RGB,
+						 GL_UNSIGNED_BYTE,
+						 0);
+		}
 		colorTexture.width = width;
 		colorTexture.height = height;
 
@@ -108,7 +130,7 @@ bool RenderTexture::create(u32 w,
 	}
 
 	std::vector<GLenum> drawBuffers;
-	if (type.data & Color)
+	if (type.data & Color || type.data & Lighting)
 		drawBuffers.push_back(GL_COLOR_ATTACHMENT0_EXT);
 	if (type.data & Depth)
 		drawBuffers.push_back(GL_DEPTH_ATTACHMENT);
@@ -130,12 +152,8 @@ bool RenderTexture::create(u32 w,
 
 void RenderTexture::bind(const RenderTexture* rt)
 {
+	if (!rt)
+		glFlush();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, rt != nullptr ? (int)rt->fbo : 0);
-}
-
-void RenderTexture::unbind(const RenderTexture* rt)
-{
-	glFlush(); // Flush just in case
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 } // namespace Dunjun

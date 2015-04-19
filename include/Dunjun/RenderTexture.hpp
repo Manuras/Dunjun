@@ -15,6 +15,7 @@ public:
 		Color = 1,
 		Depth = 2,
 		ColorAndDepth = Color | Depth,
+		Lighting = 4 | Color,
 	};
 
 	RenderTexture();
@@ -27,7 +28,6 @@ public:
 	            TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge);
 
 	GLOBAL void bind(const RenderTexture* rt);
-	GLOBAL void unbind(const RenderTexture* rt);
 
 	ReadOnly<u32, RenderTexture> width;
 	ReadOnly<u32, RenderTexture> height;

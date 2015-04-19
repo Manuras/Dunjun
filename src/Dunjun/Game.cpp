@@ -53,9 +53,6 @@ GLOBAL SceneNode* g_player;
 
 GLOBAL SceneRenderer g_renderer;
 
-GLOBAL std::map<std::string, Material> g_materials;
-GLOBAL std::map<std::string, Mesh*> g_meshes;
-
 GLOBAL Level* g_level;
 
 GLOBAL std::vector<PointLight> g_lights;
@@ -94,37 +91,55 @@ INTERNAL void handleInput()
 INTERNAL void loadShaders()
 {
 	g_shaderHolder.insertFromFile("default",
-						          "data/shaders/default.vert.glsl",
-						          "data/shaders/default.frag.glsl");
+	                              "data/shaders/default.vert.glsl",
+	                              "data/shaders/default.frag.glsl");
 	g_shaderHolder.insertFromFile("texPass",
-								  "data/shaders/texPass.vert.glsl",
-								  "data/shaders/texPass.frag.glsl");
-	g_shaderHolder.insertFromFile("deferredGeometryPass",
-								  "data/shaders/deferredGeometryPass.vert.glsl",
-								  "data/shaders/deferredGeometryPass.frag.glsl");
+	                              "data/shaders/texPass.vert.glsl",
+	                              "data/shaders/texPass.frag.glsl");
+	g_shaderHolder.insertFromFile(
+	    "deferredGeometryPass",
+	    "data/shaders/deferredGeometryPass.vert.glsl",
+	    "data/shaders/deferredGeometryPass.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredPointLight",
-								  "data/shaders/deferredLightPass.vert.glsl",
-								  "data/shaders/deferredPointLight.frag.glsl");
+	                              "data/shaders/deferredLightPass.vert.glsl",
+	                              "data/shaders/deferredPointLight.frag.glsl");
 }
 INTERNAL void loadMaterials()
 {
 	g_textureHolder.insertFromFile("default", "data/textures/default.png");
 	g_textureHolder.insertFromFile("kitten", "data/textures/kitten.jpg");
 	g_textureHolder.insertFromFile("stone", "data/textures/stone.png");
-	g_textureHolder.insertFromFile("terrain", "data/textures/terrain.png", TextureFilter::Nearest);
+	g_textureHolder.insertFromFile(
+	    "terrain", "data/textures/terrain.png", TextureFilter::Nearest);
 
-	g_materials["default"].shaders = &g_shaderHolder.get("default");
-	g_materials["default"].diffuseMap = &g_textureHolder.get("default");
+	{
+		auto mat = make_unique<Material>();
+		mat->shaders = &g_shaderHolder.get("default");
+		mat->diffuseMap = &g_textureHolder.get("default");
+		g_materialHolder.insert("default", std::move(mat));
+	}
 
-	g_materials["cat"].shaders = &g_shaderHolder.get("default");
-	g_materials["cat"].diffuseMap = &g_textureHolder.get("kitten");
-	g_materials["cat"].specularExponent = 100000;
+	{
+		auto mat = make_unique<Material>();
+		mat->shaders = &g_shaderHolder.get("default");
+		mat->diffuseMap = &g_textureHolder.get("kitten");
+		mat->specularExponent = 1e5;
+		g_materialHolder.insert("cat", std::move(mat));
+	}
 
-	g_materials["stone"].shaders = &g_shaderHolder.get("default");
-	g_materials["stone"].diffuseMap = &g_textureHolder.get("stone");
+	{
+		auto mat = make_unique<Material>();
+		mat->shaders = &g_shaderHolder.get("default");
+		mat->diffuseMap = &g_textureHolder.get("stone");
+		g_materialHolder.insert("stone", std::move(mat));
+	}
 
-	g_materials["terrain"].shaders = &g_shaderHolder.get("default");
-	g_materials["terrain"].diffuseMap = &g_textureHolder.get("terrain");
+	{
+		auto mat = make_unique<Material>();
+		mat->shaders = &g_shaderHolder.get("default");
+		mat->diffuseMap = &g_textureHolder.get("terrain");
+		g_materialHolder.insert("terrain", std::move(mat));
+	}
 }
 INTERNAL void loadSpriteAsset()
 {
@@ -139,10 +154,10 @@ INTERNAL void loadSpriteAsset()
 		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
 		meshData.generateNormals();
 
-		g_meshes["sprite"] = new Mesh(meshData);
+		g_meshHolder.insert("sprite", make_unique<Mesh>(meshData));
 
-		g_sprite.material = &g_materials["cat"];
-		g_sprite.mesh = g_meshes["sprite"];
+		g_sprite.material = &g_materialHolder.get("cat");
+		g_sprite.mesh = &g_meshHolder.get("sprite");
 	}
 	{
 		Mesh::Data meshData;
@@ -155,7 +170,7 @@ INTERNAL void loadSpriteAsset()
 		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
 		meshData.generateNormals();
 
-		g_meshes["quad"] = new Mesh(meshData);
+		g_meshHolder.insert("quad", make_unique<Mesh>(meshData));
 	}
 }
 
@@ -182,7 +197,7 @@ INTERNAL void loadInstances()
 	{
 		auto level = make_unique<Level>();
 
-		level->material = &g_materials["terrain"];
+		level->material = &g_materialHolder.get("terrain");
 		level->generate();
 
 		g_level = level.get();
@@ -191,6 +206,7 @@ INTERNAL void loadInstances()
 	}
 
 	Random random;
+	random.setSeed(1);
 	for (int i = 0; i < 50; i++)
 	{
 		PointLight light;
@@ -442,7 +458,6 @@ INTERNAL void render()
 		g_renderer.addPointLight(&light);
 
 	g_renderer.camera = g_currentCamera;
-	g_renderer.quad = g_meshes["quad"];
 
 	Vector2 fbSize = Window::getFramebufferSize();
 
@@ -453,7 +468,7 @@ INTERNAL void render()
 	g_renderer.deferredLightPass();
 
 	// TODO(bill): texture blank
-	g_materials["cat"].diffuseMap = &g_renderer.gBuffer.diffuse;
+	// g_materialHolder.get("cat").diffuseMap = &g_renderer.gBuffer.diffuse;
 
 	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
 	glClearColor(0, 0, 0, 1);
@@ -465,7 +480,7 @@ INTERNAL void render()
 
 	Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
 
-	g_renderer.draw(g_meshes["quad"]);
+	g_renderer.draw(&g_meshHolder.get("quad"));
 
 	Window::swapBuffers();
 }
@@ -542,9 +557,6 @@ void run()
 
 void cleanup()
 {
-	for (auto& mesh : g_meshes)
-		delete mesh.second;
-
 	Input::cleanup();
 	Window::cleanup();
 }

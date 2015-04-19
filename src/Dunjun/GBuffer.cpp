@@ -74,14 +74,9 @@ bool GBuffer::create(u32 w, u32 h)
 	};
 
 	addRT(diffuse, GL_COLOR_ATTACHMENT0_EXT, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
-	addRT(
-	    specular, GL_COLOR_ATTACHMENT1_EXT, GL_RGBA8, GL_RGB, GL_UNSIGNED_BYTE);
-	addRT(normal, GL_COLOR_ATTACHMENT2_EXT, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
-	addRT(depth,
-	      GL_DEPTH_ATTACHMENT_EXT,
-	      GL_DEPTH_COMPONENT24,
-	      GL_DEPTH_COMPONENT,
-	      GL_FLOAT);
+	addRT(specular, GL_COLOR_ATTACHMENT1_EXT, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
+	addRT(normal, GL_COLOR_ATTACHMENT2_EXT, GL_RGB10_A2, GL_RGBA, GL_FLOAT);
+	addRT(depth, GL_DEPTH_ATTACHMENT_EXT, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
 
 	glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
 
@@ -100,12 +95,8 @@ bool GBuffer::create(u32 w, u32 h)
 
 void GBuffer::bind(const GBuffer* b)
 {
+	if (!b)
+		glFlush();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, b != nullptr ? (int)b->fbo : 0);
-}
-
-void GBuffer::unbind(const GBuffer* b)
-{
-	glFlush(); // Flush just in case
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 } // namespace Dunjun
