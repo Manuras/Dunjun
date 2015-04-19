@@ -13,12 +13,12 @@ class TextureHolder : public ResourceHolder<Texture, std::string>
 {
 public:
 	bool insertFromFile(const std::string& id,
-	                    const char* filename,
+	                    const std::string& filename,
 	                    TextureFilter minMagFilter = TextureFilter::Linear,
 	                    TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge)
 	{
 		auto tex = make_unique<Texture>();
-		bool t = tex->loadFromFile(filename, minMagFilter, wrapMode);
+		bool t = tex->loadFromFile(BaseDirectory::Textures + filename, minMagFilter, wrapMode);
 		if (t)
 			insert(id, std::move(tex));
 		return t;

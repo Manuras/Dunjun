@@ -58,7 +58,6 @@ GLOBAL Level* g_level;
 GLOBAL std::vector<PointLight> g_pointLights;
 GLOBAL std::vector<DirectionalLight> g_directionalLights;
 
-
 namespace Game
 {
 INTERNAL void handleInput()
@@ -92,44 +91,38 @@ INTERNAL void handleInput()
 
 INTERNAL void loadShaders()
 {
-	g_shaderHolder.insertFromFile("default",
-	                              "data/shaders/default.vert.glsl",
-	                              "data/shaders/default.frag.glsl");
-	g_shaderHolder.insertFromFile("texPass",
-	                              "data/shaders/texPass.vert.glsl",
-	                              "data/shaders/texPass.frag.glsl");
 	g_shaderHolder.insertFromFile(
-	    "deferredGeometryPass",
-	    "data/shaders/deferredGeometryPass.vert.glsl",
-	    "data/shaders/deferredGeometryPass.frag.glsl");
+	    "texPass", "texPass.vert.glsl", "texPass.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredGeometryPass",
+	                              "deferredGeometryPass.vert.glsl",
+	                              "deferredGeometryPass.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredAmbientLight",
-								  "data/shaders/deferredLightPass.vert.glsl",
-								  "data/shaders/deferredAmbientLight.frag.glsl");
+	                              "deferredLightPass.vert.glsl",
+	                              "deferredAmbientLight.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredPointLight",
-	                              "data/shaders/deferredLightPass.vert.glsl",
-	                              "data/shaders/deferredPointLight.frag.glsl");
+	                              "deferredLightPass.vert.glsl",
+	                              "deferredPointLight.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredDirectionalLight",
-								  "data/shaders/deferredLightPass.vert.glsl",
-								  "data/shaders/deferredDirectionalLight.frag.glsl");
+	                              "deferredLightPass.vert.glsl",
+	                              "deferredDirectionalLight.frag.glsl");
 }
 INTERNAL void loadMaterials()
 {
-	g_textureHolder.insertFromFile("default", "data/textures/default.png");
-	g_textureHolder.insertFromFile("kitten", "data/textures/kitten.jpg");
-	g_textureHolder.insertFromFile("stone", "data/textures/stone.png");
-	g_textureHolder.insertFromFile(
-	    "terrain", "data/textures/terrain.png", TextureFilter::Nearest);
+	g_textureHolder.insertFromFile("default", "default.png");
+	g_textureHolder.insertFromFile("kitten", "kitten.jpg");
+	g_textureHolder.insertFromFile("stone", "stone.png");
+	g_textureHolder.insertFromFile("terrain", "terrain.png", TextureFilter::Nearest);
 
 	{
 		auto mat = make_unique<Material>();
-		mat->shaders = &g_shaderHolder.get("default");
+		mat->shaders = &g_shaderHolder.get("deferredGeometryPass");
 		mat->diffuseMap = &g_textureHolder.get("default");
 		g_materialHolder.insert("default", std::move(mat));
 	}
 
 	{
 		auto mat = make_unique<Material>();
-		mat->shaders = &g_shaderHolder.get("default");
+		mat->shaders = &g_shaderHolder.get("deferredGeometryPass");
 		mat->diffuseMap = &g_textureHolder.get("kitten");
 		mat->specularExponent = 1e5;
 		g_materialHolder.insert("cat", std::move(mat));
@@ -137,14 +130,14 @@ INTERNAL void loadMaterials()
 
 	{
 		auto mat = make_unique<Material>();
-		mat->shaders = &g_shaderHolder.get("default");
+		mat->shaders = &g_shaderHolder.get("deferredGeometryPass");
 		mat->diffuseMap = &g_textureHolder.get("stone");
 		g_materialHolder.insert("stone", std::move(mat));
 	}
 
 	{
 		auto mat = make_unique<Material>();
-		mat->shaders = &g_shaderHolder.get("default");
+		mat->shaders = &g_shaderHolder.get("deferredGeometryPass");
 		mat->diffuseMap = &g_textureHolder.get("terrain");
 		g_materialHolder.insert("terrain", std::move(mat));
 	}
@@ -227,7 +220,7 @@ INTERNAL void loadInstances()
 		light.color.r = random.getInt(50, 255);
 		light.color.g = random.getInt(50, 255);
 		light.color.b = random.getInt(50, 255);
-		
+
 		g_pointLights.push_back(light);
 	}
 

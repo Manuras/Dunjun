@@ -108,6 +108,9 @@
     <ClCompile Include="external\stb-master\include\stb\stb_vorbis.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp">
@@ -348,5 +351,8 @@
     <None Include="external\stb-master\README.md" />
     <None Include="data\shaders\deferredDirectionalLight.frag.glsl" />
     <None Include="data\shaders\deferredAmbientLight.frag.glsl" />
+    <None Include="data\shaders\Material.head.glsl" />
+    <None Include="data\shaders\Lighting.head.glsl" />
+    <None Include="data\shaders\common.head.glsl" />
   </ItemGroup>
 </Project>

@@ -7,19 +7,47 @@
 
 namespace Dunjun
 {
+std::vector<std::string> split(const std::string& s, char delim)
+{
+	std::vector<std::string> elems;
+
+	const char* cstr = s.c_str();
+	usize strLength = s.length();
+	usize start = 0;
+	usize end = 0;
+
+	while (end <= strLength)
+	{
+		while (end <= strLength)
+		{
+			if (cstr[end] == delim)
+				break;
+			end++;
+		}
+
+		elems.emplace_back(s.substr(start, end - start));
+		start = end + 1;
+		end = start;
+	}
+
+	return elems;
+}
+
 // TODO(bill): Customize to be specific for shader files
 // #include <> & #include ""
 INTERNAL std::string stringFromFile(const std::string& filename)
 {
 	std::ifstream file;
-	file.open(filename.c_str(), std::ios::in | std::ios::binary);
+	file.open(std::string(BaseDirectory::Shaders + filename.c_str()), std::ios::in | std::ios::binary);
+
+	std::string fileDirectory = getFileDirectory(filename) + "/";
 
 	std::string output;
 	std::string line;
 
 	if (!file.is_open())
 	{
-		std::runtime_error(std::string("Failed to open file: ") + filename);
+		throwRuntimeError(std::string("Failed to open file : ") + filename);
 	}
 	else
 	{
@@ -27,7 +55,29 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 		{
 			getline(file, line);
 
-			output.append(line + "\n");
+			if (line.find("#include") == std::string::npos)
+			{
+				output.append(line + "\n");
+			}
+			else
+			{
+				std::string includeFilename = split(line, ' ')[1];
+
+				if (includeFilename[0] == '<') // Absolute Path
+				{
+					includeFilename =
+					    includeFilename.substr(1, includeFilename.length() - 3);
+				}
+				else if (includeFilename[0] == '\"') // Relative Path
+				{
+					includeFilename =
+					    fileDirectory +
+					    includeFilename.substr(1, includeFilename.length() - 3);
+				}
+
+				std::string toAppend = stringFromFile(includeFilename);
+				output.append(toAppend + "\n");
+			}
 		}
 	}
 
@@ -69,7 +119,7 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 	else if (type == ShaderType::Fragment)
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
 	else
-		throw std::runtime_error("Shader type unknown. How did you get here?");
+		throwRuntimeError("Shader type unknown. How did you get here?");
 
 	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);

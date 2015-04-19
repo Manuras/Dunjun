@@ -47,10 +47,10 @@ Image::~Image()
 		delete[] pixels;
 }
 
-bool Image::loadFromFile(const char* filename)
+bool Image::loadFromFile(const std::string& filename)
 {
 	int w, h, f;
-	u8* p = stbi_load(filename, &w, &h, &f, 0);
+	u8* p = stbi_load(filename.c_str(), &w, &h, &f, 0);
 
 	if (!p)
 	{

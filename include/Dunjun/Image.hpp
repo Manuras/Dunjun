@@ -3,6 +3,8 @@
 
 #include <Dunjun/Types.hpp>
 
+#include <string>
+
 namespace Dunjun
 {
 enum class ImageFormat
@@ -26,7 +28,7 @@ public:
 	Image& operator=(const Image& other);
 	~Image();
 
-	bool loadFromFile(const char* filename);
+	bool loadFromFile(const std::string& filename);
 	bool loadFromMemory(u32 width,
 	                    u32 height,
 	                    ImageFormat format,

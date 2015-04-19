@@ -1,15 +1,6 @@
 #version 120
 
-struct BaseLight
-{
-	vec3 intensities; // color * intensity
-};
-
-struct DirectionalLight
-{
-	BaseLight base;
-	vec3 direction;
-};
+#include <Lighting.head.glsl>
 
 uniform sampler2D u_specular;
 uniform sampler2D u_normal;
@@ -17,8 +8,6 @@ uniform sampler2D u_normal;
 uniform DirectionalLight u_light;
 
 varying vec2 v_texCoord;
-
-float square(float x) { return x; }
 
 vec4 calculateDirectionalLight(DirectionalLight light, vec3 normal)
 {

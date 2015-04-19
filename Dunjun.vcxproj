@@ -76,6 +76,7 @@
   <ItemGroup>
     <ClCompile Include="external\stb-master\include\stb\stb_vorbis.c" />
     <ClCompile Include="src\Dunjun\Camera.cpp" />
+    <ClCompile Include="src\Dunjun\Common.cpp" />
     <ClCompile Include="src\Dunjun\ResourceHolders.cpp" />
     <ClCompile Include="src\Dunjun\Common_OSX.cpp" />
     <ClCompile Include="src\Dunjun\Common_Win32.cpp" />
@@ -178,6 +179,7 @@
     <None Include=".clang-format" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
+    <None Include="data\shaders\common.head.glsl" />
     <None Include="data\shaders\default.frag.glsl" />
     <None Include="data\shaders\default.vert.glsl" />
     <None Include="cloc.bat" />
@@ -187,6 +189,8 @@
     <None Include="data\shaders\deferredGeometryPass.vert.glsl" />
     <None Include="data\shaders\deferredLightPass.vert.glsl" />
     <None Include="data\shaders\deferredPointLight.frag.glsl" />
+    <None Include="data\shaders\Lighting.head.glsl" />
+    <None Include="data\shaders\Material.head.glsl" />
     <None Include="data\shaders\texPass.frag.glsl" />
     <None Include="data\shaders\texPass.vert.glsl" />
     <None Include="external\stb-master\README.md" />

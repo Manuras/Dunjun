@@ -44,7 +44,7 @@ Texture::Texture(const Image& image,
 		throw std::runtime_error("Could not create texture from image.");
 }
 
-bool Texture::loadFromFile(const char* filename,
+bool Texture::loadFromFile(const std::string& filename,
                            TextureFilter minMagFilter,
                            TextureWrapMode wrapMode)
 {

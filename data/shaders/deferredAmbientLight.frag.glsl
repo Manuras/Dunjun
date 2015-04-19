@@ -1,9 +1,6 @@
 #version 120
 
-struct BaseLight
-{
-	vec3 intensities; // color * intensity
-};
+#include <Lighting.head.glsl>
 
 uniform BaseLight u_light;
 

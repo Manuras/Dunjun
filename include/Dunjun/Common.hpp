@@ -58,5 +58,19 @@ inline T pseudo_cast(const U& x)
 }
 
 std::string resourcePath();
+std::string getFileDirectory(const std::string& filepath);
+
+inline void throwRuntimeError(const std::string& str)
+{
+	std::cerr << str.c_str() << std::endl;
+	std::runtime_error(str.c_str());
+}
+
+namespace BaseDirectory
+{
+extern const std::string Textures;
+extern const std::string Shaders;
+} // namespace BaseDirectory
+
 } // namespace Dunjun
 #endif
