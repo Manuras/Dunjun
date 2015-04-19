@@ -37,7 +37,7 @@ bool init()
 	}
 
 	glfwMakeContextCurrent(Window::g_ptr);
-	glfwSwapInterval(1);
+	// glfwSwapInterval(1);
 
 	glfwSetErrorCallback(errorCallback);
 

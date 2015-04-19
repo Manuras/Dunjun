@@ -7,16 +7,21 @@ struct Attenuation
 	float quadratic;
 };
 
+struct BaseLight
+{
+	vec3 intensities; // color * intensity
+};
+
 struct PointLight
 {
+	BaseLight base;
+
 	vec3 position;
-	vec3 intensities; // color * brightness
 	Attenuation attenuation;
 
 	float range;
 };
 
-// uniform sampler2D u_diffuse;
 uniform sampler2D u_specular;
 uniform sampler2D u_normal;
 uniform sampler2D u_depth;
@@ -59,7 +64,7 @@ vec4 calculatePointLight(vec3 surfaceToLight,
 
 	vec4 diffuse = vec4(0.0);
 
-	diffuse.rgb = diffuseCoefficient * u_light.intensities.rgb * attenuation;
+	diffuse.rgb = diffuseCoefficient * u_light.base.intensities.rgb * attenuation;
 	diffuse.a = 1.0;
 
 	return diffuse;
@@ -67,7 +72,6 @@ vec4 calculatePointLight(vec3 surfaceToLight,
 
 void main()
 {
-	// vec3 diffuseColor = texture2D(u_diffuse, v_texCoord).rgb;
 	vec3 specularColor = texture2D(u_specular, v_texCoord).rgb;
 	vec3 normalEncoded = texture2D(u_normal, v_texCoord).xyz;
 	float depth = texture2D(u_depth, v_texCoord).r;
@@ -81,6 +85,5 @@ void main()
 	vec4 lightColor =
 	    calculatePointLight(surfaceToLight, distanceToLight, normal);
 
-	vec3 gamma = vec3(1.0 / 2.2);
-	gl_FragColor = vec4(pow(lightColor.rgb, gamma), 1.0);
+	gl_FragColor = vec4(lightColor.rgb, 1.0);
 }

@@ -40,11 +40,10 @@ public:
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
 	void addPointLight(const PointLight* light);
+	void addDirectionalLight(const DirectionalLight* light);
 
-	void renderAll();
-
-	void deferredGeometryPass();
-	void deferredLightPass();
+	void geometryPass();
+	void lightPass();
 
 	void setCamera(const Camera& camera);
 
@@ -53,16 +52,23 @@ public:
 	RenderTexture lightingTexture;
 	GBuffer gBuffer;
 
-	std::deque<ModelInstance> modelInstances;
-	std::deque<const PointLight*> pointsLights;
 
 private:
+	void renderAmbientLight();
+	void renderDirectionLights();
+	void renderPointLights();
+
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, GLuint position);
 
 	const Material* m_currentMaterial = nullptr;
 	const ShaderProgram* m_currentShaders = nullptr;
 	const Texture* m_currentTexture = nullptr;
+	
+	std::deque<const DirectionalLight*> m_directionalLights;
+	std::deque<const PointLight*> m_pointsLights;
+
+	std::deque<ModelInstance> m_modelInstances;
 };
 } // namespace Dunjun
 

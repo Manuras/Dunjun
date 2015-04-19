@@ -13,21 +13,28 @@ struct Attenuation
 	f32 quadratic = 1.0f;
 };
 
-struct PointLight
+struct BaseLight
+{
+	Color color = Color(0xFF, 0xFF, 0xFF);
+	f32 intensity = 1.0f;
+};
+
+struct DirectionalLight : BaseLight
+{
+	Vector3 direction;
+};
+
+struct PointLight : BaseLight
 {
 	Vector3 position = {0, 0, 0};
-	Color color = Color(0xFF, 0xFF, 0xFF);
-	f32 brightness = 1.0f;
-
-	// intensity = max(color component) * brightness
-
+	
 	Attenuation attenuation;
 
 	mutable f32 range = 16.0f;
 
 	inline void calculateRange() const
 	{
-		f32 i = brightness * (f32)std::max(color.r, std::max(color.g, color.b));
+		f32 i = intensity * (f32)std::max(color.r, std::max(color.g, color.b));
 
 		f32 r = -attenuation.linear +
 		        Math::sqrt(attenuation.linear * attenuation.linear -

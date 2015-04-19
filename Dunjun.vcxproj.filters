@@ -346,5 +346,7 @@
     <None Include="Makefile_OSX" />
     <None Include="ReadMe_OSX.md" />
     <None Include="external\stb-master\README.md" />
+    <None Include="data\shaders\deferredDirectionalLight.frag.glsl" />
+    <None Include="data\shaders\deferredAmbientLight.frag.glsl" />
   </ItemGroup>
 </Project>

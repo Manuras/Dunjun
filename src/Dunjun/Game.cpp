@@ -55,7 +55,9 @@ GLOBAL SceneRenderer g_renderer;
 
 GLOBAL Level* g_level;
 
-GLOBAL std::vector<PointLight> g_lights;
+GLOBAL std::vector<PointLight> g_pointLights;
+GLOBAL std::vector<DirectionalLight> g_directionalLights;
+
 
 namespace Game
 {
@@ -100,9 +102,15 @@ INTERNAL void loadShaders()
 	    "deferredGeometryPass",
 	    "data/shaders/deferredGeometryPass.vert.glsl",
 	    "data/shaders/deferredGeometryPass.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredAmbientLight",
+								  "data/shaders/deferredLightPass.vert.glsl",
+								  "data/shaders/deferredAmbientLight.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredPointLight",
 	                              "data/shaders/deferredLightPass.vert.glsl",
 	                              "data/shaders/deferredPointLight.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredDirectionalLight",
+								  "data/shaders/deferredLightPass.vert.glsl",
+								  "data/shaders/deferredDirectionalLight.frag.glsl");
 }
 INTERNAL void loadMaterials()
 {
@@ -214,13 +222,22 @@ INTERNAL void loadInstances()
 		light.position.y = random.getFloat(0.5, 2.5);
 		light.position.z = random.getFloat(-15, 15);
 
-		light.brightness = 0.4;
+		light.intensity = 1.0;
 
 		light.color.r = random.getInt(50, 255);
 		light.color.g = random.getInt(50, 255);
 		light.color.b = random.getInt(50, 255);
+		
+		g_pointLights.push_back(light);
+	}
 
-		g_lights.push_back(light);
+	{
+		DirectionalLight light;
+		light.color = Color(255, 255, 250);
+		light.direction = Vector3(-1, -1, 0.5);
+		light.intensity = 0.5f;
+
+		g_directionalLights.push_back(light);
 	}
 
 	// Init Camera
@@ -454,8 +471,10 @@ INTERNAL void render()
 	g_renderer.clearAll();
 	g_renderer.addSceneGraph(g_rootNode);
 
-	for (const auto& light : g_lights)
+	for (const auto& light : g_pointLights)
 		g_renderer.addPointLight(&light);
+	for (const auto& light : g_directionalLights)
+		g_renderer.addDirectionalLight(&light);
 
 	g_renderer.camera = g_currentCamera;
 
@@ -463,9 +482,8 @@ INTERNAL void render()
 
 	g_renderer.gBuffer.create(fbSize.x, fbSize.y);
 
-	g_renderer.deferredGeometryPass();
-
-	g_renderer.deferredLightPass();
+	g_renderer.geometryPass();
+	g_renderer.lightPass();
 
 	// TODO(bill): texture blank
 	// g_materialHolder.get("cat").diffuseMap = &g_renderer.gBuffer.diffuse;
