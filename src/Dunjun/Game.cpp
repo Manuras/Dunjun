@@ -37,7 +37,7 @@ struct ModelInstance
 
 namespace
 {
-GLOBAL const f32 TimeStep = 1.0f / 60.0f;
+GLOBAL const Time TimeStep = seconds(1.0f / 60.0f);
 GLOBAL bool g_running = true;
 } // namespace (anonymous)
 
@@ -250,7 +250,7 @@ INTERNAL void loadInstances()
 	g_rootNode.onStart();
 }
 
-INTERNAL void update(f32 dt)
+INTERNAL void update(Time dt)
 {
 	g_rootNode.update(dt);
 
@@ -270,8 +270,8 @@ INTERNAL void update(f32 dt)
 				rts.y = 0;
 
 			g_cameraWorld.offsetOrientation(
-			    -lookSensitivity * Radian(rts.x * dt),
-			    lookSensitivity * Radian(rts.y * dt));
+			    -lookSensitivity * Radian(rts.x * dt.asSeconds()),
+			    lookSensitivity * Radian(rts.y * dt.asSeconds()));
 
 			Vector2 lts = axes.leftThumbstick;
 
@@ -332,7 +332,7 @@ INTERNAL void update(f32 dt)
 			if (length(velDir) > 1.0f)
 				velDir = normalize(velDir);
 
-			g_cameraWorld.transform.position += camVel * velDir * dt;
+			g_cameraWorld.transform.position += camVel * velDir * dt.asSeconds();
 
 			// Vibrate
 			if (Input::isGamepadButtonPressed(Input::Gamepad_1,
@@ -370,7 +370,7 @@ INTERNAL void update(f32 dt)
 			velDir = normalize(velDir);
 
 		{
-			g_player->transform.position += playerVel * velDir * dt;
+			g_player->transform.position += playerVel * velDir * dt.asSeconds();
 
 #if 0   // Billboard
 			Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
@@ -402,11 +402,11 @@ INTERNAL void update(f32 dt)
 	g_cameraPlayer.transform.position.x =
 	    Math::lerp(g_cameraPlayer.transform.position.x,
 	               g_player->transform.position.x,
-	               10.0f * dt);
+	               10.0f * dt.asSeconds());
 	g_cameraPlayer.transform.position.z =
 	    Math::lerp(g_cameraPlayer.transform.position.z,
 	               g_player->transform.position.z,
-	               10.0f * dt);
+	               10.0f * dt.asSeconds());
 
 	// g_camera.transform.position.x = player.transform.position.x;
 	f32 aspectRatio =
@@ -523,8 +523,8 @@ void run()
 	TickCounter tc;
 	Clock frameClock;
 
-	f64 accumulator = 0;
-	f64 prevTime = Input::getTime();
+	Time accumulator;
+	Time prevTime{Input::getTime()};
 
 	while (g_running)
 	{
@@ -532,13 +532,13 @@ void run()
 
 		Window::makeContextCurrent();
 
-		f64 currentTime = Input::getTime();
-		f64 dt = currentTime - prevTime;
+		Time currentTime{Input::getTime()};
+		Time dt{currentTime - prevTime};
 		prevTime = currentTime;
 		accumulator += dt;
 
-		if (accumulator > 1.2f) // remove loop of death
-			accumulator = 1.2f;
+		if (accumulator > seconds(1.2f)) // remove loop of death
+			accumulator = seconds(1.2f);
 
 		while (accumulator >= TimeStep)
 		{
@@ -549,7 +549,7 @@ void run()
 			update(TimeStep);
 		}
 
-		if (tc.update(0.5))
+		if (tc.update(seconds(0.5)))
 		{
 			titleStream.str("");
 			titleStream.clear();
@@ -560,8 +560,8 @@ void run()
 		render();
 
 		// Frame Limiter
-		while (frameClock.getElapsedTime() < 1.0 / 240.0)
-			;
+		if (frameClock.getElapsedTime() < seconds(1.0 / 240.0))
+			sleep(seconds(1.0 / 240.0) - frameClock.getElapsedTime());
 		frameClock.restart();
 	}
 }

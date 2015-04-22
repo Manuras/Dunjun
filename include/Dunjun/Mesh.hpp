@@ -71,7 +71,7 @@ private:
 
 	Data m_data;
 
-	mutable b32 m_generated;
+	mutable bool32 m_generated;
 
 	mutable GLuint m_vbo;
 	mutable GLuint m_ibo;

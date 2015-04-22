@@ -1,5 +1,8 @@
 #include <Dunjun/Common.hpp>
 
+#include <chrono>
+#include <thread>
+
 namespace Dunjun
 {
 std::string getFileDirectory(const std::string& filepath)
@@ -10,7 +13,7 @@ std::string getFileDirectory(const std::string& filepath)
 
 namespace BaseDirectory
 {
-const std::string Textures = "data/Textures/";
+const std::string Textures = "data/textures/";
 const std::string Shaders = "data/shaders/";
 } // namespace BaseDirectory
 } // namespace Dunjun

@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 #include <Dunjun/Math.hpp>
+#include <Dunjun/Time.hpp>
 
 #include <vector>
 #include <string>
@@ -189,7 +190,7 @@ enum GamepadId
 	Gamepad_Count = 4,
 };
 
-using GamepadButtons = std::vector<b8>;
+using GamepadButtons = std::vector<bool>;
 
 enum class CursorMode
 {
@@ -214,8 +215,7 @@ bool isMouseButtonPressed(Mouse button);
 
 // Vector2 getScrollOffset();
 
-f64 getTime();
-void setTime(f64 time);
+Time getTime();
 
 // TODO(bill) IMPORTANT(bill): Handle other platforms rather than just
 //                             Windows. I.e. not XInput
@@ -224,7 +224,7 @@ void updateGamepads();
 bool isGamepadPresent(GamepadId gamepadId);
 GamepadAxes getGamepadAxes(GamepadId gamepadId);
 GamepadButtons getGamepadButtons(GamepadId gamepadId);
-b8 isGamepadButtonPressed(GamepadId gamepadId, XboxButton button);
+bool isGamepadButtonPressed(GamepadId gamepadId, XboxButton button);
 // TODO(bill): Get type of gamepad rather than name
 // NOTE(bill): Strings are UTF-8
 std::string getGamepadName(GamepadId gamepadId);

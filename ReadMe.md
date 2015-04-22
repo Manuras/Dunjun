@@ -118,9 +118,16 @@ GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 * [059 - Limit Light Range and Material Structure](https://www.youtube.com/watch?v=P2qFvrkdulU)
 * [060 - GLSL Material and Light Range Calculation](https://www.youtube.com/watch?v=McKbxvSYuLg)
 * [061 - RenderTexture](https://www.youtube.com/watch?v=AjPYDwmSMeY)
-* 062 - Deferred Shading & GBuffer
-* 063 - Deferred Geometry Pass
-* 064 - Deferred Point Lighting
+* [062 - Deferred Shading & GBuffer](https://www.youtube.com/watch?v=slBtFebUrwg)
+* [063 - Deferred Geometry Pass](https://www.youtube.com/watch?v=2kx5Arna9B8)
+* [064 - Deferred Point Lighting](https://www.youtube.com/watch?v=8FlYkWhQKpI)
+* [065 - Resource Holder](https://www.youtube.com/watch?v=pqDYmvEzhIE)
+* 066 - Specialized Holders and glGen* placement
+* 067 - More Holders & Lighting RenderTexture
+* 068 - Directional Lights
+* 069 - #include for GLSL
+* 070 - Time Class & sleep(Time)
+
 
 ## Contact ##
 

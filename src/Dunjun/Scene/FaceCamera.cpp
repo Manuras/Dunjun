@@ -6,7 +6,7 @@
 
 namespace Dunjun
 {
-void FaceCamera::update(f32 dt)
+void FaceCamera::update(Time dt)
 {
 	Vector3 pos = parent->getGlobalTransform().position;
 	Vector3 camPos = camera->transform.position;

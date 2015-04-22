@@ -13,6 +13,7 @@
 #include <Xinput.h>
 
 #include <array>
+#include <chrono>
 
 namespace Dunjun
 {
@@ -428,10 +429,12 @@ bool isMouseButtonPressed(Mouse button)
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
 
 // Time
-f64 getTime() { return glfwGetTime(); }
+Time getTime()
+{ 
+	auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
 
-void setTime(f64 time) { glfwSetTime(time); }
-
+	return microseconds(std::chrono::duration_cast<std::chrono::microseconds>(now).count());
+}
 // Gamepads
 void updateGamepads()
 {

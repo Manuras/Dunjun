@@ -3,26 +3,35 @@
 
 #include <Dunjun/ReadOnly.hpp>
 
-#include <cstdint>
 #include <cstddef>
 
 namespace Dunjun
 {
-// The amount of times that I have swapped between conventions is a lot!
-using s8  = std::int8_t;
-using s16 = std::int16_t;
-using s32 = std::int32_t;
-using s64 = std::int64_t;
+// All "common" platforms use the same size for char, short and int
+// We do not need to include stdint.h/cstdint
 
-using u8  = std::uint8_t;
-using u16 = std::uint16_t;
-using u32 = std::uint32_t;
-using u64 = std::uint64_t;
+// The amount of times that I have swapped between conventions is a lot!
+using s8 = signed char;
+using u8 = unsigned char;
+
+using s16 = signed short;
+using u16 = unsigned short;
+
+using s32 = signed int;
+using u32 = unsigned int;
+
+// Older versions of MSVC do not defined long long as 64 bits so just in case
+#if defined(_MSC_VER)
+using s64 = signed __int64;
+using u64 = unsigned __int64;
+#else
+using s64 = signed long long;
+using u64 = unsigned long long;
+#endif
 
 using usize = std::size_t;
 
-using b8 = bool;
-using b32 = s32;
+using bool32 = s32; // NOTE(bill): might change to b32?
 
 using f32 = float;
 using f64 = double;

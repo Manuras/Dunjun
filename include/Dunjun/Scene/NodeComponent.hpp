@@ -5,6 +5,7 @@
 #include <Dunjun/Types.hpp>
 #include <Dunjun/Common.hpp>
 #include <Dunjun/Transform.hpp>
+#include <Dunjun/Time.hpp>
 #include <Dunjun/Scene/SceneRenderer.hpp>
 
 namespace Dunjun
@@ -20,7 +21,7 @@ public:
 	virtual ~NodeComponent() {}
 
 	virtual void onStart() {}
-	virtual void update(f32 dt) {}
+	virtual void update(Time dt) {}
 	virtual void draw(SceneRenderer& renderer, Transform t) const {}
 
 	SceneNode* parent = nullptr;

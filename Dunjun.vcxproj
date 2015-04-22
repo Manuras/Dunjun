@@ -56,7 +56,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>external/glew;external/glfw-3.1.1.bin.WIN32/lib-vc2013;external/glew-1.12.0/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;glfw3dll.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;glfw3dll.lib;xinput.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -170,6 +170,7 @@
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp" />
     <ClInclude Include="include\Dunjun\Texture.hpp" />
     <ClInclude Include="include\Dunjun\TickCounter.hpp" />
+    <ClInclude Include="include\Dunjun\Time.hpp" />
     <ClInclude Include="include\Dunjun\Transform.hpp" />
     <ClInclude Include="include\Dunjun\Types.hpp" />
     <ClInclude Include="include\Dunjun\Vertex.hpp" />
@@ -180,8 +181,6 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="data\shaders\common.head.glsl" />
-    <None Include="data\shaders\default.frag.glsl" />
-    <None Include="data\shaders\default.vert.glsl" />
     <None Include="cloc.bat" />
     <None Include="data\shaders\deferredAmbientLight.frag.glsl" />
     <None Include="data\shaders\deferredDirectionalLight.frag.glsl" />

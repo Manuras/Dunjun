@@ -5,6 +5,8 @@
 #include <Dunjun/ReadOnly.hpp>
 #include <Dunjun/Transform.hpp>
 #include <Dunjun/NonCopyable.hpp>
+#include <Dunjun/Time.hpp>
+
 #include <Dunjun/Scene/SceneRenderer.hpp>
 
 #include <Dunjun/Scene/NodeComponent.hpp>
@@ -67,7 +69,7 @@ public:
 	Transform getGlobalTransform() const;
 
 	void onStart();
-	void update(f32 dt);
+	void update(Time dt);
 
 	template <class ComponentType, class... Args>
 	ComponentType& addComponent(Args&&... args)
@@ -92,7 +94,7 @@ public:
 	}
 
 	template <class ComponentType>
-	NodeComponent& getComponent()
+	ComponentType& getComponent()
 	{
 		assert(hasComponent<ComponentType>());
 		auto ptr = m_componentArray[getComponentTypeID<ComponentType>()];
@@ -114,8 +116,8 @@ protected:
 	virtual void onStartCurrent();
 	void onStartChildren();
 
-	virtual void updateCurrent(f32 dt);
-	void updateChildren(f32 dt);
+	virtual void updateCurrent(Time dt);
+	void updateChildren(Time dt);
 
 	virtual void drawCurrent(SceneRenderer& renderer, Transform t) const;
 	void drawChildren(SceneRenderer& renderer, Transform t) const;

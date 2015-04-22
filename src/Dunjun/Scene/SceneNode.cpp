@@ -98,7 +98,7 @@ void SceneNode::onStart()
 		component->onStart();
 }
 
-void SceneNode::update(f32 dt)
+void SceneNode::update(Time dt)
 {
 	updateCurrent(dt);
 	updateChildren(dt);
@@ -130,12 +130,12 @@ void SceneNode::onStartChildren()
 		child->onStart();
 }
 
-void SceneNode::updateCurrent(f32 dt)
+void SceneNode::updateCurrent(Time dt)
 {
 	// Do nothing by default
 }
 
-void SceneNode::updateChildren(f32 dt)
+void SceneNode::updateChildren(Time dt)
 {
 	for (UPtr& child : m_children)
 		child->update(dt);

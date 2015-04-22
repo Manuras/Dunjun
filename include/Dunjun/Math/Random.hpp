@@ -33,7 +33,7 @@ public:
 		return dist(m_engine);
 	}
 
-	b8 getBool()
+	bool getBool()
 	{
 		return getInt(0, 1) == 1;
 	}

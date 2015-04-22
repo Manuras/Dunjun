@@ -311,14 +311,15 @@
     <ClInclude Include="external\stb-master\include\stb\stretchy_buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Dunjun\Time.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include="ReadMe.md" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
-    <None Include="data\shaders\default.vert.glsl" />
-    <None Include="data\shaders\default.frag.glsl" />
     <None Include="cloc.bat">
       <Filter>Source Files</Filter>
     </None>
