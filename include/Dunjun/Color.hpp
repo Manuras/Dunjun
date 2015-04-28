@@ -10,10 +10,10 @@ struct Color
 	static const u32 Depth = 256;
 
 	explicit Color(u8 r, u8 g, u8 b, u8 a = (u8)0xFF)
-	: r(r)
-	, g(g)
-	, b(b)
-	, a(a)
+	: r{r}
+	, g{g}
+	, b{b}
+	, a{a}
 	{
 	}
 

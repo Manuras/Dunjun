@@ -30,18 +30,18 @@ public:
 
 		Data& addFace(u32 a, u32 b, u32 c)
 		{
-			indices.push_back(a);
-			indices.push_back(b);
-			indices.push_back(c);
+			indices.emplace_back(a);
+			indices.emplace_back(b);
+			indices.emplace_back(c);
 
 			return *this;
 		}
 
 		Data& addFace(u32 offset, u32 a, u32 b, u32 c)
 		{
-			indices.push_back(offset + a);
-			indices.push_back(offset + b);
-			indices.push_back(offset + c);
+			indices.emplace_back(offset + a);
+			indices.emplace_back(offset + b);
+			indices.emplace_back(offset + c);
 
 			return *this;
 		}

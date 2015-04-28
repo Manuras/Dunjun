@@ -8,9 +8,9 @@ namespace Dunjun
 {
 void FaceCamera::update(Time dt)
 {
-	Vector3 pos = parent->getGlobalTransform().position;
-	Vector3 camPos = camera->transform.position;
+	const Vector3 pos{getParent()->getGlobalTransform().position};
+	const Vector3 camPos{camera->transform.position};
 
-	parent->transform.orientation = conjugate(Math::lookAt<Quaternion>(camPos, pos, up));
+	getParent()->transform.orientation = conjugate(Math::lookAt<Quaternion>(camPos, pos, up));
 }
 } // namespace Dunjun

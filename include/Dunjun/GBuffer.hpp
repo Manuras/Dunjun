@@ -17,10 +17,12 @@ public:
 
 	GLOBAL void bind(const GBuffer* b);
 
-	ReadOnly<u32, GBuffer> width;
-	ReadOnly<u32, GBuffer> height;
+	u32 getWidth() const;
+	u32 getHeight() const;
 
-	ReadOnly<GLuint, GBuffer> fbo;
+	GLuint getNativeHandle() const;
+
+	// TODO(bill): Specific Method(s) for texture retrieval
 
 	Texture diffuse;  // diffuse color (rgb)
 	Texture specular; // specular color (rgb), smootness (a)
@@ -28,6 +30,12 @@ public:
 	// TODO(bill): emission RT
 	// Texture emission;
 	Texture depth;
+
+private:
+	u32 m_width;
+	u32 m_height;
+
+	GLuint m_fbo;
 };
 } // namespace Dunjun
 

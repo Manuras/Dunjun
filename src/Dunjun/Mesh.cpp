@@ -4,14 +4,14 @@ namespace Dunjun
 {
 void Mesh::Data::generateNormals()
 {
-	for (u32 i = 0; i < indices.size(); i += 3)
+	for (u32 i{0}; i < indices.size(); i += 3)
 	{
-		Vertex& v0 = vertices[indices[i + 0]];
-		Vertex& v1 = vertices[indices[i + 1]];
-		Vertex& v2 = vertices[indices[i + 2]];
+		Vertex& v0{vertices[indices[i + 0]]};
+		Vertex& v1{vertices[indices[i + 1]]};
+		Vertex& v2{vertices[indices[i + 2]]};
 
-		Vector3 a = v1.position - v0.position;
-		Vector3 b = v2.position - v1.position;
+		Vector3 a{v1.position - v0.position};
+		Vector3 b{v2.position - v1.position};
 
 		Vector3 normal = normalize(cross(a, b));
 
@@ -20,27 +20,27 @@ void Mesh::Data::generateNormals()
 		v2.normal += normal;
 	}
 
-	for (usize i = 0; i < vertices.size(); i++)
+	for (usize i{0}; i < vertices.size(); i++)
 		vertices[i].normal = normalize(vertices[i].normal);
 }
 
 Mesh::Mesh()
-: m_data()
-, m_generated(false)
-, m_vbo(0)
-, m_ibo(0)
-, m_drawType(GL_TRIANGLES)
-, m_drawCount(0)
+: m_data{}
+, m_generated{false}
+, m_vbo{0}
+, m_ibo{0}
+, m_drawType{GL_TRIANGLES}
+, m_drawCount{0}
 {
 }
 
 Mesh::Mesh(const Data& data)
-: m_data(data)
-, m_generated(false)
-, m_vbo(0)
-, m_ibo(0)
-, m_drawType(data.drawType)
-, m_drawCount(data.indices.size())
+: m_data{data}
+, m_generated{false}
+, m_vbo{0}
+, m_ibo{0}
+, m_drawType{data.drawType}
+, m_drawCount{data.indices.size()}
 {
 	generate();
 }
@@ -91,7 +91,6 @@ void Mesh::draw() const
 	glEnableVertexAttribArray((u32)AtrribLocation::Color);
 	glEnableVertexAttribArray((u32)AtrribLocation::Normal);
 
-
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 
@@ -113,12 +112,13 @@ void Mesh::draw() const
 	                      GL_TRUE,
 	                      sizeof(Vertex), // Stride
 	                      (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2)));
-	glVertexAttribPointer((u32)AtrribLocation::Normal,
-						  3,
-						  GL_FLOAT,
-						  GL_FALSE,
-						  sizeof(Vertex), // Stride
-						  (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2) + sizeof(Color)));
+	glVertexAttribPointer(
+	    (u32)AtrribLocation::Normal,
+	    3,
+	    GL_FLOAT,
+	    GL_FALSE,
+	    sizeof(Vertex), // Stride
+	    (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2) + sizeof(Color)));
 
 	glDrawElements(m_drawType, m_drawCount, GL_UNSIGNED_INT, nullptr);
 
@@ -129,7 +129,6 @@ void Mesh::draw() const
 	glDisableVertexAttribArray((u32)AtrribLocation::TexCoord);
 	glDisableVertexAttribArray((u32)AtrribLocation::Color);
 	glDisableVertexAttribArray((u32)AtrribLocation::Normal);
-
 }
 
 } // namespace Dunjun

@@ -47,7 +47,7 @@ public:
 
 	void setCamera(const Camera& camera);
 
-	const Camera* camera = nullptr;
+	const Camera* camera{nullptr};
 
 	RenderTexture lightingTexture;
 	GBuffer gBuffer;
@@ -61,9 +61,9 @@ private:
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, GLuint position);
 
-	const Material* m_currentMaterial = nullptr;
-	const ShaderProgram* m_currentShaders = nullptr;
-	const Texture* m_currentTexture = nullptr;
+	const Material* m_currentMaterial{nullptr};
+	const ShaderProgram* m_currentShaders{nullptr};
+	const Texture* m_currentTexture{nullptr};
 	
 	std::deque<const DirectionalLight*> m_directionalLights;
 	std::deque<const PointLight*> m_pointsLights;

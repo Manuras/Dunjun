@@ -103,6 +103,7 @@
     <ClCompile Include="src\Dunjun\Scene\SceneNode.cpp" />
     <ClCompile Include="src\Dunjun\ShaderProgram.cpp" />
     <ClCompile Include="src\Dunjun\Texture.cpp" />
+    <ClCompile Include="src\Dunjun\Time.cpp" />
     <ClCompile Include="src\Dunjun\Transform.cpp" />
     <ClCompile Include="src\Dunjun\Window.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -157,7 +158,6 @@
     <ClInclude Include="include\Dunjun\ModelAsset.hpp" />
     <ClInclude Include="include\Dunjun\NonCopyable.hpp" />
     <ClInclude Include="include\Dunjun\OpenGL.hpp" />
-    <ClInclude Include="include\Dunjun\ReadOnly.hpp" />
     <ClInclude Include="include\Dunjun\ResourceHolder.hpp" />
     <ClInclude Include="include\Dunjun\ResourceHolders.hpp" />
     <ClInclude Include="include\Dunjun\Scene\Lighting.hpp" />

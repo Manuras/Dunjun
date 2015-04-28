@@ -16,7 +16,7 @@ void setup()
 {
 	// glfwSetScrollCallback(Game::getGlfwWindow(), scrollCallback);
 
-	for (int i = 0; i < Gamepad_Count; i++)
+	for (int i{0}; i < Gamepad_Count; i++)
 	{
 		// memset(&g_gamepadStates[i], 0, sizeof(XINPUT_STATE));
 		if (isGamepadPresent((GamepadId)i))
@@ -29,7 +29,7 @@ void setup()
 
 void cleanup()
 {
-	for (int i = 0; i < Gamepad_Count; i++)
+	for (int i{0}; i < Gamepad_Count; i++)
 	{
 		if (isGamepadPresent((GamepadId)i))
 			setGamepadVibration((GamepadId)i, 0, 0);
@@ -59,7 +59,7 @@ void setStickyMouseButtons(bool sticky)
 // Keyboard
 bool isKeyPressed(Key key)
 {
-	int code = 0;
+	int code{0};
 
 	switch (key)
 	{
@@ -402,7 +402,7 @@ Vector2 getCursorPosition()
 	f64 x, y;
 	glfwGetCursorPos(Window::g_ptr, &x, &y);
 
-	return Vector2(x, y);
+	return Vector2{x, y};
 }
 
 void setCursorPosition(const Vector2& pos)
@@ -419,18 +419,10 @@ bool isMouseButtonPressed(Mouse button)
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
 
-// Time
-Time getTime()
-{ 
-	auto now = std::chrono::high_resolution_clock::now().time_since_epoch();
-
-	return microseconds(std::chrono::duration_cast<std::chrono::microseconds>(now).count());
-}
-
 // Gamepads
 void updateGamepads()
 {
-	for (usize i = 0; i < Gamepad_Count; i++)
+	for (usize i{0}; i < Gamepad_Count; i++)
 		isGamepadPresent((GamepadId)i);
 }
 
@@ -443,8 +435,8 @@ GamepadAxes getGamepadAxes(GamepadId gamepadId)
 {
 	GamepadAxes axes;
 
-	int count = 0;
-	const f32* glfwAxes = glfwGetJoystickAxes(GLFW_JOYSTICK_1 + (int)gamepadId, &count);
+	int count{0};
+	const f32* glfwAxes{glfwGetJoystickAxes(GLFW_JOYSTICK_1 + (int)gamepadId, &count)};
 
 	if (count >= 3)
 	{
@@ -464,8 +456,8 @@ GamepadButtons getGamepadButtons(GamepadId gamepadId)
 
 	// TODO(bill): Get Gamepad button values for OSX
 
-	int count = 0;
-	const u8* glfwButtons = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + (int)gamepadId, &count);
+	int count{0};
+	const u8* glfwButtons{glfwGetJoystickButtons(GLFW_JOYSTICK_1 + (int)gamepadId, &count)};
 
 	buttons[(int)XboxButton::DpadUp] = false;
 	buttons[(int)XboxButton::DpadDown] = false;

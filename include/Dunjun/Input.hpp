@@ -215,8 +215,6 @@ bool isMouseButtonPressed(Mouse button);
 
 // Vector2 getScrollOffset();
 
-Time getTime();
-
 // TODO(bill) IMPORTANT(bill): Handle other platforms rather than just
 //                             Windows. I.e. not XInput
 void updateGamepads();

@@ -48,7 +48,7 @@ void SceneRenderer::draw(const Mesh* mesh) const
 void SceneRenderer::addModelInstance(const MeshRenderer& meshRenderer,
                                      Transform t)
 {
-	if (meshRenderer.parent->visible) // Just in case
+	if (meshRenderer.getParent()->visible) // Just in case
 		m_modelInstances.push_back({&meshRenderer, t});
 }
 
@@ -85,7 +85,7 @@ void SceneRenderer::geometryPass()
 
 	GBuffer::bind(&gBuffer);
 	{
-		glViewport(0, 0, gBuffer.width, gBuffer.height);
+		glViewport(0, 0, gBuffer.getWidth(), gBuffer.getHeight());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaders.use();
@@ -121,7 +121,7 @@ void SceneRenderer::geometryPass()
 
 void SceneRenderer::lightPass()
 {
-	lightingTexture.create(gBuffer.width, gBuffer.height, RenderTexture::Lighting);
+	lightingTexture.create(gBuffer.getWidth(), gBuffer.getHeight(), RenderTexture::Lighting);
 
 	Texture::bind(&gBuffer.diffuse, 0);
 	Texture::bind(&gBuffer.specular, 1);
@@ -131,7 +131,7 @@ void SceneRenderer::lightPass()
 	RenderTexture::bind(&lightingTexture);
 	{
 		glClearColor(0, 0, 0, 0);
-		glViewport(0, 0, lightingTexture.width, lightingTexture.height);
+		glViewport(0, 0, lightingTexture.getWidth(), lightingTexture.getHeight());
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glDepthMask(GL_FALSE);

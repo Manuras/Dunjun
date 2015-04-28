@@ -13,7 +13,7 @@ public:
 	Random() = default;
 
 	Random(std::mt19937::result_type seed)
-	: m_engine(seed)
+	: m_engine{seed}
 	{
 	}
 
@@ -22,21 +22,18 @@ public:
 	// inclusive
 	s32 getInt(s32 min, s32 max)
 	{
-		std::uniform_int_distribution<s32> dist(min, max);
+		std::uniform_int_distribution<s32> dist{min, max};
 		return dist(m_engine);
 	}
 
 	// inclusive
 	f32 getFloat(f32 min, f32 max)
 	{
-		std::uniform_real_distribution<f32> dist(min, max);
+		std::uniform_real_distribution<f32> dist{min, max};
 		return dist(m_engine);
 	}
 
-	bool getBool()
-	{
-		return getInt(0, 1) == 1;
-	}
+	bool getBool() { return getInt(0, 1) == 1; }
 
 private:
 	std::mt19937 m_engine{std::random_device{}()};

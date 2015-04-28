@@ -27,18 +27,18 @@ INTERNAL GLenum getInteralFormat(ImageFormat format, bool srgb)
 }
 
 Texture::Texture()
-: m_object(0)
-, width(0)
-, height(0)
+: m_object{0}
+, m_width{0}
+, m_height{0}
 {
 }
 
 Texture::Texture(const Image& image,
                  TextureFilter minMagFilter,
                  TextureWrapMode wrapMode)
-: m_object(0)
-, width(image.width)
-, height(image.height)
+: m_object{0}
+, m_width{image.getWidth()}
+, m_height{image.getHeight()}
 {
 	if (!loadFromImage(image, minMagFilter, wrapMode))
 		throw std::runtime_error("Could not create texture from image.");
@@ -60,11 +60,11 @@ bool Texture::loadFromImage(const Image& image,
                             TextureFilter minMagFilter,
                             TextureWrapMode wrapMode)
 {
-	if ((const ImageFormat&)image.format == ImageFormat::None)
+	if (image.getFormat() == ImageFormat::None)
 		return false;
 
-	width = image.width;
-	height = image.height;
+	m_width = image.getWidth();
+	m_height = image.getHeight();
 
 	if (!m_object)
 		glGenTextures(1, &m_object);
@@ -81,13 +81,13 @@ bool Texture::loadFromImage(const Image& image,
 
 	glTexImage2D(GL_TEXTURE_2D,
 	             0,
-	             getInteralFormat(image.format, true),
-	             width,
-	             height,
+	             getInteralFormat(image.getFormat(), true),
+	             m_width,
+	             m_height,
 	             0,
-	             getInteralFormat(image.format, false),
+	             getInteralFormat(image.getFormat(), false),
 	             GL_UNSIGNED_BYTE,
-	             image.pixels);
+	             image.getPixels());
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -117,4 +117,9 @@ void Texture::bind(const Texture* tex, GLuint position)
 	glDisable(GL_TEXTURE_2D);
 }
 
+s32 Texture::getWidth() const { return m_width; }
+
+s32 Texture::getHeight() const { return m_height; }
+
+GLuint Texture::getNativeHandle() const { return m_object; }
 } // namespace Dunjun

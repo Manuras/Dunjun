@@ -15,18 +15,18 @@ public:
 	using Type = T;
 
 	Unit()
-	: m_value(T(0))
+	: m_value{T{0}}
 	{
 	}
 
 	explicit Unit(T value)
-	: m_value(value)
+	: m_value{value}
 	{
 	}
 
 	template <class U>
 	explicit Unit(Unit<Derived, U> value)
-	: m_value(T(value.m_value))
+	: m_value{T{value.m_value}}
 	{
 	}
 
@@ -53,7 +53,7 @@ public:
 
 	bool operator>=(Unit<Derived, T> other) const { return !operator<(other); }
 
-	Unit<Derived, T> operator-() const { return Unit<Derived, T>(-m_value); }
+	Unit<Derived, T> operator-() const { return Unit<Derived, T>{-m_value}; }
 
 	Unit<Derived, T>& operator+=(Unit<Derived, T> other)
 	{
@@ -63,7 +63,7 @@ public:
 
 	Unit<Derived, T> operator+(Unit<Derived, T> other) const
 	{
-		return Unit<Derived, T>(m_value + other.m_value);
+		return Unit<Derived, T>{m_value + other.m_value};
 	}
 
 	Unit<Derived, T>& operator-=(Unit<Derived, T> other)
@@ -74,7 +74,7 @@ public:
 
 	Unit<Derived, T> operator-(Unit<Derived, T> other) const
 	{
-		return Unit<Derived, T>(m_value - other.m_value);
+		return Unit<Derived, T>{m_value - other.m_value};
 	}
 
 	Unit<Derived, T>& operator*=(T number)
@@ -85,7 +85,7 @@ public:
 
 	Unit<Derived, T> operator*(T number) const
 	{
-		return Unit<Derived, T>(m_value * number);
+		return Unit<Derived, T>{m_value * number};
 	}
 
 	Unit<Derived, T>& operator/=(T number)
@@ -96,7 +96,7 @@ public:
 
 	Unit<Derived, T> operator/(T number) const
 	{
-		return Unit<Derived, T>(m_value / number);
+		return Unit<Derived, T>{m_value / number};
 	}
 
 	T operator/(Unit<Derived, T> other) const { return m_value / other.value; }

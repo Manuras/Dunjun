@@ -57,12 +57,16 @@ public:
 	void setUniform(const std::string& name, const Transform& t) const;
 	void setUniform(const std::string& name, const Color& c) const;
 
+	bool isLinked() const;
+	const std::string& getErrorLog() const;
 
-	ReadOnly<GLuint, ShaderProgram> object;
-	ReadOnly<bool, ShaderProgram> isLinked;
-	ReadOnly<std::string, ShaderProgram> errorLog;
+	GLuint getNativeHandle() const;
 
 private:
+	GLuint m_object;
+	bool m_isLinked;
+	std::string m_errorLog;
+
 	mutable std::map<std::string, GLint> m_attribLocations;
 	mutable std::map<std::string, GLint> m_uniformLocations;
 };

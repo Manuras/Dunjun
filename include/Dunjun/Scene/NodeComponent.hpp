@@ -24,10 +24,12 @@ public:
 	virtual void update(Time dt) {}
 	virtual void draw(SceneRenderer& renderer, Transform t) const {}
 
-	SceneNode* parent = nullptr;
+	SceneNode* getParent() const { return m_parent; }
 
 private:
 	friend class SceneNode;
+
+	SceneNode* m_parent{nullptr};
 };
 } // namespace Dunjun
 

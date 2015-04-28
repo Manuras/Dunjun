@@ -37,8 +37,9 @@ struct ModelInstance
 
 namespace
 {
-GLOBAL const Time TimeStep = seconds(1.0f / 60.0f);
-GLOBAL bool g_running = true;
+GLOBAL const Time TimeStep{seconds(1.0f / 60.0f)};
+GLOBAL const Time MaxFrameTime{seconds(1.0 / (2.0f * 144.0f + 1.0f))};
+GLOBAL bool g_running{true};
 } // namespace (anonymous)
 
 GLOBAL Camera g_cameraPlayer;
@@ -70,13 +71,13 @@ INTERNAL void handleInput()
 		Window::g_isFullscreen = !Window::g_isFullscreen;
 		if (Window::g_isFullscreen)
 		{
-			GLFWwindow* w = Window::createWindow(glfwGetPrimaryMonitor());
+			GLFWwindow* w{Window::createWindow(glfwGetPrimaryMonitor())};
 			Window::destroyWindow();
 			Window::g_ptr = w;
 		}
 		else
 		{
-			GLFWwindow* w = Window::createWindow(nullptr);
+			GLFWwindow* w{Window::createWindow(nullptr)};
 			Window::destroyWindow();
 			Window::g_ptr = w;
 		}
@@ -111,7 +112,8 @@ INTERNAL void loadMaterials()
 	g_textureHolder.insertFromFile("default", "default.png");
 	g_textureHolder.insertFromFile("kitten", "kitten.jpg");
 	g_textureHolder.insertFromFile("stone", "stone.png");
-	g_textureHolder.insertFromFile("terrain", "terrain.png", TextureFilter::Nearest);
+	g_textureHolder.insertFromFile(
+	    "terrain", "terrain.png", TextureFilter::Nearest);
 
 	{
 		auto mat = make_unique<Material>();
@@ -206,9 +208,8 @@ INTERNAL void loadInstances()
 		g_rootNode.attachChild(std::move(level));
 	}
 
-	Random random;
-	random.setSeed(1);
-	for (int i = 0; i < 50; i++)
+	Random random{1};
+	for (int i{0}; i < 50; i++)
 	{
 		PointLight light;
 		light.position.x = random.getFloat(-15, 15);
@@ -226,8 +227,8 @@ INTERNAL void loadInstances()
 
 	{
 		DirectionalLight light;
-		light.color = Color(255, 255, 250);
-		light.direction = Vector3(-1, -1, 0.5);
+		light.color = Color{255, 255, 250};
+		light.direction = Vector3{-1, -1, 0.5};
 		light.intensity = 0.5f;
 
 		g_directionalLights.push_back(light);
@@ -236,9 +237,9 @@ INTERNAL void loadInstances()
 	// Init Camera
 	g_cameraPlayer.transform.position = {5, 2, 5};
 	g_cameraPlayer.transform.orientation =
-	    angleAxis(Degree(45), {0, 1, 0}) * angleAxis(Degree(-30), {1, 0, 0});
+	    angleAxis(Degree{45}, {0, 1, 0}) * angleAxis(Degree{-30}, {1, 0, 0});
 
-	g_cameraPlayer.fieldOfView = Degree(50.0f);
+	g_cameraPlayer.fieldOfView = Degree{50.0f};
 	g_cameraPlayer.orthoScale = 8;
 
 	g_cameraWorld = g_cameraPlayer;
@@ -254,16 +255,16 @@ INTERNAL void update(Time dt)
 {
 	g_rootNode.update(dt);
 
-	f32 camVel = 10.0f;
+	f32 camVel{10.0f};
 	{
 		if (Input::isGamepadPresent(Input::Gamepad_1))
 		{
-			Input::GamepadAxes axes = Input::getGamepadAxes(Input::Gamepad_1);
+			Input::GamepadAxes axes{Input::getGamepadAxes(Input::Gamepad_1)};
 
-			const f32 lookSensitivity = 2.0f;
-			const f32 deadZone = 0.21f;
+			const f32 lookSensitivity{2.0f};
+			const f32 deadZone{0.21f};
 
-			Vector2 rts = axes.rightThumbstick;
+			Vector2 rts{axes.rightThumbstick};
 			if (Math::abs(rts.x) < deadZone)
 				rts.x = 0;
 			if (Math::abs(rts.y) < deadZone)
@@ -273,7 +274,7 @@ INTERNAL void update(Time dt)
 			    -lookSensitivity * Radian(rts.x * dt.asSeconds()),
 			    lookSensitivity * Radian(rts.y * dt.asSeconds()));
 
-			Vector2 lts = axes.leftThumbstick;
+			Vector2 lts{axes.leftThumbstick};
 
 			if (Math::abs(lts.x) < deadZone)
 				lts.x = 0;
@@ -283,9 +284,9 @@ INTERNAL void update(Time dt)
 			if (length(lts) > 1.0f)
 				lts = normalize(lts);
 
-			Vector3 velDir = {0, 0, 0};
+			Vector3 velDir{0, 0, 0};
 
-			Vector3 forward = g_cameraWorld.forward();
+			Vector3 forward{g_cameraWorld.forward()};
 			forward.y = 0;
 			forward = normalize(forward);
 			velDir += lts.x * g_cameraWorld.right();
@@ -301,14 +302,14 @@ INTERNAL void update(Time dt)
 
 			if (buttons[(usize)Input::XboxButton::DpadUp])
 			{
-				Vector3 f = g_cameraWorld.forward();
+				Vector3 f{g_cameraWorld.forward()};
 				f.y = 0;
 				f = normalize(f);
 				velDir += f;
 			}
 			if (buttons[(usize)Input::XboxButton::DpadDown])
 			{
-				Vector3 b = g_cameraWorld.backward();
+				Vector3 b{g_cameraWorld.backward()};
 				b.y = 0;
 				b = normalize(b);
 				velDir += b;
@@ -316,14 +317,14 @@ INTERNAL void update(Time dt)
 
 			if (buttons[(usize)Input::XboxButton::DpadLeft])
 			{
-				Vector3 l = g_cameraWorld.left();
+				Vector3 l{g_cameraWorld.left()};
 				l.y = 0;
 				l = normalize(l);
 				velDir += l;
 			}
 			if (buttons[(usize)Input::XboxButton::DpadRight])
 			{
-				Vector3 r = g_cameraWorld.right();
+				Vector3 r{g_cameraWorld.right()};
 				r.y = 0;
 				r = normalize(r);
 				velDir += r;
@@ -332,7 +333,8 @@ INTERNAL void update(Time dt)
 			if (length(velDir) > 1.0f)
 				velDir = normalize(velDir);
 
-			g_cameraWorld.transform.position += camVel * velDir * dt.asSeconds();
+			g_cameraWorld.transform.position +=
+			    camVel * velDir * dt.asSeconds();
 
 			// Vibrate
 			if (Input::isGamepadButtonPressed(Input::Gamepad_1,
@@ -349,7 +351,7 @@ INTERNAL void update(Time dt)
 
 	f32 playerVel = 4.0f;
 	{
-		Vector3 velDir = {0, 0, 0};
+		Vector3 velDir{0, 0, 0};
 
 		if (Input::isKeyPressed(Input::Key::Up))
 			velDir += {0, 0, -1};
@@ -409,8 +411,7 @@ INTERNAL void update(Time dt)
 	               10.0f * dt.asSeconds());
 
 	// g_camera.transform.position.x = player.transform.position.x;
-	f32 aspectRatio =
-	    Window::getFramebufferSize().x / Window::getFramebufferSize().y;
+	f32 aspectRatio{Window::getFramebufferSize().x / Window::getFramebufferSize().y};
 	if (aspectRatio && Window::getFramebufferSize().y > 0)
 	{
 		g_cameraPlayer.viewportAspectRatio = aspectRatio;
@@ -471,7 +472,7 @@ INTERNAL void render()
 
 	g_renderer.camera = g_currentCamera;
 
-	Vector2 fbSize = Window::getFramebufferSize();
+	Vector2 fbSize{Window::getFramebufferSize()};
 
 	g_renderer.gBuffer.create(fbSize.x, fbSize.y);
 
@@ -524,15 +525,15 @@ void run()
 	Clock frameClock;
 
 	Time accumulator;
-	Time prevTime{Input::getTime()};
+	Time prevTime{Time::now()};
+
+	Window::makeContextCurrent();
 
 	while (g_running)
 	{
 		// Window::pollEvents();
 
-		Window::makeContextCurrent();
-
-		Time currentTime{Input::getTime()};
+		Time currentTime{Time::now()};
 		Time dt{currentTime - prevTime};
 		prevTime = currentTime;
 		accumulator += dt;
@@ -560,8 +561,9 @@ void run()
 		render();
 
 		// Frame Limiter
-		if (frameClock.getElapsedTime() < seconds(1.0 / 240.0))
-			sleep(seconds(1.0 / 240.0) - frameClock.getElapsedTime());
+		const Time framelimitTime = MaxFrameTime - frameClock.getElapsedTime();
+		if (framelimitTime > Time::Zero)
+			Time::sleep(framelimitTime);
 		frameClock.restart();
 	}
 }

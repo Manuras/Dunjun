@@ -13,14 +13,14 @@ class MeshRenderer : public NodeComponent
 {
 public:
 	explicit MeshRenderer(const Mesh* mesh, Material* material)
-	: mesh(mesh)
-	, material(material)
+	: mesh{mesh}
+	, material{material}
 	{
 	}
 
 	explicit MeshRenderer(const ModelAsset& asset)
-	: mesh(asset.mesh)
-	, material(asset.material)
+	: mesh{asset.mesh}
+	, material{asset.material}
 	{
 	}
 
@@ -32,8 +32,8 @@ public:
 		renderer.addModelInstance(*this, t);
 	}
 
-	Material* material;
 	const Mesh* mesh;
+	Material* material;
 };
 } // namespace Dunjun
 

@@ -10,39 +10,38 @@ namespace Dunjun
 struct Material
 {
 	/* What a final material will look like
-		shaders
+	    shaders
 
-		diffuse / albedo
-			- map
-			- color
+	    diffuse / albedo
+	    - map
+	    - color
 
-		specular
-			- map
-			- color
-			- exponent / smoothness
+	    specular
+	    - map
+	    - color
+	    - exponent / smoothness
 
 
-		// Other things
+	    // Other things
 
-		ambient occlusion
-			- map
+	    ambient occlusion
+	    - map
 
-		emissive
-			- map
+	    emissive
+	    - map
 
-		detail
-			- map
-			- color
-	*/
+	    detail
+	    - map
+	    - color
+	    */
 
-	ShaderProgram* shaders = nullptr;
+	ShaderProgram* shaders{nullptr};
 
-	Texture* diffuseMap = nullptr;
-	Color diffuseColor = Color(0xFF, 0xFF, 0xFF);
+	Texture* diffuseMap{nullptr};
+	Color diffuseColor{0xFF, 0xFF, 0xFF};
 
-	Color specularColor = Color(0xFF, 0xFF, 0xFF);
-	f32 specularExponent = 80.0f;
-
+	Color specularColor{0xFF, 0xFF, 0xFF};
+	f32 specularExponent{80.0f};
 };
 } // namespace Dunjun
 

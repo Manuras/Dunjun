@@ -24,14 +24,14 @@ struct TileId
 	TileId() {}
 
 	TileId(s16 x, s16 y)
-	: x(x)
-	, y(y)
+	: x{x}
+	, y{y}
 	{
 	}
 
 	TileId(s16 xy[2])
-	: x(xy[0])
-	, y(xy[1])
+	: x{xy[0]}
+	, y{xy[1]}
 	{
 	}
 
@@ -42,8 +42,8 @@ struct TileId
 
 	inline bool operator!=(const TileId& id) { return !operator==(id); }
 
-	s16 x = 0;
-	s16 y = 0;
+	s16 x{0};
+	s16 y{0};
 };
 
 using RandomTileSet = std::vector<TileId>;
@@ -61,24 +61,20 @@ public:
 		{
 		}
 
-		u16 x = 0;
-		u16 y = 0;
+		u16 x{0};
+		u16 y{0};
 	};
 
-	GLOBAL const s32 Height = 3;
+	GLOBAL const s32 Height{3};
 
-	explicit Room(Random& random,
-				  const Room::Size& size);
+	explicit Room(Random& random, const Room::Size& size);
 
 	virtual ~Room() override;
 
 	const Room::Size size;
 	Material* material;
 
-	void generate(bool northDoor,
-				  bool eastDoor,
-				  bool southDoor,
-				  bool westDoor);
+	void generate(bool northDoor, bool eastDoor, bool southDoor, bool westDoor);
 
 protected:
 	void addTileSurface(const Vector3& position,

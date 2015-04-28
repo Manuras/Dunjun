@@ -5,64 +5,64 @@
 namespace Dunjun
 {
 Vector4::Vector4()
-: x(0)
-, y(0)
-, z(0)
-, w(0)
+: x{0}
+, y{0}
+, z{0}
+, w{0}
 {
 }
 
 Vector4::Vector4(f32 xyzw)
-: x(xyzw)
-, y(xyzw)
-, z(xyzw)
-, w(xyzw)
+: x{xyzw}
+, y{xyzw}
+, z{xyzw}
+, w{xyzw}
 {
 }
 
 Vector4::Vector4(f32 x, f32 y, f32 z, f32 w)
-: x(x)
-, y(y)
-, z(z)
-, w(w)
+: x{x}
+, y{y}
+, z{z}
+, w{w}
 {
 }
 
 Vector4::Vector4(f32 xyzw[4])
-: x(xyzw[0])
-, y(xyzw[1])
-, z(xyzw[2])
-, w(xyzw[3])
+: x{xyzw[0]}
+, y{xyzw[1]}
+, z{xyzw[2]}
+, w{xyzw[3]}
 {
 }
 
 Vector4::Vector4(const Vector2& xy, f32 z, f32 w)
-: x(xy.x)
-, y(xy.y)
-, z(z)
-, w(w)
+: x{xy.x}
+, y{xy.y}
+, z{z}
+, w{w}
 {
 }
 
 Vector4::Vector4(const Vector2& xy, const Vector2& zw)
-: x(xy.x)
-, y(xy.y)
-, z(zw.x)
-, w(zw.y)
+: x{xy.x}
+, y{xy.y}
+, z{zw.x}
+, w{zw.y}
 {
 }
 
 Vector4::Vector4(const Vector3& xyz, f32 w)
-: x(xyz.x)
-, y(xyz.y)
-, z(xyz.z)
-, w(w)
+: x{xyz.x}
+, y{xyz.y}
+, z{xyz.z}
+, w{w}
 {
 }
 
 bool Vector4::operator==(const Vector4& other) const
 {
-	for (usize i = 0; i < 4; i++)
+	for (usize i{0}; i < 4; i++)
 	{
 		if (data[i] != other.data[i])
 			return false;
@@ -80,24 +80,24 @@ Vector4 Vector4::operator-() const { return {-x, -y, -z, -w}; }
 
 Vector4 Vector4::operator+(const Vector4& other) const
 {
-	return Vector4(x + other.x, y + other.y, z + other.z, w + other.w);
+	return {x + other.x, y + other.y, z + other.z, w + other.w};
 }
 
 Vector4 Vector4::operator-(const Vector4& other) const
 {
-	return Vector4(x - other.x, y - other.y, z - other.z, w - other.w);
+	return {x - other.x, y - other.y, z - other.z, w - other.w};
 }
 
 Vector4 Vector4::operator*(f32 scalar) const
 {
-	return Vector4(scalar * x, scalar * y, scalar * z, scalar * w);
+	return {scalar * x, scalar * y, scalar * z, scalar * w};
 }
 
 // Hadamard Product
 Vector4 Vector4::operator*(const Vector4& other) const
 {
 	Vector4 result;
-	for (usize i = 0; i < 4; i++)
+	for (usize i{0}; i < 4; i++)
 		result[i] = data[i] * other.data[i];
 	return result;
 }
@@ -106,14 +106,14 @@ Vector4 Vector4::operator*(const Vector4& other) const
 Vector4 Vector4::operator/(const Vector4& other) const
 {
 	Vector4 result;
-	for (usize i = 0; i < 4; i++)
+	for (usize i{0}; i < 4; i++)
 		result[i] = data[i] / other.data[i];
 	return result;
 }
 
 Vector4 Vector4::operator/(f32 scalar) const
 {
-	return Vector4(x / scalar, y / scalar, z / scalar, w / scalar);
+	return {x / scalar, y / scalar, z / scalar, w / scalar};
 }
 
 Vector4& Vector4::operator+=(const Vector4& other)

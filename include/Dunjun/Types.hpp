@@ -1,8 +1,6 @@
 #ifndef DUNJUN_TYPES_HPP
 #define DUNJUN_TYPES_HPP
 
-#include <Dunjun/ReadOnly.hpp>
-
 #include <cstddef>
 
 namespace Dunjun

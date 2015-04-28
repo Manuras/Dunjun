@@ -2,7 +2,6 @@
 #define DUNJUN_SCENE_SCENENODE_HPP
 
 #include <Dunjun/Common.hpp>
-#include <Dunjun/ReadOnly.hpp>
 #include <Dunjun/Transform.hpp>
 #include <Dunjun/NonCopyable.hpp>
 #include <Dunjun/Time.hpp>
@@ -76,9 +75,9 @@ public:
 	{
 		assert(!hasComponent<ComponentType>());
 
-		ComponentType* component(
-			new ComponentType(std::forward<Args>(args)...));
-		component->parent = this;
+		ComponentType* component{
+		    new ComponentType{std::forward<Args>(args)...}};
+		component->m_parent = this;
 		m_components.push_back(std::unique_ptr<NodeComponent>(component));
 
 		m_componentArray[getComponentTypeID<ComponentType>()] = component;
@@ -97,16 +96,17 @@ public:
 	ComponentType& getComponent()
 	{
 		assert(hasComponent<ComponentType>());
-		auto ptr = m_componentArray[getComponentTypeID<ComponentType>()];
+		auto ptr{m_componentArray[getComponentTypeID<ComponentType>()]};
 		return *reinterpret_cast<ComponentType*>(ptr);
 	}
 
-	using ID = u64;
-	const ID id;
+	SceneNode* getParent() const { return m_parent; }
+
+	using Id = u64;
+	const Id id;
 	std::string name;
 	Transform transform;
-	ReadOnly<SceneNode*, SceneNode> parent;
-	bool visible = true;
+	bool visible{true};
 
 protected:
 	friend class SceneRenderer;
@@ -122,6 +122,7 @@ protected:
 	virtual void drawCurrent(SceneRenderer& renderer, Transform t) const;
 	void drawChildren(SceneRenderer& renderer, Transform t) const;
 
+	SceneNode* m_parent{nullptr};
 	std::deque<UPtr> m_children;
 
 	std::deque<NodeComponent::UPtr> m_components;

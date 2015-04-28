@@ -10,8 +10,8 @@ class FaceCamera : public NodeComponent
 {
 public:
 	explicit FaceCamera(const Camera& camera, const Vector3& up = {0, 1, 0})
-	: camera(&camera)
-	, up(up)
+	: camera{&camera}
+	, up{up}
 	{
 	}
 

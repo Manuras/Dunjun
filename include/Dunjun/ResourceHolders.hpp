@@ -17,8 +17,8 @@ public:
 	                    TextureFilter minMagFilter = TextureFilter::Linear,
 	                    TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge)
 	{
-		auto tex = make_unique<Texture>();
-		bool t = tex->loadFromFile(BaseDirectory::Textures + filename, minMagFilter, wrapMode);
+		std::unique_ptr<Texture> tex{make_unique<Texture>()};
+		bool t{tex->loadFromFile(BaseDirectory::Textures + filename, minMagFilter, wrapMode)};
 		if (t)
 			insert(id, std::move(tex));
 		return t;
@@ -30,8 +30,8 @@ public:
 	                    TextureFilter minMagFilter = TextureFilter::Linear,
 	                    TextureWrapMode wrapMode = TextureWrapMode::ClampToEdge)
 	{
-		auto tex = make_unique<Texture>();
-		bool t = tex->loadFromImage(image, minMagFilter, wrapMode);
+		std::unique_ptr<Texture> tex{make_unique<Texture>()};
+		bool t{tex->loadFromImage(image, minMagFilter, wrapMode)};
 		if (t)
 			insert(id, std::move(tex));
 
@@ -47,17 +47,17 @@ public:
 	                    const std::string& fragmentFilename,
 	                    bool bindDefaultAttribLocation = true)
 	{
-		auto shaders = make_unique<ShaderProgram>();
+		std::unique_ptr<ShaderProgram> shaders{make_unique<ShaderProgram>()};
 		if (!shaders->attachShaderFromFile(ShaderType::Vertex, vertexFilename))
 		{
-			std::cerr << (const std::string&)shaders->errorLog << std::endl;
+			std::cerr << shaders->getErrorLog() << std::endl;
 
 			return false;
 		}
 		if (!shaders->attachShaderFromFile(ShaderType::Fragment,
 		                                   fragmentFilename))
 		{
-			std::cerr << (const std::string&)shaders->errorLog << std::endl;
+			std::cerr << shaders->getErrorLog() << std::endl;
 
 			return false;
 		}
@@ -75,7 +75,7 @@ public:
 
 		if (!shaders->link())
 		{
-			std::cerr << (const std::string&)shaders->errorLog << std::endl;
+			std::cerr << shaders->getErrorLog() << std::endl;
 
 			return false;
 		}

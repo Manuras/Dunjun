@@ -7,20 +7,20 @@ namespace Dunjun
 {
 namespace Impl
 {
-inline SceneNode::ID getUniqueSceneNodeID()
+inline SceneNode::Id getUniqueSceneNodeId()
 {
-	LOCAL_PERSIST SceneNode::ID lastID = 0;
+	LOCAL_PERSIST SceneNode::Id lastID{0};
 	return lastID++;
 }
 } // namespace Impl
 
 SceneNode::SceneNode()
-: m_children()
-, id(Impl::getUniqueSceneNodeID())
-, name("")
-, transform()
-, parent(nullptr)
-, visible(true)
+: m_children{}
+, id{Impl::getUniqueSceneNodeId()}
+, name{}
+, transform{}
+, visible{true}
+, m_parent{nullptr}
 {
 	std::stringstream ss;
 	ss << "node_" << id;
@@ -29,7 +29,7 @@ SceneNode::SceneNode()
 
 SceneNode& SceneNode::attachChild(UPtr child)
 {
-	child->parent = this;
+	child->m_parent = this;
 	m_children.push_back(std::move(child));
 
 	return *this;
@@ -46,9 +46,9 @@ SceneNode::UPtr SceneNode::detachChild(const SceneNode& node)
 
 	if (found != m_children.end()) // Child was found
 	{
-		UPtr result = std::move(*found);
+		UPtr result{std::move(*found)};
 
-		result->parent = nullptr;
+		result->m_parent = nullptr;
 		m_children.erase(found);
 
 		return result;
@@ -84,7 +84,7 @@ Transform SceneNode::getGlobalTransform() const
 {
 	Transform result;
 
-	for (const SceneNode* node = this; node != nullptr; node = node->parent)
+	for (const SceneNode* node{this}; node != nullptr; node = node->getParent())
 		result *= node->transform;
 
 	return result;

@@ -6,21 +6,22 @@ namespace Dunjun
 {
 namespace Window
 {
-GLFWwindow* g_ptr = nullptr;
-bool g_isFullscreen = false;
+GLFWwindow* g_ptr{nullptr};
+bool g_isFullscreen{false};
 
 namespace
 {
-GLOBAL const int g_windowWidth = 1280;
-GLOBAL const int g_windowHeight = 720;
+GLOBAL const int g_windowWidth{1280};
+GLOBAL const int g_windowHeight{720};
 
-GLOBAL int g_width = g_windowWidth;
-GLOBAL int g_height = g_windowHeight;
+GLOBAL int g_width{g_windowWidth};
+GLOBAL int g_height{g_windowHeight};
 } // namespace (anonymous)
 
 // GLFW Specific Callback Prototypes
 INTERNAL void resizeCallback(GLFWwindow* window, int width, int height);
-INTERNAL void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+INTERNAL void
+    framebufferSizeCallback(GLFWwindow* window, int width, int height);
 INTERNAL void errorCallback(int error, const char* description);
 INTERNAL void windowRefreshCallback(GLFWwindow* window);
 
@@ -82,7 +83,7 @@ GLFWwindow* createWindow(GLFWmonitor* monitor)
 	}
 
 	GLFWwindow* w = glfwCreateWindow(
-		Window::g_width, Window::g_height, "Dunjun", monitor, Window::g_ptr);
+	    Window::g_width, Window::g_height, "Dunjun", monitor, Window::g_ptr);
 
 	// Set GLFW specific callbacks
 	glfwSetFramebufferSizeCallback(w, framebufferSizeCallback);
@@ -103,7 +104,7 @@ GLFWwindow* createWindow(GLFWmonitor* monitor, u32 width, u32 height)
 
 	if (monitor) // Fullscreen
 	{
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		const GLFWvidmode* mode{glfwGetVideoMode(monitor)};
 
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -126,7 +127,7 @@ GLFWwindow* createWindow(GLFWmonitor* monitor, u32 width, u32 height)
 	}
 
 	GLFWwindow* w = glfwCreateWindow(
-		Window::g_width, Window::g_height, "Dunjun", monitor, Window::g_ptr);
+	    Window::g_width, Window::g_height, "Dunjun", monitor, Window::g_ptr);
 
 	// Set GLFW specific callbacks
 	glfwSetFramebufferSizeCallback(w, framebufferSizeCallback);
@@ -138,39 +139,27 @@ GLFWwindow* createWindow(GLFWmonitor* monitor, u32 width, u32 height)
 	return w;
 }
 
-void destroyWindow()
-{
-	glfwDestroyWindow(Window::g_ptr);
-}
+void destroyWindow() { glfwDestroyWindow(Window::g_ptr); }
 
 void destroyWindow(GLFWwindow* windowPtr) { glfwDestroyWindow(windowPtr); }
 
-void makeContextCurrent()
-{
-	glfwMakeContextCurrent(Window::g_ptr);
-}
+void makeContextCurrent() { glfwMakeContextCurrent(Window::g_ptr); }
 
 void swapInterval(int i) { glfwSwapInterval(i); }
 
-bool shouldClose()
-{
-	return glfwWindowShouldClose(Window::g_ptr) == 1;
-}
+bool shouldClose() { return glfwWindowShouldClose(Window::g_ptr) == 1; }
 
-void swapBuffers()
-{
-	glfwSwapBuffers(Window::g_ptr);
-}
+void swapBuffers() { glfwSwapBuffers(Window::g_ptr); }
 
 void pollEvents() { glfwPollEvents(); }
 
-void setTitle(const char* title)
-{
-	glfwSetWindowTitle(Window::g_ptr, title);
-}
+void setTitle(const char* title) { glfwSetWindowTitle(Window::g_ptr, title); }
 
-Vector2 getWindowSize() { return Vector2(static_cast<f32>(Window::g_width),
-										 static_cast<f32>(Window::g_height)); }
+Vector2 getWindowSize()
+{
+	return Vector2{static_cast<f32>(Window::g_width),
+	               static_cast<f32>(Window::g_height)};
+}
 
 Vector2 getFramebufferSize()
 {
@@ -179,7 +168,7 @@ Vector2 getFramebufferSize()
 
 	glfwGetFramebufferSize(Window::g_ptr, &width, &height);
 
-	return Vector2(width, height);
+	return Vector2{static_cast<f32>(width), static_cast<f32>(height)};
 }
 
 bool isInFocus()
@@ -213,9 +202,6 @@ INTERNAL void errorCallback(int error, const char* description)
 
 INTERNAL void windowRefreshCallback(GLFWwindow* window)
 {
-	Vector2 fbSize = getFramebufferSize();
-	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
-
 	glfwMakeContextCurrent(window);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);

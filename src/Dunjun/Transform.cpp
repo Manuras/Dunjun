@@ -28,7 +28,7 @@ Transform operator/(const Transform& ws, const Transform& ps)
 {
 	Transform ls;
 
-	const Quaternion psConjugate = conjugate(ps.orientation);
+	const Quaternion psConjugate{conjugate(ps.orientation)};
 
 	ls.position = (psConjugate * (ws.position - ps.position)) / ps.scale;
 	ls.orientation = psConjugate * ws.orientation;
@@ -47,7 +47,7 @@ Transform& operator/=(Transform& ws, const Transform& ps)
 // TODO(bill): inverse of Transform without division trick
 Transform inverse(const Transform& t)
 {
-	const Transform i = Transform();
+	const Transform i{};
 	return i / t;
 }
 

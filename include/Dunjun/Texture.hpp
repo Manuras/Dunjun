@@ -42,12 +42,17 @@ public:
 
 	GLOBAL void bind(const Texture* tex, GLuint position);
 
-	GLsizei width;
-	GLsizei height;
+	s32 getWidth() const;
+	s32 getHeight() const;
+
+	GLuint getNativeHandle() const;
 
 private:
 	friend class RenderTexture;
 	friend class GBuffer;
+
+	s32 m_width;
+	s32 m_height;
 
 	GLuint m_object;
 };

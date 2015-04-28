@@ -18,11 +18,11 @@ struct Vertex
 	Vertex(const Vector3& position = {0, 0, 0},
 	       const Vector2& texCoord = {0, 0},
 	       const Color& color = Color(0xFFFFFFFF),
-		   const Vector3& normal = {0, 0, 0})
-	: position(position)
-	, texCoord(texCoord)
-	, color(color)
-	, normal(normal)
+	       const Vector3& normal = {0, 0, 0})
+	: position{position}
+	, texCoord{texCoord}
+	, color{color}
+	, normal{normal}
 	{
 	}
 };
@@ -39,8 +39,8 @@ public:
 
 	inline VertexArray& append(const Vector3& position = {0, 0, 0},
 	                           const Vector2& texCoord = {0, 0},
-							   const Color& color = Color(0xFFFFFFFF),
-							   const Vector3& normal = {0, 0, 0})
+	                           const Color& color = Color(0xFFFFFFFF),
+	                           const Vector3& normal = {0, 0, 0})
 	{
 		return append(Vertex(position, texCoord, color, normal));
 	}

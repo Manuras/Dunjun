@@ -29,14 +29,25 @@ public:
 
 	GLOBAL void bind(const RenderTexture* rt);
 
-	ReadOnly<u32, RenderTexture> width;
-	ReadOnly<u32, RenderTexture> height;
+	u32 getWidth() const;
+	u32 getHeight() const;
 
-	ReadOnly<TextureType, RenderTexture> type;
+	TextureType getType() const;
 
+	GLuint getNativeHandle() const;
+
+	// TODO(bill): Specific Method(s) for Textures
 	Texture colorTexture;
 	Texture depthTexture;
-	ReadOnly<GLuint, RenderTexture> fbo; // framebuffer
+
+private:
+	u32 m_width;
+	u32 m_height;
+
+	TextureType m_type;
+
+
+	GLuint m_fbo; // framebuffer
 };
 } // namespace Dunjun
 

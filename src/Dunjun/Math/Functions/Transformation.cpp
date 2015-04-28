@@ -10,18 +10,18 @@ namespace Math
 Matrix4 translate(const Vector3& v)
 {
 	Matrix4 result;
-	result[3] = Vector4(v, 1);
+	result[3] = Vector4{v, 1};
 	return result;
 }
 
 // Angle in Radians
 Matrix4 rotate(const Radian& angle, const Vector3& v)
 {
-	const f32 c = Math::cos(angle);
-	const f32 s = Math::sin(angle);
+	const f32 c{Math::cos(angle)};
+	const f32 s{Math::sin(angle)};
 
-	const Vector3 axis(normalize(v));
-	const Vector3 t = (1.0f - c) * axis;
+	const Vector3 axis{normalize(v)};
+	const Vector3 t{(1.0f - c) * axis};
 
 	Matrix4 rot;
 	rot[0][0] = c + t[0] * axis[0];
@@ -44,8 +44,8 @@ Matrix4 rotate(const Radian& angle, const Vector3& v)
 
 Matrix4 scale(const Vector3& v)
 {
-	Matrix4 result(
-	    {v.x, 0, 0, 0}, {0, v.y, 0, 0}, {0, 0, v.z, 0}, {0, 0, 0, 1});
+	Matrix4 result{
+		{v.x, 0, 0, 0}, {0, v.y, 0, 0}, {0, 0, v.z, 0}, {0, 0, 0, 1}};
 	return result;
 }
 
@@ -80,9 +80,9 @@ Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar)
 {
 	assert(Math::abs(aspect - std::numeric_limits<f32>::epsilon()) > 0.0f);
 
-	const f32 tanHalfFovy = Math::tan(0.5f * fovy);
+	const f32 tanHalfFovy{Math::tan(0.5f * fovy)};
 
-	Matrix4 result(0.0f);
+	Matrix4 result{0.0f};
 	result[0][0] = 1.0f / (aspect * tanHalfFovy);
 	result[1][1] = 1.0f / (tanHalfFovy);
 	result[2][2] = -(zFar + zNear) / (zFar - zNear);
@@ -94,13 +94,13 @@ Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar)
 
 Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear)
 {
-	const f32 range = Math::tan(0.5f * fovy) * zNear;
-	const f32 left = -range * aspect;
-	const f32 right = range * aspect;
-	const f32 bottom = -range;
-	const f32 top = range;
+	const f32 range{Math::tan(0.5f * fovy) * zNear};
+	const f32 left{-range * aspect};
+	const f32 right{range * aspect};
+	const f32 bottom{-range};
+	const f32 top{range};
 
-	Matrix4 result(0.0f);
+	Matrix4 result{0.0f};
 
 	result[0][0] = (2.0f * zNear) / (right - left);
 	result[1][1] = (2.0f * zNear) / (top - bottom);
@@ -116,9 +116,9 @@ Matrix4 lookAt<Matrix4>(const Vector3& eye,
                         const Vector3& center,
                         const Vector3& up)
 {
-	const Vector3 f(normalize(center - eye));
-	const Vector3 s(normalize(cross(f, up)));
-	const Vector3 u(cross(s, f));
+	const Vector3 f{normalize(center - eye)};
+	const Vector3 s{normalize(cross(f, up))};
+	const Vector3 u{cross(s, f)};
 
 	Matrix4 result;
 	result[0][0] = +s.x;
@@ -146,10 +146,10 @@ Quaternion lookAt<Quaternion>(const Vector3& eye,
                               const Vector3& center,
                               const Vector3& up)
 {
-	const f32 similar = 0.001f;
+	const f32 similar{0.001f};
 
 	if (length(center - eye) < similar)
-		return Quaternion(); // You cannot look at where you are!
+		return Quaternion{}; // You cannot look at where you are!
 
 	return matrix4ToQuaternion(lookAt<Matrix4>(eye, center, up));
 

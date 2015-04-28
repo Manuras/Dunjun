@@ -51,5 +51,5 @@ void main()
 	vec4 lightColor =
 	    calculatePointLight(surfaceToLight, distanceToLight, normal);
 
-	gl_FragColor = vec4(lightColor.rgb, 1.0);
+	gl_FragColor = lightColor;
 }
