@@ -14,7 +14,7 @@ namespace
 GLOBAL const Dimensions g_windowSize{1280, 720};
 
 GLOBAL Dimensions g_size{g_windowSize.width, g_windowSize.height};
-} // namespace (anonymous)F
+} // namespace (anonymous)
 
 // GLFW Specific Callback Prototypes
 INTERNAL void resizeCallback(GLFWwindow* window, int width, int height);

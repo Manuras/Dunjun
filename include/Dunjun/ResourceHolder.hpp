@@ -94,6 +94,7 @@ public:
 	}
 
 protected:
+	// TODO(bill): Is an `unordered_map` really better than a `map`?
 	std::unordered_map<Identifier, ResourceUPtr> m_resources;
 };
 } // namespace Dunjun

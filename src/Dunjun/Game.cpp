@@ -2,6 +2,7 @@
 #include <Dunjun/Game.hpp>
 
 #include <Dunjun/Clock.hpp>
+#include <Dunjun/Input.hpp>
 #include <Dunjun/Level/Level.hpp>
 #include <Dunjun/ResourceHolders.hpp>
 #include <Dunjun/Scene.hpp>

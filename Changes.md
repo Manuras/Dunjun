@@ -13,7 +13,6 @@
 	- `Type a{...};` vs `Type a = ...;` etc.
 * `var.begin()` -> `std::begin(var)`
 * `var.end()` -> `std::end(var)`
-* OpenGL Type `object` -> `getNativeHandle() return m_handle`
 
 ### Time
 
@@ -31,13 +30,14 @@
 
 * Compiler Detection
 * Environment Bit Size Detection
+* Custom `f16` half-precision floating point - to be used later for data packing
 * GL[u]int -> [us]32 etc.
 	- Compile-time check of sizes (just to make sure) `<Dunjun/OpenGL.cpp>`
 	- OpenGL types are fixed values compared to C/C++ types which can be different sizes
+* OpenGL Type `object` -> `getNativeHandle() return m_handle`
 * `push_back` -> `emplace_back`
 * ResourceHolder
 	- `std::map` -> `std::unordered_map`
-* Custom `f16` half-precision floating point - to be used later for data packing
 
 ## Small
 
@@ -53,7 +53,7 @@
 
 * `Math::Contansts::` -> `Math::`
 * `<cfloat>` -> `<limits>`
-* `enum class DrawType : GLenum`
+* `enum class DrawType : s32`
 
 ### Window
 
