@@ -2,7 +2,7 @@
 #ifdef DUNJUN_SYSTEM_WINDOWS
 #include <Dunjun/Input.hpp>
 
-#include <Dunjun/Window.hpp>
+//#include <Dunjun/Window.hpp>
 #include <Dunjun/Game.hpp>
 
 #define VC_EXTRALEAN
@@ -47,22 +47,22 @@ void cleanup()
 
 void setCursorMode(CursorMode mode)
 {
-	if (mode == CursorMode::Normal)
+	/*if (mode == CursorMode::Normal)
 		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	if (mode == CursorMode::Hidden)
 		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	if (mode == CursorMode::Disabled)
-		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);*/
 }
 
 void setStickyKeys(bool sticky)
 {
-	glfwSetInputMode(Window::getHandle(), GLFW_STICKY_KEYS, sticky);
+	//glfwSetInputMode(Window::getHandle(), GLFW_STICKY_KEYS, sticky);
 }
 
 void setStickyMouseButtons(bool sticky)
 {
-	glfwSetInputMode(Window::getHandle(), GLFW_STICKY_MOUSE_BUTTONS, sticky);
+	//glfwSetInputMode(Window::getHandle(), GLFW_STICKY_MOUSE_BUTTONS, sticky);
 }
 
 // Keyboard
@@ -402,28 +402,31 @@ bool isKeyPressed(Key key)
 	if (code == 0)
 		return false;
 
-	return glfwGetKey(Window::getHandle(), code) == 1;
+	return false;
+	//return glfwGetKey(Window::getHandle(), code) == 1;
 }
 
 // Cursor
 Vector2 getCursorPosition()
 {
-	f64 x, y;
-	glfwGetCursorPos(Window::getHandle(), &x, &y);
+	return {0, 0};
+	//f64 x, y;
+	//glfwGetCursorPos(Window::getHandle(), &x, &y);
 
-	return Vector2{static_cast<f32>(x), static_cast<f32>(y)};
+	//return Vector2{static_cast<f32>(x), static_cast<f32>(y)};
 }
 
 void setCursorPosition(const Vector2& pos)
 {
-	glfwSetCursorPos(
-	    Window::getHandle(), static_cast<f64>(pos.x), static_cast<f64>(pos.y));
+	//glfwSetCursorPos(
+	    //Window::getHandle(), static_cast<f64>(pos.x), static_cast<f64>(pos.y));
 }
 
 // Mouse
 bool isMouseButtonPressed(Mouse button)
 {
-	return glfwGetMouseButton(Window::getHandle(), (int)button) == 1;
+	return false;
+	//return glfwGetMouseButton(Window::getHandle(), (int)button) == 1;
 }
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
@@ -536,12 +539,12 @@ void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor)
 // Clipboard
 std::string getClipboardString()
 {
-	return glfwGetClipboardString(Window::getHandle());
+	return{};// return glfwGetClipboardString(Window::getHandle());
 }
 
 void setClipboardString(const std::string& str)
 {
-	glfwSetClipboardString(Window::getHandle(), str.c_str());
+	//glfwSetClipboardString(Window::getHandle(), str.c_str());
 }
 
 } // namespace Input

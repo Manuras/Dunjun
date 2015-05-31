@@ -57,7 +57,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)/external/glew-1.12.0/include;$(ProjectDir)/external/glfw-3.1.1.bin.WIN32/include;$(ProjectDir)/external/stb-master/include;$(ProjectDir)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/external/glew-1.12.0/include;$(ProjectDir)/external/SDL2-2.0.3/include;$(ProjectDir)/external/glfw-3.1.1.bin.WIN32/include;$(ProjectDir)/external/stb-master/include;$(ProjectDir)/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_DEPRECATE;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
       <AssemblerListingLocation>$(IntDir)\</AssemblerListingLocation>
@@ -72,8 +72,9 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>external/glew;external/glfw-3.1.1.bin.WIN32/lib-vc2013;external/glew-1.12.0/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;glfw3dll.lib;xinput.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/external/glew;$(ProjectDir)/external/SDL2-2.0.3/lib/x86;$(ProjectDir)/external/glfw-3.1.1.bin.WIN32/lib-vc2013;$(ProjectDir)/external/glew-1.12.0/lib/Release/Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;SDL2.lib;SDL2main.lib;glfw3.lib;glfw3dll.lib;xinput.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

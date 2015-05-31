@@ -4,18 +4,23 @@
 #include <Dunjun/Math.hpp>
 
 #include <Dunjun/OpenGL.hpp>
-#include <GLFW/glfw3.h>
+
+#include <Dunjun/Clock.hpp>
+
+#include <SDL/SDL.h>
 
 #include <string>
 
 namespace Dunjun
 {
-namespace Window
-{
 struct Dimensions
 {
-	int width;
-	int height;
+	Dimensions() = default;
+	Dimensions(int width, int height)
+	: width{width}
+	, height{height}
+	{
+	}
 
 	inline f32 aspectRatio() const
 	{
@@ -24,36 +29,117 @@ struct Dimensions
 
 		return static_cast<f32>(width) / static_cast<f32>(height);
 	}
+
+	int width;
+	int height;
 };
 
-GLFWwindow* getHandle();
-void setHandle(GLFWwindow* w);
+namespace Style
+{
+	enum : u32
+	{
+		Borderless = 1,
+		Windowed   = 2,
+		Fullscreen = 4,
+		Visible    = 8,
+		Hidden     = 16,
+		Minimized  = 32,
+		Maximized  = 64,
+		Resizable  = 128,
 
-bool init();
-void cleanup();
+		Default = Windowed | Visible | Resizable,
+	};
+} // namespace Style
 
-GLFWwindow* createWindow(GLFWmonitor* monitor = nullptr);
-GLFWwindow* createWindow(Dimensions size, GLFWmonitor* monitor = nullptr);
-void destroyWindow();
-void destroyWindow(GLFWwindow* w);
 
-void makeContextCurrent();
-void swapInterval(int i);
-bool shouldClose(); // Or should it be isOpen() ?
+class Window
+{
+public:
+	Window();
 
-void swapBuffers(); // or should it be display() ?
-void pollEvents();
+	explicit Window(const Dimensions& dimensions,
+					const std::string& title,
+					u32 style);
 
-void setTitle(const std::string& title);
+	virtual ~Window();
 
-bool isFullscreen();
-void setFullscreen(bool fullscreen);
+	void create(const Dimensions& dimensions,
+				const std::string& title,
+				u32 style);
 
-Dimensions getWindowSize();
-Dimensions getFramebufferSize();
+	void close();
+	bool isOpen() const;
 
-bool isInFocus();
-bool isIconified();
+	Vector2 getPosition() const;
+	Window& setPosition(const Vector2& position);
+
+	Dimensions getSize() const;
+	Window& setSize();
+
+	Window& setTitle(const std::string& title);
+	Window& setVisible(bool visible);
+	Window& setVerticalSyncEnabled(bool enabled);
+	Window& setFramerateLimit(u32 limit);
+
+	void display();
+
+private:
+	void init();
+
+	SDL_Window* m_impl;
+	SDL_GLContext m_context;
+	Clock m_clock;
+	Time m_frameTimeLimit;
+	Dimensions m_size;
+};
+} // namespace Dunjun
+
+//namespace Dunjun
+//{
+//namespace Window
+//{
+//struct Dimensions
+//{
+//	int width;
+//	int height;
+//
+//	inline f32 aspectRatio() const
+//	{
+//		if (width == height)
+//			return 1.0f;
+//
+//		return static_cast<f32>(width) / static_cast<f32>(height);
+//	}
+//};
+//
+//GLFWwindow* getHandle();
+//void setHandle(GLFWwindow* w);
+//
+//bool init();
+//void cleanup();
+//
+//GLFWwindow* createWindow(GLFWmonitor* monitor = nullptr);
+//GLFWwindow* createWindow(Dimensions size, GLFWmonitor* monitor = nullptr);
+//void destroyWindow();
+//void destroyWindow(GLFWwindow* w);
+//
+//void makeContextCurrent();
+//void swapInterval(int i);
+//bool shouldClose(); // Or should it be isOpen() ?
+//
+//void swapBuffers(); // or should it be display() ?
+//void pollEvents();
+//
+//void setTitle(const std::string& title);
+//
+//bool isFullscreen();
+//void setFullscreen(bool fullscreen);
+//
+//Dimensions getWindowSize();
+//Dimensions getFramebufferSize();
+//
+//bool isInFocus();
+//bool isIconified();
 
 // void setIcon(const Image& image);
 // void setFramerateLimit(u32 limit);
@@ -65,8 +151,8 @@ bool isIconified();
 // bool pollEvent(Event& event);
 // // Wait for an event and return it
 // bool waitEvent(Event& event);
-
-} // namespace Window
-} // namespace Dunjun
+//
+//} // namespace Window
+//} // namespace Dunjun
 
 #endif
