@@ -21,7 +21,7 @@ Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 zNear, f32 zFar);
 Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar);
 Matrix4 infinitePerspective(const Radian& fovy, f32 aspect, f32 zNear);
 
-template <class T>
+template <typename T>
 T lookAt(const Vector3& eye, const Vector3& center, const Vector3& up);
 
 template <>

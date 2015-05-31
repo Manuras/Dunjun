@@ -1,13 +1,12 @@
 #include <Dunjun/Math/Constants.hpp>
 
-#include <cfloat>
+#include <limits>
 
 namespace Dunjun
 {
-namespace Constants
+namespace Math
 {
-// TODO(bill): Remove FLT_EPSILON and use proper C++11 numerical_limits
-const f32 Epsilon{FLT_EPSILON};
+const f32 Epsilon{std::numeric_limits<f32>::epsilon()};
 
 const f32 Zero{0.0f};
 const f32 One{1.0f};
@@ -22,5 +21,5 @@ const f32 Sqrt2{1.414213562f};
 const f32 Sqrt3{1.732050808f};
 
 const f32 GoldenRatio{1.618033989f};
-} // namespace Constants
+} // namespace Math
 } // namespace Dunjun

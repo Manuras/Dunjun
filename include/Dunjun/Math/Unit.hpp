@@ -5,10 +5,10 @@
 
 namespace Dunjun
 {
-template <template <class> class Derived, class T>
+template <template <typename> class Derived, typename T>
 class Unit
 {
-	template <template <class> class, class>
+	template <template <typename> class, typename>
 	friend class Unit;
 
 public:
@@ -24,7 +24,7 @@ public:
 	{
 	}
 
-	template <class U>
+	template <typename U>
 	explicit Unit(Unit<Derived, U> value)
 	: m_value{T{value.m_value}}
 	{
@@ -105,7 +105,7 @@ private:
 	T m_value;
 };
 
-template <template <class> class Derived, class T>
+template <template <typename> class Derived, typename T>
 Unit<Derived, T> operator*(typename std::common_type<T>::type number,
                            const Unit<Derived, T>& value)
 {

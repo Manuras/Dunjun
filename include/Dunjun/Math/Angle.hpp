@@ -11,11 +11,11 @@ namespace Dunjun
 {
 namespace Impl
 {
-template <class T>
+template <typename T>
 class Radian;
 
 // Degree
-template <class T>
+template <typename T>
 class Degree : public Unit<Degree, T>
 {
 public:
@@ -41,7 +41,7 @@ public:
 };
 
 // Radian
-template <class T>
+template <typename T>
 class Radian : public Unit<Radian, T>
 {
 public:
@@ -65,15 +65,15 @@ public:
 	Radian(Unit<Degree, T> value);
 };
 
-template <class T>
+template <typename T>
 Degree<T>::Degree(Unit<Radian, T> value)
-: Unit<Dunjun::Impl::Degree, T>(T(360) * T(value) / Constants::Tau)
+: Unit<Dunjun::Impl::Degree, T>(T(360) * T(value) / Math::Tau)
 {
 }
 
-template <class T>
+template <typename T>
 Radian<T>::Radian(Unit<Degree, T> value)
-: Unit<Dunjun::Impl::Radian, T>(T(value) * Constants::Tau / T(360))
+: Unit<Dunjun::Impl::Radian, T>(T(value) * Math::Tau / T(360))
 {
 }
 } // namespace Impl

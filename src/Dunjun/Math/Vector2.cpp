@@ -125,5 +125,4 @@ f32 lengthSquared(const Vector2& a) { return dot(a, a); }
 f32 length(const Vector2& a) { return Math::sqrt(lengthSquared(a)); }
 
 Vector2 normalize(const Vector2& a) { return a * (1.0f / length(a)); }
-
 } // namespace Dunjun

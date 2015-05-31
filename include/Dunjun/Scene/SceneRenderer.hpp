@@ -22,6 +22,14 @@ class SceneRenderer : private NonCopyable
 public:
 	struct ModelInstance
 	{
+		ModelInstance() = default;
+		ModelInstance(const MeshRenderer& meshRenderer, const Transform& transform)
+		: meshRenderer{&meshRenderer}
+		, transform{transform}
+		{
+		}
+
+
 		const MeshRenderer* meshRenderer;
 		Transform transform;
 	};
@@ -35,7 +43,7 @@ public:
 	void reset(); // Reset all pointers
 	void clearAll(); // clear all containers
 
-	void addSceneGraph(const SceneNode& node, Transform t = Transform());
+	void addSceneGraph(const SceneNode& node, Transform t = Transform{});
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
@@ -59,12 +67,12 @@ private:
 	void renderPointLights();
 
 	bool setShaders(const ShaderProgram* shaders);
-	bool setTexture(const Texture* texture, GLuint position);
+	bool setTexture(const Texture* texture, u32 position);
 
 	const Material* m_currentMaterial{nullptr};
 	const ShaderProgram* m_currentShaders{nullptr};
 	const Texture* m_currentTexture{nullptr};
-	
+
 	std::deque<const DirectionalLight*> m_directionalLights;
 	std::deque<const PointLight*> m_pointsLights;
 

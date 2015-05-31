@@ -1,6 +1,5 @@
 #include <Dunjun/Math/Functions/Transformation.hpp>
 
-#include <cassert>
 #include <Dunjun/Math/Functions.hpp>
 
 namespace Dunjun
@@ -78,7 +77,8 @@ Matrix4 ortho(f32 left, f32 right, f32 bottom, f32 top, f32 zNear, f32 zFar)
 
 Matrix4 perspective(const Radian& fovy, f32 aspect, f32 zNear, f32 zFar)
 {
-	assert(Math::abs(aspect - std::numeric_limits<f32>::epsilon()) > 0.0f);
+	assert(Math::abs(aspect - std::numeric_limits<f32>::epsilon()) > 0.0f &&
+	       "Math::perspective `fovy` is 0/inf.");
 
 	const f32 tanHalfFovy{Math::tan(0.5f * fovy)};
 
@@ -153,17 +153,17 @@ Quaternion lookAt<Quaternion>(const Vector3& eye,
 
 	return matrix4ToQuaternion(lookAt<Matrix4>(eye, center, up));
 
-	// const Vector3 f(normalize(center - eye));
-	// const Vector3 s(normalize(cross(f, up)));
-	// const Vector3 u(cross(s, f));
-	// const Vector3 refUp(normalize(up));
+	// const Vector3 f{normalize(center - eye)};
+	// const Vector3 s{normalize(cross(f, up))};
+	// const Vector3 u{cross(s, f)};
+	// const Vector3 refUp{normalize(up)};
 
 	//// NOTE(bill): this is from
 	////
 	///http://lolengine.net/blog/2013/09/18/beautiful-maths-quaternion-from-vectors
-	// const f32 m = Math::sqrt(2.0f + 2.0f * dot(u, refUp));
-	// Vector3 v = (1.0f / m) * cross(u, refUp);
-	// return Quaternion(v, 0.5f * m);
+	// const f32 m{Math::sqrt(2.0f + 2.0f * dot(u, refUp))};
+	// Vector3 v{(1.0f / m) * cross(u, refUp)};
+	// return {v, 0.5f * m};
 }
 } // namespace Math
 } // namespace Dunjun

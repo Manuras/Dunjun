@@ -1,10 +1,9 @@
 #ifndef DUNJUN_TIME_HPP
 #define DUNJUN_TIME_HPP
 
-#include <Dunjun/Common.hpp>
-
 #include <chrono>
-#include <thread>
+
+#include <Dunjun/Common.hpp>
 
 namespace Dunjun
 {
@@ -16,13 +15,11 @@ public:
 	GLOBAL const Time Zero;
 
 	f32 asSeconds() const;
-
 	s32 asMilliseconds() const;
-
 	s64 asMicroseconds() const;
 
-	GLOBAL Time now();
-	GLOBAL void sleep(Time time);
+	GLOBAL Time now(); // NOTE(bill): OS dependent
+	GLOBAL void sleep(Time time); // Sleep on current thread
 
 private:
 	friend Time seconds(f32);
@@ -31,7 +28,7 @@ private:
 
 	explicit Time(s64 microseconds);
 
-	std::chrono::microseconds m_microseconds;
+	std::chrono::microseconds m_microseconds{0};
 };
 
 Time seconds(f32 amount);

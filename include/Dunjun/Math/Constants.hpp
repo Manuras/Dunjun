@@ -5,7 +5,7 @@
 
 namespace Dunjun
 {
-namespace Constants
+namespace Math
 {
 extern const f32 Epsilon;
 
@@ -22,7 +22,7 @@ extern const f32 Sqrt2;
 extern const f32 Sqrt3;
 
 extern const f32 GoldenRatio;
-};
+} // namespace Math
 } // namespace Dunjun
 
 #endif

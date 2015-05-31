@@ -53,10 +53,10 @@ public:
 	u32 getHeight() const;
 
 private:
-	ImageFormat m_format;
-	u32 m_width;
-	u32 m_height;
-	u8* m_pixels;
+	ImageFormat m_format{ImageFormat::None};
+	u32 m_width{0};
+	u32 m_height{0};
+	u8* m_pixels{nullptr};
 };
 } // namespace Dunjun
 

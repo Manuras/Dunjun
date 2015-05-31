@@ -37,12 +37,12 @@ void Level::placeRooms(int floor)
 	// transform.position.x = -(w - 0.5f) * size.x / 2.0f;
 	// transform.position.z = -(h - 0.5f) * size.y / 2.0f;
 
-	bool grid[w][h]{{{false}}};
+	bool grid[w][h]{{}};
 
 	grid[w / 2][h / 2] = true;
 
 	// 2 Random walks from center;
-	for (int r = 0; r < 4; r++)
+	for (int r{0}; r < 4; r++)
 	{
 		int x{w / 2};
 		int y{h / 2};
@@ -131,7 +131,7 @@ void Level::placeRooms(int floor)
 		}
 	}
 
-	int roomCount = 0;
+	int roomCount{0};
 
 	for (int i{0}; i < w; i++)
 	{
@@ -165,7 +165,7 @@ void Level::placeRooms(int floor)
 
 			room->generate(northDoor, eastDoor, southDoor, westDoor);
 
-			rooms.push_back(room.get());
+			rooms.emplace_back(room.get());
 
 			attachChild(std::move(room));
 			roomCount++;

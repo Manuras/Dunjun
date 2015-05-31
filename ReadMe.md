@@ -1,7 +1,7 @@
 # Dunjun #
 This project will be documenting and demonstrating the development of making a game from scratch<sup>1</sup>! Every step of the game development process and every line of code will be explained thoroughly.
 
-The game will be a 3D randomly generated, perma-death, dungeon crawler style game. More will be revealed about the game as the project persists.
+The game will be a 3D based game. More will be revealed about the game as the project persists.
 
 YouTube Channel: [GingerGames](https://youtube.com/c/GingerGames)
 

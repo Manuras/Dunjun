@@ -1,50 +1,43 @@
 #include <Dunjun/Scene/SceneNode.hpp>
 
 #include <algorithm>
-#include <sstream>
+#include <cstdio>
 
 namespace Dunjun
 {
-namespace Impl
+namespace
 {
-inline SceneNode::Id getUniqueSceneNodeId()
+INTERNAL inline SceneNode::Id getUniqueSceneNodeId()
 {
-	LOCAL_PERSIST SceneNode::Id lastID{0};
-	return lastID++;
+	LOCAL_PERSIST SceneNode::Id lastId{0};
+	return lastId++;
 }
-} // namespace Impl
+} // namespace (anonymous)
 
 SceneNode::SceneNode()
-: m_children{}
-, id{Impl::getUniqueSceneNodeId()}
-, name{}
-, transform{}
-, visible{true}
-, m_parent{nullptr}
+: id{getUniqueSceneNodeId()}
 {
-	std::stringstream ss;
-	ss << "node_" << id;
-	name = ss.str();
+	name = stringFormat("node_%llu", id);
 }
 
-SceneNode& SceneNode::attachChild(UPtr child)
+SceneNode& SceneNode::attachChild(UPtr&& child)
 {
 	child->m_parent = this;
-	m_children.push_back(std::move(child));
+	m_children.emplace_back(std::move(child));
 
 	return *this;
 }
 
 SceneNode::UPtr SceneNode::detachChild(const SceneNode& node)
 {
-	auto found = std::find_if(m_children.begin(),
-	                          m_children.end(),
+	auto found = std::find_if(std::begin(m_children),
+	                          std::end(m_children),
 	                          [&node](UPtr& child)
 	                          {
 		                          return child.get() == &node;
 		                      });
 
-	if (found != m_children.end()) // Child was found
+	if (found != std::end(m_children)) // Child was found
 	{
 		UPtr result{std::move(*found)};
 
@@ -64,6 +57,10 @@ SceneNode* SceneNode::findChildById(usize id) const
 	{
 		if (child->id == id)
 			return child.get();
+		// If not found, check its children
+		SceneNode* subChild{child->findChildById(id)};
+		if (subChild != nullptr)
+			return subChild;
 	}
 
 	return nullptr;
@@ -75,6 +72,10 @@ SceneNode* SceneNode::findChildByName(const std::string& name) const
 	{
 		if (child->name == name)
 			return child.get();
+		// If not found, check its children
+		SceneNode* subChild{child->findChildByName(name)};
+		if (subChild != nullptr)
+			return subChild;
 	}
 
 	return nullptr;
@@ -84,6 +85,7 @@ Transform SceneNode::getGlobalTransform() const
 {
 	Transform result;
 
+	// Iterate upwards until parent node has no other parent node
 	for (const SceneNode* node{this}; node != nullptr; node = node->getParent())
 		result *= node->transform;
 

@@ -21,13 +21,13 @@ INTERNAL GLenum getInteralFormat(ImageFormat format, bool srgb)
 
 	default:
 	case ImageFormat::None:
-		throw std::runtime_error("Non-valid ImageFormat.");
+		throwRuntimeError("Non-valid ImageFormat.");
 		return 0;
 	}
 }
 
 Texture::Texture()
-: m_object{0}
+: m_handle{0}
 , m_width{0}
 , m_height{0}
 {
@@ -36,12 +36,12 @@ Texture::Texture()
 Texture::Texture(const Image& image,
                  TextureFilter minMagFilter,
                  TextureWrapMode wrapMode)
-: m_object{0}
-, m_width{image.getWidth()}
-, m_height{image.getHeight()}
+: m_handle{0}
+, m_width{(s32)image.getWidth()}
+, m_height{(s32)image.getHeight()}
 {
 	if (!loadFromImage(image, minMagFilter, wrapMode))
-		throw std::runtime_error("Could not create texture from image.");
+		throwRuntimeError("Could not create texture from image.");
 }
 
 bool Texture::loadFromFile(const std::string& filename,
@@ -66,18 +66,22 @@ bool Texture::loadFromImage(const Image& image,
 	m_width = image.getWidth();
 	m_height = image.getHeight();
 
-	if (!m_object)
-		glGenTextures(1, &m_object);
+	if (!m_handle)
+		glGenTextures(1, &m_handle);
 
-	glBindTexture(GL_TEXTURE_2D, m_object);
-	glTexParameteri(
-	    GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(wrapMode));
-	glTexParameteri(
-	    GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(wrapMode));
-	glTexParameteri(
-	    GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(minMagFilter));
-	glTexParameteri(
-	    GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(minMagFilter));
+	glBindTexture(GL_TEXTURE_2D, m_handle);
+	glTexParameteri(GL_TEXTURE_2D,
+	                GL_TEXTURE_WRAP_S,
+	                static_cast<s32>(wrapMode));
+	glTexParameteri(GL_TEXTURE_2D,
+	                GL_TEXTURE_WRAP_T,
+	                static_cast<s32>(wrapMode));
+	glTexParameteri(GL_TEXTURE_2D,
+	                GL_TEXTURE_MIN_FILTER,
+	                static_cast<s32>(minMagFilter));
+	glTexParameteri(GL_TEXTURE_2D,
+	                GL_TEXTURE_MAG_FILTER,
+	                static_cast<s32>(minMagFilter));
 
 	glTexImage2D(GL_TEXTURE_2D,
 	             0,
@@ -96,11 +100,11 @@ bool Texture::loadFromImage(const Image& image,
 
 Texture::~Texture()
 {
-	if (m_object)
-		glDeleteTextures(1, &m_object);
+	if (m_handle)
+		glDeleteTextures(1, &m_handle);
 }
 
-void Texture::bind(const Texture* tex, GLuint position)
+void Texture::bind(const Texture* tex, u32 position)
 {
 	if (position > 31)
 	{
@@ -113,7 +117,7 @@ void Texture::bind(const Texture* tex, GLuint position)
 	glClientActiveTexture(GL_TEXTURE0 + position);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, (tex && tex->m_object) ? tex->m_object : 0);
+	glBindTexture(GL_TEXTURE_2D, (tex && tex->m_handle) ? tex->m_handle : 0);
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -121,5 +125,5 @@ s32 Texture::getWidth() const { return m_width; }
 
 s32 Texture::getHeight() const { return m_height; }
 
-GLuint Texture::getNativeHandle() const { return m_object; }
+u32 Texture::getNativeHandle() const { return m_handle; }
 } // namespace Dunjun

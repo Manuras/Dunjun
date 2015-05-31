@@ -76,7 +76,6 @@ inline std::ostream& operator<<(std::ostream& os, const Vector2& v)
 {
 	return os << "Vector2(" << v[0] << ", " << v[1] << ")";
 }
-
 } // namespace Dunjun
 
 #endif

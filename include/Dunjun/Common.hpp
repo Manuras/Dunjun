@@ -1,54 +1,87 @@
 #ifndef DUNJUN_COMMON_HPP
 #define DUNJUN_COMMON_HPP
 
+#include <Dunjun/Config.hpp>
 #include <Dunjun/Types.hpp>
 
 #include <cassert>
-#include <functional>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <stack>
 #include <stdexcept>
 
-#define GLOBAL static        // global variables
-#define INTERNAL static      // internal linkage
+#define GLOBAL        static // global variables
+#define INTERNAL      static // internal linkage
 #define LOCAL_PERSIST static // local persisting variables
+
+// namespace
+// {
+// template <typename F>
+// struct Defer
+// {
+// 	Defer(F f)
+// 	: f{f}
+// 	{
+// 	}
+
+// 	~Defer() { f(); }
+
+// 	F f;
+// };
+
+// template <typename F>
+// inline Defer<F> makeDefer(F f)
+// {
+// 	return Defer<F>(f);
+// }
+// } // namespace (anonymous)
+
+// #define STRING_JOIN2(arg1, arg2) DO_STRING_JOIN2(arg1, arg2)
+// #define DO_STRING_JOIN2(arg1, arg2) arg1 ## arg2
+// #define DEFER(code) auto STRING_JOIN2(defer_, __LINE__) = makeDefer([=](){code;})
 
 namespace Dunjun
 {
 namespace
 {
-template <class T, class... Args>
+template <typename T, typename... Args>
 INTERNAL std::unique_ptr<T> make_unique_helper(std::false_type, Args&&... args)
 {
-	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+	return std::unique_ptr<T>{new T{std::forward<Args>(args)...}};
 }
 
-template <class T, class... Args>
+template <typename T, typename... Args>
 INTERNAL std::unique_ptr<T> make_unique_helper(std::true_type, Args&&... args)
 {
 	static_assert(std::extent<T>::value == 0,
-	              "make_unique<T[N]>() is forbidden, "
-	              "please use make_unique<T[]>().");
+				  "Dunjun::make_unique<T[N]>() is forbidden, "
+				  "please use make_unique<T[]>().");
 
 	typedef typename std::remove_extent<T>::type U;
-	return std::unique_ptr<T>(
-	    new U[sizeof...(Args)]{std::forward<Args>(args)...});
+	return std::unique_ptr<T>{
+		new U[sizeof...(Args)]{std::forward<Args>(args)...}};
 }
 } // namespace (anonymous)
 
 // NOTE(bill): Used as std::make_unique is not available in C++11, only C++14
 //             MSVC does support std::make_unique but use this function instead
-template <class T, class... Args>
+template <typename T, typename... Args>
 inline std::unique_ptr<T> make_unique(Args&&... args)
 {
 	return make_unique_helper<T>(std::is_array<T>(),
-	                             std::forward<Args>(args)...);
+								 std::forward<Args>(args)...);
 }
 
 // NOTE(bill): Very similar to doing
-//             `T y = *(T*)(&x);`
+//             `*(T*)(&x)`
+// NOTE(bill): This also uses snake_case rather than camelCase to be consistent
+// with the other casting types (e.g. static_cast, dynamic_cast, etc.)
+// NOTE(bill) IMPORTANT(bill): Only use for small types as it requires `memcpy`
 template <typename T, typename U>
 inline T pseudo_cast(const U& x)
 {
@@ -57,13 +90,36 @@ inline T pseudo_cast(const U& x)
 	return to;
 }
 
+// Cross-platform version of sprintf that uses a local persist buffer
+// If more than 1024 characters are needed, a std::stringstream may be needed
+// instead.
+inline std::string stringFormat(const char* fmt, ...)
+{
+	LOCAL_PERSIST char s_buf[1024];
+	va_list v;
+	va_start(v, fmt);
+	#if defined(DUNJUN_COMPILER_MSVC) // "Fix" MSVC's idea of "standards"
+		_vsnprintf(s_buf, 1024, fmt, v);
+	#else
+		vsnprintf(s_buf, 1024, fmt, v);
+	#endif
+	va_end(v);
+	s_buf[1023] = '\0';
+
+	return {s_buf, strlen(s_buf)};
+}
+
+// TODO(bill): Place these functions in their own place `FileSystem::` or `fs::`
 std::string resourcePath();
 std::string getFileDirectory(const std::string& filepath);
 
+// TODO(bill): Remove throwRuntimeError(...) from code eventually and use a log
+// This is similar to an assert but not exactly. At the moment, it exit's the
+// application but later, it should not.
 inline void throwRuntimeError(const std::string& str)
 {
 	std::cerr << str.c_str() << std::endl;
-	std::runtime_error(str.c_str());
+	std::exit(EXIT_FAILURE);
 }
 
 namespace BaseDirectory

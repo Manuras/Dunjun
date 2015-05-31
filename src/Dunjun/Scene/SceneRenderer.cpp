@@ -49,17 +49,17 @@ void SceneRenderer::addModelInstance(const MeshRenderer& meshRenderer,
                                      Transform t)
 {
 	if (meshRenderer.getParent()->visible) // Just in case
-		m_modelInstances.push_back({&meshRenderer, t});
+		m_modelInstances.emplace_back(meshRenderer, t);
 }
 
 void SceneRenderer::addPointLight(const PointLight* light)
 {
-	m_pointsLights.push_back(light);
+	m_pointsLights.emplace_back(light);
 }
 
 void SceneRenderer::addDirectionalLight(const DirectionalLight* light)
 {
-	m_directionalLights.push_back(light);
+	m_directionalLights.emplace_back(light);
 }
 
 void SceneRenderer::geometryPass()
@@ -134,7 +134,7 @@ void SceneRenderer::lightPass()
 		glViewport(0, 0, lightingTexture.getWidth(), lightingTexture.getHeight());
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glDepthMask(GL_FALSE);
+		glDepthMask(false);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
 
@@ -143,7 +143,7 @@ void SceneRenderer::lightPass()
 		renderPointLights();
 
 		glDisable(GL_BLEND);
-		glDepthMask(GL_TRUE);
+		glDepthMask(true);
 	}
 	RenderTexture::bind(nullptr);
 }
@@ -153,8 +153,8 @@ void SceneRenderer::renderAmbientLight()
 	auto& shaders = g_shaderHolder.get("deferredAmbientLight");
 
 	shaders.use();
-	shaders.setUniform("u_light.intensities", Vector3(0.169, 0.188, 0.231));
-
+	// TODO(bill): Allow for custom ambient light - This is a cool blue light
+	shaders.setUniform("u_light.intensities", 0.02f*Vector3{0.871f, 0.890f, 0.933f});
 
 	draw(&g_meshHolder.get("quad"));
 
@@ -244,7 +244,7 @@ bool SceneRenderer::setShaders(const ShaderProgram* shaders)
 	return false;
 }
 
-bool SceneRenderer::setTexture(const Texture* texture, GLuint position)
+bool SceneRenderer::setTexture(const Texture* texture, u32 position)
 {
 	if (texture != m_currentTexture)
 	{

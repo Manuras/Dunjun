@@ -66,18 +66,16 @@ s64 abs(s64 x);
 Radian abs(const Radian& x);
 Degree abs(const Degree& x);
 
-
-
-template <class T>
+template <typename T>
 T clamp(const T& x, const T& lower, const T& upper)
 {
 	return std::max(lower, std::min(x, upper));
 }
 
-template <class T>
+template <typename T>
 inline T kroneckerDelta(const T& i, const T& j)
 {
-	return i == j ? T(1) : T(0);
+	return i == j ? T{1} : T{0};
 }
 } // namespace Math
 } // namespace Dunjun

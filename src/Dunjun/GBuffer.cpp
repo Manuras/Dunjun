@@ -14,7 +14,7 @@ GBuffer::~GBuffer()
 
 bool GBuffer::create(u32 w, u32 h)
 {
-	if (w == m_width && h == m_height)
+	if (w == m_width && h == m_height) // GBuffer already exists
 		return true;
 
 	m_width = w;
@@ -25,30 +25,17 @@ bool GBuffer::create(u32 w, u32 h)
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 
-	GLuint depthRenderBuffer = 0;
-	// The depth buffer
-	glGenRenderbuffersEXT(1, &depthRenderBuffer);
-	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthRenderBuffer);
-	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT,
-	                         GL_DEPTH_COMPONENT,
-							 (GLsizei)m_width,
-	                         (GLsizei)m_height);
-	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
-	                             GL_DEPTH_ATTACHMENT,
-	                             GL_RENDERBUFFER_EXT,
-	                             depthRenderBuffer);
-
 	std::vector<GLenum> drawBuffers;
 
 	auto addRT = [&drawBuffers, w, h](Texture& tex,
-	                                  GLenum attactment,
-	                                  GLint internalFormat,
+	                                  GLenum attachment,
+	                                  s32 internalFormat,
 	                                  GLenum format,
 	                                  GLenum type)
 	{
-		if (!tex.m_object)
-			glGenTextures(1, &tex.m_object);
-		glBindTexture(GL_TEXTURE_2D, tex.m_object);
+		if (!tex.m_handle)
+			glGenTextures(1, &tex.m_handle);
+		glBindTexture(GL_TEXTURE_2D, tex.m_handle);
 		glTexImage2D(GL_TEXTURE_2D,
 		             0,
 		             internalFormat,
@@ -67,16 +54,32 @@ bool GBuffer::create(u32 w, u32 h)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glFramebufferTextureEXT(
-		    GL_FRAMEBUFFER_EXT, attactment, tex.m_object, 0);
+		    GL_FRAMEBUFFER_EXT, attachment, tex.m_handle, 0);
 
-		if (attactment != GL_DEPTH_ATTACHMENT_EXT)
-			drawBuffers.push_back(attactment);
+		if (attachment != GL_DEPTH_ATTACHMENT_EXT)
+			drawBuffers.emplace_back(attachment);
 	};
 
-	addRT(diffuse, GL_COLOR_ATTACHMENT0_EXT, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE);
-	addRT(specular, GL_COLOR_ATTACHMENT1_EXT, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE);
-	addRT(normal, GL_COLOR_ATTACHMENT2_EXT, GL_RGB10_A2, GL_RGBA, GL_FLOAT);
-	addRT(depth, GL_DEPTH_ATTACHMENT_EXT, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT);
+	addRT(diffuse,
+	      GL_COLOR_ATTACHMENT0_EXT,
+	      GL_RGB8,
+	      GL_RGB,
+	      GL_UNSIGNED_BYTE);
+	addRT(specular,
+	      GL_COLOR_ATTACHMENT1_EXT,
+	      GL_RGBA8,
+	      GL_RGBA,
+	      GL_UNSIGNED_BYTE);
+	addRT(normal,
+	      GL_COLOR_ATTACHMENT2_EXT,
+	      GL_RGB10_A2,
+	      GL_RGBA,
+	      GL_FLOAT);
+	addRT(depth,
+	      GL_DEPTH_ATTACHMENT_EXT,
+	      GL_DEPTH_COMPONENT24,
+	      GL_DEPTH_COMPONENT,
+	      GL_FLOAT);
 
 	glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
 
@@ -100,18 +103,8 @@ void GBuffer::bind(const GBuffer* b)
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, b != nullptr ? b->m_fbo : 0);
 }
 
+u32 GBuffer::getWidth() const { return m_width; }
+u32 GBuffer::getHeight() const { return m_height; }
 
-u32 GBuffer::getWidth() const
-{
-	return m_width;
-}
-u32 GBuffer::getHeight() const
-{
-	return m_height;
-}
-
-GLuint GBuffer::getNativeHandle() const
-{
-	return m_fbo;
-}
+u32 GBuffer::getNativeHandle() const { return m_fbo; }
 } // namespace Dunjun

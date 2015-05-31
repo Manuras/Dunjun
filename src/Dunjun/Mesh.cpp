@@ -13,7 +13,7 @@ void Mesh::Data::generateNormals()
 		Vector3 a{v1.position - v0.position};
 		Vector3 b{v2.position - v1.position};
 
-		Vector3 normal = normalize(cross(a, b));
+		Vector3 normal{normalize(cross(a, b))};
 
 		v0.normal += normal;
 		v1.normal += normal;
@@ -29,7 +29,7 @@ Mesh::Mesh()
 , m_generated{false}
 , m_vbo{0}
 , m_ibo{0}
-, m_drawType{GL_TRIANGLES}
+, m_drawType{DrawType::Triangles}
 , m_drawCount{0}
 {
 }
@@ -40,7 +40,7 @@ Mesh::Mesh(const Data& data)
 , m_vbo{0}
 , m_ibo{0}
 , m_drawType{data.drawType}
-, m_drawCount{data.indices.size()}
+, m_drawCount{(s32)data.indices.size()}
 {
 	generate();
 }
@@ -96,31 +96,34 @@ void Mesh::draw() const
 
 	glVertexAttribPointer((u32)AtrribLocation::Position,
 	                      3,
-	                      GL_FLOAT,
-	                      GL_FALSE,
+	                      GL_FLOAT,       // Type
+	                      false,          // Normalized?
 	                      sizeof(Vertex), // Stride
 	                      (const GLvoid*)(0));
 	glVertexAttribPointer((u32)AtrribLocation::TexCoord,
 	                      2,
-	                      GL_FLOAT,
-	                      GL_FALSE,
-	                      sizeof(Vertex), // Stride
-	                      (const GLvoid*)(sizeof(Vector3)));
+	                      GL_FLOAT,                 // Type
+	                      false,                    // Normalized?
+	                      sizeof(Vertex),           // Stride
+	                      (const GLvoid*)(0 +       //
+	                                      sizeof(Vector3)));
 	glVertexAttribPointer((u32)AtrribLocation::Color,
 	                      4,
-	                      GL_UNSIGNED_BYTE, // 0-255 => 0-1
-	                      GL_TRUE,
+	                      GL_UNSIGNED_BYTE,                 // 0-255 => 0-1
+	                      true,                             // Normalized?
+	                      sizeof(Vertex),                   // Stride
+	                      (const GLvoid*)(0 +               //
+	                                      sizeof(Vector3) + //
+	                                      sizeof(Vector2)));
+	glVertexAttribPointer((u32)AtrribLocation::Normal,
+	                      3,
+	                      GL_FLOAT,       // Type
+	                      false,          // Normalized?
 	                      sizeof(Vertex), // Stride
-	                      (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2)));
-	glVertexAttribPointer(
-	    (u32)AtrribLocation::Normal,
-	    3,
-	    GL_FLOAT,
-	    GL_FALSE,
-	    sizeof(Vertex), // Stride
-	    (const GLvoid*)(sizeof(Vector3) + sizeof(Vector2) + sizeof(Color)));
+	                      (const GLvoid*)(0 + sizeof(Vector3) +
+	                                      sizeof(Vector2) + sizeof(Color)));
 
-	glDrawElements(m_drawType, m_drawCount, GL_UNSIGNED_INT, nullptr);
+	glDrawElements((GLenum)m_drawType, (s32)m_drawCount, GL_UNSIGNED_INT, nullptr);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -130,5 +133,4 @@ void Mesh::draw() const
 	glDisableVertexAttribArray((u32)AtrribLocation::Color);
 	glDisableVertexAttribArray((u32)AtrribLocation::Normal);
 }
-
 } // namespace Dunjun

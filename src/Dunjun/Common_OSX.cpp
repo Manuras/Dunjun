@@ -15,14 +15,14 @@ std::string resourcePath()
 	        resourcesURL, TRUE, (UInt8*)path, PATH_MAX))
 	{
 		// POSIX
-		char executablePath[FILENAME_MAX];
+		char executablePath[FILENAME_MAX]{0};
 		if (!getcwd(executablePath, sizeof(executablePath)))
 			return "";
 
-		executablePath[sizeof(executablePath) - 1] =
-		    '\0'; // not really required
+		// not really required
+		executablePath[sizeof(executablePath) - 1] = '\0';
 
-		return std::string(executablePath) + "/";
+		return std::string{executablePath} + "/";
 	}
 	CFRelease(resourcesURL);
 

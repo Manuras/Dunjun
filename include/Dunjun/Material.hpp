@@ -9,7 +9,8 @@ namespace Dunjun
 {
 struct Material
 {
-	/* What a final material will look like
+	/*
+	  What a final material will look like
 	    shaders
 
 	    diffuse / albedo
@@ -33,8 +34,11 @@ struct Material
 	    detail
 	    - map
 	    - color
-	    */
+	 */
 
+
+	// TODO(bill): Restrict types/number of shaders and use an enum rather
+	// than a pointer?
 	ShaderProgram* shaders{nullptr};
 
 	Texture* diffuseMap{nullptr};

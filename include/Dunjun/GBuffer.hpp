@@ -20,9 +20,9 @@ public:
 	u32 getWidth() const;
 	u32 getHeight() const;
 
-	GLuint getNativeHandle() const;
+	u32 getNativeHandle() const;
 
-	// TODO(bill): Specific Method(s) for texture retrieval
+	// TODO(bill): Specific Method(s) for texture retrieval ???
 
 	Texture diffuse;  // diffuse color (rgb)
 	Texture specular; // specular color (rgb), smootness (a)
@@ -35,7 +35,7 @@ private:
 	u32 m_width;
 	u32 m_height;
 
-	GLuint m_fbo;
+	u32 m_fbo;
 };
 } // namespace Dunjun
 

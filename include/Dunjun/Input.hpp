@@ -59,13 +59,11 @@ enum class Key
 	LControl,     // The left Control key
 	LShift,       // The left Shift key
 	LAlt,         // The left Alt key
-	LSystem,      // The left OS specific key: window (Windows and Linux), apple
-	              // (MacOS X), ...
+	LSystem,      // The left OS specific key: window (Windows and Linux), apple (MacOS X), ...
 	RControl,     // The right Control key
 	RShift,       // The right Shift key
 	RAlt,         // The right Alt key
-	RSystem,     // The right OS specific key: window (Windows and Linux), apple
-	             // (MacOS X), ...
+	RSystem,     // The right OS specific key: window (Windows and Linux), apple (MacOS X), ...
 	Menu,        // The Menu key
 	LBracket,    // The [ key
 	RBracket,    // The ] key
@@ -126,10 +124,7 @@ enum class Key
 	F15,         // The F15 key
 	Pause,       // The Pause key
 
-	// TODO(bill): Implement Extra Keys
-	// Tilde,        // The ~ key
-
-	KeyCount // Keep last -- the total number of keyboard keys
+	KeyCount     // Keep last -- the total number of keyboard keys
 };
 
 enum class Mouse
@@ -152,24 +147,24 @@ struct GamepadAxes
 {
 	Vector2 leftThumbstick;
 	Vector2 rightThumbstick;
-	f32 leftTrigger;
-	f32 rightTrigger;
+	f32     leftTrigger;
+	f32     rightTrigger;
 };
 
 enum class XboxButton
 {
-	DpadUp = 0,
-	DpadDown = 1,
-	DpadLeft = 2,
+	DpadUp    = 0,
+	DpadDown  = 1,
+	DpadLeft  = 2,
 	DpadRight = 3,
 
 	Start = 4,
-	Back = 5,
+	Back  = 5,
 
-	LeftThumb = 6,
+	LeftThumb  = 6,
 	RightThumb = 7,
 
-	LeftShoulder = 8,
+	LeftShoulder  = 8,
 	RightShoulder = 9,
 
 	A = 10,
@@ -231,7 +226,6 @@ void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor);
 // NOTE(bill): Strings are UTF-8
 std::string getClipboardString();
 void setClipboardString(const std::string& str);
-
 } // namespace Input
 } // namespace Dunjun
 

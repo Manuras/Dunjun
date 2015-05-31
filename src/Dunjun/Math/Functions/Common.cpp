@@ -78,7 +78,7 @@ f32 ceil(f32 x) { return std::ceil(x); }
 f32 floor(f32 x) { return std::floor(x); }
 f32 mod(f32 x, f32 y)
 {
-	f32 result = std::remainder(Math::abs(x), (y = Math::abs(y)));
+	f32 result{std::remainder(Math::abs(x), (y = Math::abs(y)))};
 	if (std::signbit(result))
 		result += y;
 	return std::copysign(result, x);

@@ -38,7 +38,7 @@ std::vector<std::string> split(const std::string& s, char delim)
 INTERNAL std::string stringFromFile(const std::string& filename)
 {
 	std::ifstream file;
-	file.open(std::string(BaseDirectory::Shaders + filename.c_str()),
+	file.open(std::string{BaseDirectory::Shaders + filename.c_str()},
 	          std::ios::in | std::ios::binary);
 
 	std::string fileDirectory{getFileDirectory(filename) + "/"};
@@ -54,7 +54,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 	{
 		while (file.good())
 		{
-			getline(file, line);
+			std::getline(file, line);
 
 			if (line.find("#include") == std::string::npos)
 			{
@@ -64,20 +64,50 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 			{
 				std::string includeFilename{split(line, ' ')[1]};
 
-				if (includeFilename[0] == '<') // Absolute Path
+				if (includeFilename[0] == '<') // Absolute Path (library path)
 				{
-					includeFilename =
-					    includeFilename.substr(1, includeFilename.length() - 3);
+					usize closingBracketPos{0};
+					for (usize i{1}; i < includeFilename.length(); i++)
+					{
+						if (includeFilename[i] == '>')
+						{
+							closingBracketPos = i;
+							break;
+						}
+					}
+
+					if (closingBracketPos > 1)
+					{
+						includeFilename =
+						    includeFilename.substr(1, closingBracketPos - 1);
+					}
+					else
+					{
+						includeFilename = "";
+					}
 				}
-				else if (includeFilename[0] == '\"') // Relative Path
+				else if (includeFilename[0] == '\"') // Relative Path (folder path)
 				{
-					includeFilename =
-					    fileDirectory +
-					    includeFilename.substr(1, includeFilename.length() - 3);
+					usize closingSpeechMark{0};
+					for (usize i{1}; i < includeFilename.length(); i++)
+					{
+						if (includeFilename[i] == '\"')
+						{
+							closingSpeechMark = i;
+							break;
+						}
+					}
+
+					if (closingSpeechMark > 1)
+						includeFilename = includeFilename.substr(1, closingSpeechMark - 1);
+					else
+						includeFilename = "";
 				}
 
-				std::string toAppend{stringFromFile(includeFilename)};
-				output.append(toAppend + "\n");
+				// std::cout << includeFilename << '\n';
+
+				if (includeFilename.length() > 0)
+					output.append(stringFromFile(includeFilename) + "\n");
 			}
 		}
 	}
@@ -87,7 +117,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 }
 
 ShaderProgram::ShaderProgram()
-: m_object{0}
+: m_handle{0}
 , m_isLinked{false}
 , m_errorLog{}
 {
@@ -95,8 +125,8 @@ ShaderProgram::ShaderProgram()
 
 ShaderProgram::~ShaderProgram()
 {
-	if (m_object)
-		glDeleteProgram(m_object);
+	if (m_handle)
+		glDeleteProgram(m_handle);
 }
 
 bool ShaderProgram::attachShaderFromFile(ShaderType type,
@@ -109,25 +139,23 @@ bool ShaderProgram::attachShaderFromFile(ShaderType type,
 bool ShaderProgram::attachShaderFromMemory(ShaderType type,
                                            const std::string& source)
 {
-	if (!m_object)
-		m_object = glCreateProgram();
+	if (!m_handle)
+		m_handle = glCreateProgram();
 
 	const char* shaderSource{source.c_str()};
 
-	GLuint shader;
+	u32 shader;
 	if (type == ShaderType::Vertex)
 		shader = glCreateShader(GL_VERTEX_SHADER);
 	else if (type == ShaderType::Fragment)
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
-	else
-		throwRuntimeError("Shader type unknown. How did you get here?");
 
 	glShaderSource(shader, 1, &shaderSource, nullptr);
 	glCompileShader(shader);
 
-	GLint status;
+	s32 status;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE)
+	if (status == false)
 	{
 		std::string msg;
 		if (type == ShaderType::Vertex)
@@ -135,7 +163,7 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 		else if (type == ShaderType::Fragment)
 			msg = "Compile failure in fragment shader: \n";
 
-		GLint infoLogLength;
+		s32 infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 		char* strInfoLog{new char[infoLogLength + 1]};
 		glGetShaderInfoLog(shader, infoLogLength, nullptr, strInfoLog);
@@ -151,7 +179,7 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 		return false;
 	}
 
-	glAttachShader(m_object, shader);
+	glAttachShader(m_handle, shader);
 
 	return true;
 }
@@ -159,15 +187,15 @@ bool ShaderProgram::attachShaderFromMemory(ShaderType type,
 void ShaderProgram::use() const
 {
 	if (!isInUse())
-		glUseProgram(m_object);
+		glUseProgram(m_handle);
 }
 
 bool ShaderProgram::isInUse() const
 {
-	GLint currentProgram = 0;
+	s32 currentProgram{0};
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
-	return (currentProgram == (GLint)m_object);
+	return (currentProgram == (s32)m_handle);
 }
 
 void ShaderProgram::stopUsing() const
@@ -179,36 +207,36 @@ void ShaderProgram::stopUsing() const
 void ShaderProgram::checkInUse() const
 {
 	if (!isInUse())
-		throw std::runtime_error("ShaderProgram not is use.");
+		throwRuntimeError("ShaderProgram not is use.");
 }
 
 bool ShaderProgram::link()
 {
-	if (!m_object)
-		m_object = glCreateProgram();
+	if (!m_handle)
+		m_handle = glCreateProgram();
 
 	if (!m_isLinked)
 	{
-		glLinkProgram(m_object);
+		glLinkProgram(m_handle);
 
-		GLint status;
-		glGetProgramiv(m_object, GL_LINK_STATUS, &status);
-		if (status == GL_FALSE)
+		s32 status;
+		glGetProgramiv(m_handle, GL_LINK_STATUS, &status);
+		if (!status)
 		{
-			std::string msg("ShaderProgram linking failure: \n");
+			std::string msg{"ShaderProgram linking failure: \n"};
 
-			GLint infoLogLength;
-			glGetProgramiv(m_object, GL_INFO_LOG_LENGTH, &infoLogLength);
-			char* strInfoLog = new char[infoLogLength + 1];
-			glGetProgramInfoLog(m_object, infoLogLength, nullptr, strInfoLog);
+			s32 infoLogLength;
+			glGetProgramiv(m_handle, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* strInfoLog{new char[infoLogLength + 1]};
+			glGetProgramInfoLog(m_handle, infoLogLength, nullptr, strInfoLog);
 			msg.append(strInfoLog);
 			delete[] strInfoLog;
 
 			msg.append("\n");
 			m_errorLog.append(msg);
 
-			glDeleteProgram(m_object);
-			m_object = 0;
+			glDeleteProgram(m_handle);
+			m_handle = 0;
 
 			m_isLinked = false;
 			return m_isLinked;
@@ -220,36 +248,36 @@ bool ShaderProgram::link()
 	return m_isLinked;
 }
 
-GLuint ShaderProgram::getNativeHandle() const { return m_object; }
+u32 ShaderProgram::getNativeHandle() const { return m_handle; }
 
 bool ShaderProgram::isLinked() const { return m_isLinked; }
 
 const std::string& ShaderProgram::getErrorLog() const { return m_errorLog; }
 
-void ShaderProgram::bindAttribLocation(GLuint location, const std::string& name)
+void ShaderProgram::bindAttribLocation(u32 location, const std::string& name)
 {
-	glBindAttribLocation(m_object, location, name.c_str());
+	glBindAttribLocation(m_handle, location, name.c_str());
 	m_attribLocations[name] = location;
 }
 
-GLint ShaderProgram::getAttribLocation(const std::string& name) const
+s32 ShaderProgram::getAttribLocation(const std::string& name) const
 {
 	auto found = m_attribLocations.find(name);
-	if (found != m_attribLocations.end())
+	if (found != std::end(m_attribLocations))
 		return found->second;
 
-	GLint loc = glGetAttribLocation(m_object, name.c_str());
+	s32 loc{glGetAttribLocation(m_handle, name.c_str())};
 	m_attribLocations[name] = loc;
 	return loc;
 }
 
-GLint ShaderProgram::getUniformLocation(const std::string& name) const
+s32 ShaderProgram::getUniformLocation(const std::string& name) const
 {
 	auto found = m_uniformLocations.find(name);
-	if (found != m_uniformLocations.end())
+	if (found != std::end(m_uniformLocations))
 		return found->second;
 
-	GLint loc = glGetUniformLocation(m_object, name.c_str());
+	s32 loc{glGetUniformLocation(m_handle, name.c_str())};
 	m_uniformLocations[name] = loc;
 	return loc;
 }
@@ -257,7 +285,7 @@ GLint ShaderProgram::getUniformLocation(const std::string& name) const
 void ShaderProgram::setUniform(const std::string& name, f32 x) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform1f(loc, x);
@@ -266,7 +294,7 @@ void ShaderProgram::setUniform(const std::string& name, f32 x) const
 void ShaderProgram::setUniform(const std::string& name, f32 x, f32 y) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform2f(loc, x, y);
@@ -278,7 +306,7 @@ void ShaderProgram::setUniform(const std::string& name,
                                f32 z) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform3f(loc, x, y, z);
@@ -291,7 +319,7 @@ void ShaderProgram::setUniform(const std::string& name,
                                f32 w) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform4f(loc, x, y, z, w);
@@ -300,7 +328,7 @@ void ShaderProgram::setUniform(const std::string& name,
 void ShaderProgram::setUniform(const std::string& name, u32 x) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform1ui(loc, x);
@@ -309,7 +337,7 @@ void ShaderProgram::setUniform(const std::string& name, u32 x) const
 void ShaderProgram::setUniform(const std::string& name, s32 x) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform1i(loc, x);
@@ -318,16 +346,16 @@ void ShaderProgram::setUniform(const std::string& name, s32 x) const
 void ShaderProgram::setUniform(const std::string& name, bool x) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
-	glUniform1i(loc, (int)x);
+	glUniform1i(loc, (s32)x);
 }
 
 void ShaderProgram::setUniform(const std::string& name, const Vector2& v) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform2fv(loc, 1, &v[0]);
@@ -336,7 +364,7 @@ void ShaderProgram::setUniform(const std::string& name, const Vector2& v) const
 void ShaderProgram::setUniform(const std::string& name, const Vector3& v) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform3fv(loc, 1, &v[0]);
@@ -345,7 +373,7 @@ void ShaderProgram::setUniform(const std::string& name, const Vector3& v) const
 void ShaderProgram::setUniform(const std::string& name, const Vector4& v) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform4fv(loc, 1, &v[0]);
@@ -354,17 +382,17 @@ void ShaderProgram::setUniform(const std::string& name, const Vector4& v) const
 void ShaderProgram::setUniform(const std::string& name, const Matrix4& m) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &m[0][0]);
+	glUniformMatrix4fv(loc, 1, false, &m[0][0]);
 }
 
 void ShaderProgram::setUniform(const std::string& name,
                                const Quaternion& t) const
 {
 	checkInUse();
-	GLint loc = getUniformLocation(name);
+	s32 loc{getUniformLocation(name)};
 	if (loc == -1)
 		return;
 	glUniform4fv(loc, 1, &t.data[0]);
@@ -374,10 +402,24 @@ void ShaderProgram::setUniform(const std::string& name,
                                const Transform& t) const
 {
 	checkInUse();
-
-	setUniform(name + ".position", t.position);
-	setUniform(name + ".orientation", t.orientation);
-	setUniform(name + ".scale", t.scale);
+	{
+		s32 loc{getUniformLocation(name + ".position")};
+		if (loc == -1)
+			return;
+		glUniform3fv(loc, 1, &t.position[0]);
+	}
+	{
+		s32 loc{getUniformLocation(name + ".orientation")};
+		if (loc == -1)
+			return;
+		glUniform4fv(loc, 1, &t.orientation[0]);
+	}
+	{
+		s32 loc{getUniformLocation(name + ".scale")};
+		if (loc == -1)
+			return;
+		glUniform3fv(loc, 1, &t.scale[0]);
+	}
 }
 
 void ShaderProgram::setUniform(const std::string& name, const Color& c) const

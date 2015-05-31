@@ -295,7 +295,7 @@ Quaternion matrix4ToQuaternion(const Matrix4& m)
 	break;
 	default: // Should never actually get here. Just for sanities sake.
 	{
-		assert(false);
+		assert(false && "How did you get here?!");
 	}
 	break;
 	}

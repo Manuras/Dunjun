@@ -8,13 +8,13 @@
 
 namespace Dunjun
 {
-enum class TextureFilter : GLint
+enum class TextureFilter : s32
 {
 	Linear = GL_LINEAR,
 	Nearest = GL_NEAREST,
 };
 
-enum class TextureWrapMode : GLint
+enum class TextureWrapMode : s32
 {
 	Clamp = GL_CLAMP,
 	Repeat = GL_REPEAT,
@@ -40,21 +40,21 @@ public:
 
 	virtual ~Texture();
 
-	GLOBAL void bind(const Texture* tex, GLuint position);
+	GLOBAL void bind(const Texture* tex, u32 position);
 
 	s32 getWidth() const;
 	s32 getHeight() const;
 
-	GLuint getNativeHandle() const;
+	u32 getNativeHandle() const;
 
 private:
 	friend class RenderTexture;
 	friend class GBuffer;
 
-	s32 m_width;
-	s32 m_height;
+	s32 m_width{0};
+	s32 m_height{0};
 
-	GLuint m_object;
+	u32 m_handle{0};
 };
 } // namespace Dunjun
 

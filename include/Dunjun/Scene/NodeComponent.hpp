@@ -16,8 +16,6 @@ class NodeComponent : private NonCopyable
 public:
 	using UPtr = std::unique_ptr<NodeComponent>;
 
-	NodeComponent() = default;
-
 	virtual ~NodeComponent() {}
 
 	virtual void onStart() {}

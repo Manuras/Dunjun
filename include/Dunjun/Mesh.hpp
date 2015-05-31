@@ -18,12 +18,24 @@ enum class AtrribLocation : u32
 	Normal = 3,
 };
 
+enum class DrawType : GLenum
+{
+	Points = GL_POINTS,
+	Lines = GL_LINES,
+	LineStrip = GL_LINE_STRIP,
+	LineLoop = GL_LINE_LOOP,
+	Triangles = GL_TRIANGLES,
+	TriangleStrip = GL_TRIANGLE_STRIP,
+	TriangleFan = GL_TRIANGLE_FAN,
+	// Quads = GL_QUADS, // Disabled by default
+};
+
 class Mesh
 {
 public:
 	struct Data
 	{
-		GLenum drawType = GL_TRIANGLES;
+		DrawType drawType{DrawType::Triangles};
 
 		VertexArray vertices;
 		std::vector<u32> indices;
@@ -58,25 +70,33 @@ public:
 
 	void generate() const;
 
+private:
+	// NOTE(bill): Only Renderers can draw a mesh
+	friend class SceneRenderer;
+
 	inline void destroy() const
 	{
-		glDeleteBuffers(1, &m_vbo);
-		glDeleteBuffers(1, &m_ibo);
+		if (m_vbo)
+			glDeleteBuffers(1, &m_vbo);
+		if (m_ibo)
+			glDeleteBuffers(1, &m_ibo);
 	}
 
-private:
-	friend class SceneRenderer;
 
 	void draw() const;
 
 	Data m_data;
 
-	mutable bool32 m_generated;
+	// NOTE(bill): These mutables are a little bit of a hack but it works and
+	// is semi-const correct
 
-	mutable GLuint m_vbo;
-	mutable GLuint m_ibo;
-	GLenum m_drawType;
-	GLint m_drawCount;
+	mutable u32 m_vbo{0};
+	mutable u32 m_ibo{0};
+
+	mutable bool m_generated{false};
+
+	DrawType m_drawType{DrawType::Triangles};
+	s32 m_drawCount{0};
 };
 } // namespace Dunjun
 

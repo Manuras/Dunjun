@@ -29,7 +29,7 @@ public:
 private:
 	usize m_tick{0};
 	f64 m_tickRate{0};
-	Clock m_clock;
+	Clock m_clock{};
 };
 
 } // namespace Dunjun

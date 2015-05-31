@@ -1,13 +1,13 @@
 #ifndef DUNJUN_COLOR_HPP
 #define DUNJUN_COLOR_HPP
 
-#include <Dunjun/Types.hpp>
+#include <Dunjun/Common.hpp>
 
 namespace Dunjun
 {
 struct Color
 {
-	static const u32 Depth = 256;
+	GLOBAL const u32 Depth{256};
 
 	explicit Color(u8 r, u8 g, u8 b, u8 a = (u8)0xFF)
 	: r{r}
@@ -21,8 +21,8 @@ struct Color
 	{
 		r = (rgba >> 24) & 0xFF;
 		g = (rgba >> 16) & 0xFF;
-		b = (rgba >> 8) & 0xFF;
-		a = (rgba >> 0) & 0xFF;
+		b = (rgba >> 8)  & 0xFF;
+		a = (rgba >> 0)  & 0xFF;
 	}
 
 	union

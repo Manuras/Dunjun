@@ -19,6 +19,7 @@ public:
 	};
 
 	RenderTexture();
+
 	virtual ~RenderTexture();
 
 	bool create(u32 width,
@@ -34,7 +35,7 @@ public:
 
 	TextureType getType() const;
 
-	GLuint getNativeHandle() const;
+	u32 getNativeHandle() const;
 
 	// TODO(bill): Specific Method(s) for Textures
 	Texture colorTexture;
@@ -47,7 +48,7 @@ private:
 	TextureType m_type;
 
 
-	GLuint m_fbo; // framebuffer
+	u32 m_fbo; // framebuffer
 };
 } // namespace Dunjun
 

@@ -10,27 +10,28 @@ namespace Dunjun
 class Random
 {
 public:
+	using ResultType = std::mt19937::result_type;
+
 	Random() = default;
 
-	Random(std::mt19937::result_type seed)
+	Random(ResultType seed)
 	: m_engine{seed}
 	{
 	}
 
-	void setSeed(std::mt19937::result_type seed) { m_engine.seed(seed); }
+	void setSeed(ResultType seed) { m_engine.seed(seed); }
+
 
 	// inclusive
 	s32 getInt(s32 min, s32 max)
 	{
-		std::uniform_int_distribution<s32> dist{min, max};
-		return dist(m_engine);
+		return std::uniform_int_distribution<s32>{min, max}(m_engine);
 	}
 
 	// inclusive
 	f32 getFloat(f32 min, f32 max)
 	{
-		std::uniform_real_distribution<f32> dist{min, max};
-		return dist(m_engine);
+		return std::uniform_real_distribution<f32>{min, max}(m_engine);
 	}
 
 	bool getBool() { return getInt(0, 1) == 1; }

@@ -1,26 +1,15 @@
+#include <Dunjun/Config.hpp>
 #include <Dunjun/Game.hpp>
 
-#include <Dunjun/Common.hpp>
-
-#include <Dunjun/Window.hpp>
-#include <Dunjun/Input.hpp>
-
-#include <Dunjun/RenderTexture.hpp>
-#include <Dunjun/GBuffer.hpp>
-
-#include <Dunjun/ResourceHolders.hpp>
-
 #include <Dunjun/Clock.hpp>
-#include <Dunjun/TickCounter.hpp>
-
-#include <Dunjun/Math.hpp>
-#include <Dunjun/Camera.hpp>
-#include <Dunjun/ModelAsset.hpp>
-
-#include <Dunjun/Scene.hpp>
-
 #include <Dunjun/Level/Level.hpp>
+#include <Dunjun/ResourceHolders.hpp>
+#include <Dunjun/Scene.hpp>
+#include <Dunjun/TickCounter.hpp>
+#include <Dunjun/Window.hpp>
 
+#include <cassert>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -38,23 +27,24 @@ struct ModelInstance
 namespace
 {
 GLOBAL const Time TimeStep{seconds(1.0f / 60.0f)};
-GLOBAL const Time MaxFrameTime{seconds(1.0 / (2.0f * 144.0f + 1.0f))};
+GLOBAL const Time MaxFrameTime{seconds(1.0f / (288.0f + 1.0f))};
+
 GLOBAL bool g_running{true};
 } // namespace (anonymous)
 
 GLOBAL Camera g_cameraPlayer;
 GLOBAL Camera g_cameraWorld;
 
-GLOBAL Camera* g_currentCamera = &g_cameraPlayer;
+GLOBAL Camera* g_currentCamera{&g_cameraPlayer};
 
 GLOBAL ModelAsset g_sprite;
 
 GLOBAL SceneNode g_rootNode;
-GLOBAL SceneNode* g_player;
+GLOBAL SceneNode* g_player{nullptr};
 
 GLOBAL SceneRenderer g_renderer;
 
-GLOBAL Level* g_level;
+GLOBAL Level* g_level{nullptr};
 
 GLOBAL std::vector<PointLight> g_pointLights;
 GLOBAL std::vector<DirectionalLight> g_directionalLights;
@@ -68,22 +58,22 @@ INTERNAL void handleInput()
 
 	if (Input::isKeyPressed(Input::Key::F11))
 	{
-		Window::g_isFullscreen = !Window::g_isFullscreen;
-		if (Window::g_isFullscreen)
+		Window::setFullscreen(!Window::isFullscreen());
+		if (Window::isFullscreen())
 		{
 			GLFWwindow* w{Window::createWindow(glfwGetPrimaryMonitor())};
 			Window::destroyWindow();
-			Window::g_ptr = w;
+			Window::setHandle(w);
 		}
 		else
 		{
-			GLFWwindow* w{Window::createWindow(nullptr)};
+			GLFWwindow* w{Window::createWindow()};
 			Window::destroyWindow();
-			Window::g_ptr = w;
+			Window::setHandle(w);
 		}
 
 		Window::makeContextCurrent();
-		Window::swapInterval(1);
+		Window::swapInterval(0);
 
 		// Initial OpenGL settings
 		glInit();
@@ -92,8 +82,9 @@ INTERNAL void handleInput()
 
 INTERNAL void loadShaders()
 {
-	g_shaderHolder.insertFromFile(
-	    "texPass", "texPass.vert.glsl", "texPass.frag.glsl");
+	g_shaderHolder.insertFromFile("texPass",           //
+	                              "texPass.vert.glsl", //
+	                              "texPass.frag.glsl");
 	g_shaderHolder.insertFromFile("deferredGeometryPass",
 	                              "deferredGeometryPass.vert.glsl",
 	                              "deferredGeometryPass.frag.glsl");
@@ -112,8 +103,8 @@ INTERNAL void loadMaterials()
 	g_textureHolder.insertFromFile("default", "default.png");
 	g_textureHolder.insertFromFile("kitten", "kitten.jpg");
 	g_textureHolder.insertFromFile("stone", "stone.png");
-	g_textureHolder.insertFromFile(
-	    "terrain", "terrain.png", TextureFilter::Nearest);
+	g_textureHolder.insertFromFile("terrain", "terrain.png", //
+	                               TextureFilter::Nearest);
 
 	{
 		auto mat = make_unique<Material>();
@@ -148,12 +139,14 @@ INTERNAL void loadSpriteAsset()
 {
 	{
 		Mesh::Data meshData;
+		meshData.vertices.reserve(4); // There will be 4 vertices
 		meshData.vertices //
 		    .append({-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f})
 		    .append({+0.5f, -0.5f, 0.0f}, {1.0f, 0.0f})
 		    .append({+0.5f, +0.5f, 0.0f}, {1.0f, 1.0f})
 		    .append({-0.5f, +0.5f, 0.0f}, {0.0f, 1.0f});
 
+		meshData.indices.reserve(6);
 		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
 		meshData.generateNormals();
 
@@ -164,12 +157,14 @@ INTERNAL void loadSpriteAsset()
 	}
 	{
 		Mesh::Data meshData;
+		meshData.vertices.reserve(4); // There will be 4 vertices
 		meshData.vertices //
 		    .append({-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f})
 		    .append({+1.0f, -1.0f, 0.0f}, {1.0f, 0.0f})
 		    .append({+1.0f, +1.0f, 0.0f}, {1.0f, 1.0f})
 		    .append({-1.0f, +1.0f, 0.0f}, {0.0f, 1.0f});
 
+		meshData.indices.reserve(6);
 		meshData.addFace(0, 1, 2).addFace(2, 3, 0);
 		meshData.generateNormals();
 
@@ -177,20 +172,17 @@ INTERNAL void loadSpriteAsset()
 	}
 }
 
-INTERNAL void generateWorld() { g_rootNode.onStart(); }
-
 INTERNAL void loadInstances()
 {
-	generateWorld();
-
+	g_rootNode.onStart();
 	{
 		auto player = make_unique<SceneNode>();
 
 		player->name = "player";
 		player->transform.position = {2, 0.5, 2};
-		player->transform.orientation = angleAxis(Degree(45), {0, 1, 0});
+		player->transform.orientation = angleAxis(Degree{45}, {0, 1, 0});
 		player->addComponent<MeshRenderer>(g_sprite);
-		// player->addComponent<FaceCamera>(g_cameraWorld);
+		player->addComponent<FaceCamera>(g_cameraWorld);
 
 		g_player = player.get();
 
@@ -209,12 +201,14 @@ INTERNAL void loadInstances()
 	}
 
 	Random random{1};
-	for (int i{0}; i < 50; i++)
+	for (int i{0}; i < 20; i++)
 	{
 		PointLight light;
-		light.position.x = random.getFloat(-15, 15);
+		f32 radius{random.getFloat(0.1f, 16.0f)};
+		Radian angle{random.getFloat(0, Math::Tau)};
+		light.position.x = 4.0f + radius * Math::cos(angle);
 		light.position.y = random.getFloat(0.5, 2.5);
-		light.position.z = random.getFloat(-15, 15);
+		light.position.z = 4.0f + radius * Math::sin(angle);
 
 		light.intensity = 1.0;
 
@@ -222,16 +216,16 @@ INTERNAL void loadInstances()
 		light.color.g = random.getInt(50, 255);
 		light.color.b = random.getInt(50, 255);
 
-		g_pointLights.push_back(light);
+		g_pointLights.emplace_back(light);
 	}
 
 	{
 		DirectionalLight light;
 		light.color = Color{255, 255, 250};
 		light.direction = Vector3{-1, -1, 0.5};
-		light.intensity = 0.5f;
+		light.intensity = 0.1f;
 
-		g_directionalLights.push_back(light);
+		g_directionalLights.emplace_back(light);
 	}
 
 	// Init Camera
@@ -271,8 +265,8 @@ INTERNAL void update(Time dt)
 				rts.y = 0;
 
 			g_cameraWorld.offsetOrientation(
-			    -lookSensitivity * Radian(rts.x * dt.asSeconds()),
-			    lookSensitivity * Radian(rts.y * dt.asSeconds()));
+			    -lookSensitivity * Radian{rts.x * dt.asSeconds()},
+			    +lookSensitivity * Radian{rts.y * dt.asSeconds()});
 
 			Vector2 lts{axes.leftThumbstick};
 
@@ -292,8 +286,8 @@ INTERNAL void update(Time dt)
 			velDir += lts.x * g_cameraWorld.right();
 			velDir += lts.y * forward;
 
-			Input::GamepadButtons buttons =
-			    Input::getGamepadButtons(Input::Gamepad_1);
+			Input::GamepadButtons buttons{
+			    Input::getGamepadButtons(Input::Gamepad_1)};
 
 			if (buttons[(usize)Input::XboxButton::RightShoulder])
 				velDir.y += 1;
@@ -349,7 +343,7 @@ INTERNAL void update(Time dt)
 		}
 	}
 
-	f32 playerVel = 4.0f;
+	f32 playerVel{4.0f};
 	{
 		Vector3 velDir{0, 0, 0};
 
@@ -375,14 +369,14 @@ INTERNAL void update(Time dt)
 			g_player->transform.position += playerVel * velDir * dt.asSeconds();
 
 #if 0   // Billboard
-			Quaternion pRot = conjugate(quaternionLookAt(player.transform.position,
+			Quaternion pRot{conjugate(quaternionLookAt(player.transform.position,
 				g_camera.transform.position,
-				{0, 1, 0}));
+				{0, 1, 0}))};
 
 
 			player.transform.orientation = pRot;
 #elif 0 // Billboard fixed y-axis
-			Vector3 f = player.transform.position - g_camera.transform.position;
+			Vector3 f{player.transform.position - g_camera.transform.position};
 			f.y = 0;
 			if (f.x == 0 && f.z == 0)
 			{
@@ -390,7 +384,7 @@ INTERNAL void update(Time dt)
 			}
 			else
 			{
-				Radian a = -Math::atan(f.z / f.x);
+				Radian a{-Math::atan(f.z / f.x)};
 				a += Radian(Constants::Tau / 4);
 				if (f.x >= 0)
 					a -= Radian(Constants::Tau / 2);
@@ -411,8 +405,8 @@ INTERNAL void update(Time dt)
 	               10.0f * dt.asSeconds());
 
 	// g_camera.transform.position.x = player.transform.position.x;
-	f32 aspectRatio{Window::getFramebufferSize().x / Window::getFramebufferSize().y};
-	if (aspectRatio && Window::getFramebufferSize().y > 0)
+	f32 aspectRatio{Window::getFramebufferSize().aspectRatio()};
+	if (aspectRatio && Window::getFramebufferSize().height > 0)
 	{
 		g_cameraPlayer.viewportAspectRatio = aspectRatio;
 		g_cameraWorld.viewportAspectRatio = aspectRatio;
@@ -426,29 +420,32 @@ INTERNAL void update(Time dt)
 		g_currentCamera = &g_cameraWorld;
 	}
 
-#if 0
+#if 1
+	// TODO(bill): Make bounding boxes for SceneNodes and implement this
+	// in SceneRenderer
 	for (auto& room : g_level->rooms)
 	{
-		Vector3 roomPos = room->transform.position;
+		Vector3 roomPos{room->transform.position};
 		roomPos.x += room->size.x / 2;
 		roomPos.z += room->size.y / 2;
-		const Vector3 playerPos = g_cameraWorld.transform.position;
+		const Vector3 playerPos{g_cameraWorld.transform.position};
 
-		const Vector3 dp = roomPos - playerPos;
+		const Vector3 dp{roomPos - playerPos};
 
-		const f32 dist = length(dp);
+		const f32 dist{length(dp)};
 
 		// Distance Culling
-		if (dist < 50)
+		if (dist < g_cameraWorld.farPlane)
 		{
-			const Vector3 f = g_cameraWorld.forward();
+			const Vector3 f{g_cameraWorld.forward()};
 
-			f32 cosTheta = dot(f, normalize(dp));
+			f32 cosTheta{dot(f, normalize(dp))};
 
-			Radian theta = Math::acos(cosTheta);
+			Radian theta{Math::acos(cosTheta)};
 
 			// Cone/(bad) Frustum Culling
-			if (Math::abs(theta) <= 1.1f * g_cameraWorld.fieldOfView || dist < 10)
+			if (Math::abs(theta) <= 2.0f * g_cameraWorld.fieldOfView ||
+			    dist < 10)
 				room->visible = true;
 			else
 				room->visible = false;
@@ -461,6 +458,8 @@ INTERNAL void update(Time dt)
 
 INTERNAL void render()
 {
+	Window::Dimensions fbSize = Window::getFramebufferSize();
+
 	g_renderer.reset();
 	g_renderer.clearAll();
 	g_renderer.addSceneGraph(g_rootNode);
@@ -472,28 +471,29 @@ INTERNAL void render()
 
 	g_renderer.camera = g_currentCamera;
 
-	Vector2 fbSize{Window::getFramebufferSize()};
-
-	g_renderer.gBuffer.create(fbSize.x, fbSize.y);
+	g_renderer.gBuffer.create(fbSize.width, fbSize.height);
 
 	g_renderer.geometryPass();
 	g_renderer.lightPass();
 
-	// TODO(bill): texture blank
-	// g_materialHolder.get("cat").diffuseMap = &g_renderer.gBuffer.diffuse;
+	// g_materialHolder.get("cat").diffuseMap =
+	//     &g_renderer.lightingTexture.colorTexture;
 
-	glViewport(0, 0, (GLsizei)fbSize.x, (GLsizei)fbSize.y);
+	glViewport(0, 0, fbSize.width, fbSize.height);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	{
+		ShaderProgram& shaders = g_shaderHolder.get("texPass");
+		shaders.use();
 
-	g_shaderHolder.get("texPass").use();
-	g_shaderHolder.get("texPass").setUniform("u_tex", 0);
-	g_shaderHolder.get("texPass").setUniform("u_scale", Vector3(1.0f));
+		shaders.setUniform("u_scale", Vector3{1.0f});
+		shaders.setUniform("u_tex", 0);
+		Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
 
-	Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
+		g_renderer.draw(&g_meshHolder.get("quad"));
 
-	g_renderer.draw(&g_meshHolder.get("quad"));
-
+		shaders.stopUsing();
+	}
 	Window::swapBuffers();
 }
 
@@ -519,8 +519,6 @@ void init()
 
 void run()
 {
-	std::stringstream titleStream;
-
 	TickCounter tc;
 	Clock frameClock;
 
@@ -538,8 +536,8 @@ void run()
 		prevTime = currentTime;
 		accumulator += dt;
 
-		if (accumulator > seconds(1.2f)) // remove loop of death
-			accumulator = seconds(1.2f);
+		if (accumulator > milliseconds(1200)) // remove loop of death
+			accumulator = milliseconds(1200);
 
 		while (accumulator >= TimeStep)
 		{
@@ -550,18 +548,19 @@ void run()
 			update(TimeStep);
 		}
 
-		if (tc.update(seconds(0.5)))
+		// Set Window Title
+		if (tc.update(milliseconds(500)))
 		{
-			titleStream.str("");
-			titleStream.clear();
-			titleStream << "Dunjun - " << 1000.0 / tc.getTickRate() << " ms";
-			Window::setTitle(titleStream.str().c_str());
+			Window::setTitle(
+				stringFormat("Dunjun - %.3f ms - %d fps",
+				             1000.0f / tc.getTickRate(),
+				             (u32)tc.getTickRate()));
 		}
 
 		render();
 
 		// Frame Limiter
-		const Time framelimitTime = MaxFrameTime - frameClock.getElapsedTime();
+		const Time framelimitTime{MaxFrameTime - frameClock.getElapsedTime()};
 		if (framelimitTime > Time::Zero)
 			Time::sleep(framelimitTime);
 		frameClock.restart();

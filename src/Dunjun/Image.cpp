@@ -114,7 +114,7 @@ void Image::setPixel(u32 column, u32 row, const u32* pixel)
 	if (column >= m_width || row >= m_height)
 		return;
 
-	u8* p = getPixel(column, row);
+	u8* p{getPixel(column, row)};
 	std::memcpy(p, pixel, (usize)m_format);
 }
 
@@ -124,7 +124,7 @@ void Image::flipVertically()
 	u32 halfRows{m_height / 2};
 	u8* rowBuffer{new u8[pitch]};
 
-	for (u32 i = 0; i < halfRows; i++)
+	for (u32 i{0}; i < halfRows; i++)
 	{
 		u8* row{m_pixels + (i * m_width) * (usize)m_format};
 		u8* oppositeRow{m_pixels +
