@@ -1,5 +1,7 @@
 #include <Dunjun/Window.hpp>
 
+#include <Dunjun/Event.hpp>
+
 namespace Dunjun
 {
 namespace
@@ -33,7 +35,6 @@ Window::Window()
 : m_impl{nullptr}
 , m_context{}
 , m_frameTimeLimit{Time::Zero}
-, m_size{0, 0}
 {
 
 }
@@ -44,7 +45,6 @@ Window::Window(const Dimensions& size,
 : m_impl{nullptr}
 , m_context{}
 , m_frameTimeLimit{Time::Zero}
-, m_size{0, 0}
 {
 	create(size, title, style);
 }
@@ -93,8 +93,6 @@ void Window::init()
 {
 	setVisible(true);
 	setFramerateLimit(0);
-
-	SDL_GetWindowSize(m_impl, &m_size.width, &m_size.height);
 }
 
 void Window::close()
@@ -131,16 +129,19 @@ Window& Window::setPosition(const Vector2& position)
 	return *this;
 }
 
-Dimensions Window::getSize() const
+Window::Dimensions Window::getSize() const
 {
-	return m_size;
+	// TODO(bill): update when changed
+	s32 width, height;
+	SDL_GetWindowSize(m_impl, &width, &height);
+
+	return {width, height};
 }
 
 Window& Window::setSize(const Dimensions& size)
 {
 	SDL_SetWindowSize(m_impl, size.width, size.height);
-	SDL_GetWindowSize(m_impl, &m_size.width, &m_size.height);
-	
+
 	return *this;
 }
 
@@ -153,7 +154,11 @@ Window& Window::setTitle(const std::string& title)
 
 Window& Window::setVisible(bool visible)
 {
-	// TODO(bill):
+	if (visible)
+		SDL_ShowWindow(m_impl);
+	else
+		SDL_HideWindow(m_impl);
+
 	return *this;
 }
 
@@ -185,233 +190,363 @@ void Window::display()
 	}
 
 }
+
+INTERNAL Input::Key convertFromSDL_ScanCode(u32 code)
+{
+	using namespace Input;
+	switch (code)
+	{
+	default:
+		return Key::Unknown;
+	case SDL_SCANCODE_A:
+		return Key::A;
+	case SDL_SCANCODE_B:
+		return Key::B;
+	case SDL_SCANCODE_C:
+		return Key::C;
+	case SDL_SCANCODE_D:
+		return Key::D;
+	case SDL_SCANCODE_E:
+		return Key::E;
+	case SDL_SCANCODE_F:
+		return Key::F;
+	case SDL_SCANCODE_G:
+		return Key::G;
+	case SDL_SCANCODE_H:
+		return Key::H;
+	case SDL_SCANCODE_I:
+		return Key::I;
+	case SDL_SCANCODE_J:
+		return Key::J;
+	case SDL_SCANCODE_K:
+		return Key::K;
+	case SDL_SCANCODE_L:
+		return Key::L;
+	case SDL_SCANCODE_M:
+		return Key::M;
+	case SDL_SCANCODE_N:
+		return Key::N;
+	case SDL_SCANCODE_O:
+		return Key::O;
+	case SDL_SCANCODE_P:
+		return Key::P;
+	case SDL_SCANCODE_Q:
+		return Key::Q;
+	case SDL_SCANCODE_R:
+		return Key::R;
+	case SDL_SCANCODE_S:
+		return Key::S;
+	case SDL_SCANCODE_T:
+		return Key::T;
+	case SDL_SCANCODE_U:
+		return Key::U;
+	case SDL_SCANCODE_V:
+		return Key::V;
+	case SDL_SCANCODE_W:
+		return Key::W;
+	case SDL_SCANCODE_X:
+		return Key::X;
+	case SDL_SCANCODE_Y:
+		return Key::Y;
+	case SDL_SCANCODE_Z:
+		return Key::Z;
+	case SDL_SCANCODE_0:
+		return Key::Num0;
+	case SDL_SCANCODE_1:
+		return Key::Num1;
+	case SDL_SCANCODE_2:
+		return Key::Num2;
+	case SDL_SCANCODE_3:
+		return Key::Num3;
+	case SDL_SCANCODE_4:
+		return Key::Num4;
+	case SDL_SCANCODE_5:
+		return Key::Num5;
+	case SDL_SCANCODE_6:
+		return Key::Num6;
+	case SDL_SCANCODE_7:
+		return Key::Num7;
+	case SDL_SCANCODE_8:
+		return Key::Num8;
+	case SDL_SCANCODE_9:
+		return Key::Num9;
+	case SDL_SCANCODE_ESCAPE:
+		return Key::Escape;
+	case SDL_SCANCODE_LCTRL:
+		return Key::LControl;
+	case SDL_SCANCODE_LSHIFT:
+		return Key::LShift;
+	case SDL_SCANCODE_LALT:
+		return Key::LAlt;
+	case SDL_SCANCODE_LGUI:
+		return Key::LSystem;
+	case SDL_SCANCODE_RCTRL:
+		return Key::RControl;
+	case SDL_SCANCODE_RSHIFT:
+		return Key::RShift;
+	case SDL_SCANCODE_RALT:
+		return Key::RAlt;
+	case SDL_SCANCODE_RGUI:
+		return Key::RSystem;
+	case SDL_SCANCODE_MENU:
+		return Key::Menu;
+	case SDL_SCANCODE_LEFTBRACKET:
+		return Key::LBracket;
+	case SDL_SCANCODE_RIGHTBRACKET:
+		return Key::RBracket;
+	case SDL_SCANCODE_SEMICOLON:
+		return Key::SemiColon;
+	case SDL_SCANCODE_COMMA:
+		return Key::Comma;
+	case SDL_SCANCODE_PERIOD:
+		return Key::Period;
+	case SDL_SCANCODE_APOSTROPHE:
+		return Key::Apostrophe;
+	case SDL_SCANCODE_SLASH:
+		return Key::Slash;
+	case SDL_SCANCODE_BACKSLASH:
+		return Key::BackSlash;
+	case SDL_SCANCODE_EQUALS:
+		return Key::Equal;
+	case SDL_SCANCODE_MINUS:
+		return Key::Minus;
+	case SDL_SCANCODE_SPACE:
+		return Key::Space;
+	case SDL_SCANCODE_RETURN:
+		return Key::Return;
+	case SDL_SCANCODE_BACKSPACE:
+		return Key::BackSpace;
+	case SDL_SCANCODE_TAB:
+		return Key::Tab;
+	case SDL_SCANCODE_GRAVE:
+		return Key::GraveAccent;
+	case SDL_SCANCODE_PAGEUP:
+		return Key::PageUp;
+	case SDL_SCANCODE_PAGEDOWN:
+		return Key::PageDown;
+	case SDL_SCANCODE_END:
+		return Key::End;
+	case SDL_SCANCODE_HOME:
+		return Key::Home;
+	case SDL_SCANCODE_INSERT:
+		return Key::Insert;
+	case SDL_SCANCODE_DELETE:
+		return Key::Delete;
+	case SDL_SCANCODE_KP_PLUS:
+		return Key::Add;
+	case SDL_SCANCODE_KP_MINUS:
+		return Key::Subtract;
+	case SDL_SCANCODE_KP_MULTIPLY:
+		return Key::Multiply;
+	case SDL_SCANCODE_KP_DIVIDE:
+		return Key::Divide;
+	case SDL_SCANCODE_LEFT:
+		return Key::Left;
+	case SDL_SCANCODE_RIGHT:
+		return Key::Right;
+	case SDL_SCANCODE_UP:
+		return Key::Up;
+	case SDL_SCANCODE_DOWN:
+		return Key::Down;
+	case SDL_SCANCODE_KP_0:
+		return Key::Numpad0;
+	case SDL_SCANCODE_KP_1:
+		return Key::Numpad1;
+	case SDL_SCANCODE_KP_2:
+		return Key::Numpad2;
+	case SDL_SCANCODE_KP_3:
+		return Key::Numpad3;
+	case SDL_SCANCODE_KP_4:
+		return Key::Numpad4;
+	case SDL_SCANCODE_KP_5:
+		return Key::Numpad5;
+	case SDL_SCANCODE_KP_6:
+		return Key::Numpad6;
+	case SDL_SCANCODE_KP_7:
+		return Key::Numpad7;
+	case SDL_SCANCODE_KP_8:
+		return Key::Numpad8;
+	case SDL_SCANCODE_KP_9:
+		return Key::Numpad9;
+	case SDL_SCANCODE_F1:
+		return Key::F1;
+	case SDL_SCANCODE_F2:
+		return Key::F2;
+	case SDL_SCANCODE_F3:
+		return Key::F3;
+	case SDL_SCANCODE_F4:
+		return Key::F4;
+	case SDL_SCANCODE_F5:
+		return Key::F5;
+	case SDL_SCANCODE_F6:
+		return Key::F6;
+	case SDL_SCANCODE_F7:
+		return Key::F7;
+	case SDL_SCANCODE_F8:
+		return Key::F8;
+	case SDL_SCANCODE_F9:
+		return Key::F9;
+	case SDL_SCANCODE_F10:
+		return Key::F10;
+	case SDL_SCANCODE_F11:
+		return Key::F11;
+	case SDL_SCANCODE_F12:
+		return Key::F12;
+	case SDL_SCANCODE_F13:
+		return Key::F13;
+	case SDL_SCANCODE_F14:
+		return Key::F14;
+	case SDL_SCANCODE_F15:
+		return Key::F15;
+	case SDL_SCANCODE_PAUSE:
+		return Key::Pause;
+	}
+	return Key::Unknown;
+}
+
+INTERNAL bool convertEvent(SDL_Event& e, Event& event)
+{
+	if (e.type == SDL_WINDOWEVENT)
+	{
+		if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+		{
+			event.type = Event::Resized;
+			event.size.width = e.window.data1;
+			event.size.height = e.window.data2;
+
+			return true;
+		}
+
+		if (e.window.event == SDL_WINDOWEVENT_CLOSE)
+		{
+			event.type = Event::Closed;
+			return true;
+		}
+
+		if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+		{
+			event.type = Event::GainedFocus;
+			return true;
+		}
+
+		if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+		{
+			event.type = Event::LostFocus;
+			return true;
+		}
+
+		if (e.window.event == SDL_WINDOWEVENT_MOVED)
+		{
+			event.type = Event::Moved;
+			event.move.x = e.window.data1;
+			event.move.y = e.window.data2;
+
+			return true;
+		}
+	}
+
+	if (e.type == SDL_KEYDOWN)
+	{
+		event.type = Event::KeyPressed;
+		event.key.code = convertFromSDL_ScanCode(e.key.keysym.scancode);
+		u16 mod{e.key.keysym.mod};
+		if (mod & KMOD_ALT)
+			event.key.alt = true;
+		if (mod & KMOD_CTRL)
+			event.key.ctrl = true;
+		if (mod & KMOD_SHIFT)
+			event.key.shift = true;
+		if (mod & KMOD_GUI)
+			event.key.system = true;
+		if (mod & KMOD_CAPS)
+			event.key.capsLock = true;
+		if (mod & KMOD_NUM)
+			event.key.numLock = true;
+		return true;
+	}
+
+	if (e.type == SDL_KEYUP)
+	{
+		event.type = Event::KeyReleased;
+		event.key.code = convertFromSDL_ScanCode(e.key.keysym.scancode);
+		u16 mod{e.key.keysym.mod};
+		if (mod & KMOD_ALT)
+			event.key.alt = true;
+		if (mod & KMOD_CTRL)
+			event.key.ctrl = true;
+		if (mod & KMOD_SHIFT)
+			event.key.shift = true;
+		if (mod & KMOD_GUI)
+			event.key.system = true;
+		if (mod & KMOD_CAPS)
+			event.key.capsLock = true;
+		if (mod & KMOD_NUM)
+			event.key.numLock = true;
+		return true;
+	}
+
+	if (e.type == SDL_MOUSEMOTION)
+	{
+		event.type = Event::MouseMoved;
+		event.mouseMove.x = e.motion.x;
+		event.mouseMove.y = e.motion.y;
+
+		return true;
+	}
+
+	if (e.type == SDL_MOUSEBUTTONDOWN)
+	{
+		event.type = Event::MouseButtonPressed;
+		event.mouseButton.button = (Input::Mouse)e.button.button;
+		event.mouseButton.clicks = e.button.clicks;
+
+		event.mouseMove.x = e.button.x;
+		event.mouseMove.y = e.button.y;
+
+		return true;
+	}
+
+	if (e.type == SDL_MOUSEBUTTONUP)
+	{
+		event.type = Event::MouseButtonReleased;
+		event.mouseButton.button = (Input::Mouse)e.button.button;
+		event.mouseButton.clicks = e.button.clicks;
+
+		event.mouseMove.x = e.button.x;
+		event.mouseMove.y = e.button.y;
+
+		return true;
+	}
+
+	if (e.type == SDL_MOUSEWHEEL)
+	{
+		event.type = Event::MouseWheelScrolled;
+		event.mouseWheelScroll.deltaX = e.wheel.x;
+		event.mouseWheelScroll.deltaY = e.wheel.y;
+
+		return true;
+	}
+
+	// TODO(bill): handle Joystick events
+
+	return false;
+}
+
+bool Window::pollEvent(Event& event)
+{
+	SDL_Event e;
+	if (!SDL_PollEvent(&e))
+		return false;
+
+	return convertEvent(e, event);
+}
+
+bool Window::waitEvent(Event& event)
+{
+	SDL_Event e;
+	if (!SDL_WaitEvent(&e))
+		return false;
+
+	return convertEvent(e, event);
+}
 } // namespace Dunjun
-
-
-//#include <Dunjun/Window.hpp>
-//
-//#include <Dunjun/Common.hpp>
-//
-//namespace Dunjun
-//{
-//namespace Window
-//{
-//GLFWwindow* g_ptr{nullptr};
-//bool g_isFullscreen{false};
-//
-//namespace
-//{
-//GLOBAL const Dimensions g_windowSize{1280, 720};
-//
-//GLOBAL Dimensions g_size{g_windowSize.width, g_windowSize.height};
-//} // namespace (anonymous)
-//
-//// GLFW Specific Callback Prototypes
-//INTERNAL void resizeCallback(GLFWwindow* window, int width, int height);
-//INTERNAL void framebufferSizeCallback(GLFWwindow* window, int w, int h);
-//INTERNAL void errorCallback(int error, const char* description);
-//INTERNAL void windowRefreshCallback(GLFWwindow* window);
-//
-//GLFWwindow* getHandle()
-//{
-//	return g_ptr;
-//}
-//
-//void setHandle(GLFWwindow* w)
-//{
-//	g_ptr = w;
-//}
-//
-//bool init()
-//{
-//	if (!glfwInit())
-//		return false;
-//
-//	setHandle(createWindow({g_windowSize.width, g_windowSize.height}));
-//	if (!getHandle())
-//	{
-//		glfwTerminate();
-//		return false;
-//	}
-//
-//	makeContextCurrent();
-//
-//	glfwSetErrorCallback(errorCallback);
-//
-//	return true;
-//}
-//
-//void cleanup()
-//{
-//	glfwDestroyWindow(getHandle());
-//	glfwTerminate();
-//}
-//
-//GLFWwindow* createWindow(GLFWmonitor* monitor)
-//{
-//	glfwDefaultWindowHints();
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-//	glfwWindowHint(GLFW_FOCUSED, true);
-//
-//	if (monitor) // Fullscreen
-//	{
-//		const GLFWvidmode* mode{glfwGetVideoMode(monitor)};
-//
-//		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-//		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-//		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-//		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-//
-//		glfwWindowHint(GLFW_RESIZABLE, false);
-//
-//		g_size.width = mode->width;
-//		g_size.height = mode->height;
-//	}
-//	else
-//	{
-//		glfwWindowHint(GLFW_RESIZABLE, true);
-//
-//		// TODO(bill): Set to previous window size
-//		// Initial Window Size
-//		g_size.width = g_windowSize.width;
-//		g_size.height = g_windowSize.height;
-//	}
-//
-//	GLFWwindow* w{glfwCreateWindow(
-//	    g_size.width, g_size.height, "Dunjun", monitor, getHandle())};
-//
-//	// Set GLFW specific callbacks
-//	glfwSetFramebufferSizeCallback(w, framebufferSizeCallback);
-//	glfwSetWindowSizeCallback(w, resizeCallback);
-//	glfwSetWindowRefreshCallback(w, windowRefreshCallback);
-//
-//	glfwGetWindowSize(w, &g_size.width, &g_size.height);
-//
-//	return w;
-//}
-//
-//GLFWwindow* createWindow(Dimensions size, GLFWmonitor* monitor)
-//{
-//	glfwDefaultWindowHints();
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-//	glfwWindowHint(GLFW_FOCUSED, true);
-//
-//	if (monitor) // Fullscreen
-//	{
-//		const GLFWvidmode* mode{glfwGetVideoMode(monitor)};
-//
-//		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-//		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-//		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-//		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-//
-//		glfwWindowHint(GLFW_RESIZABLE, false);
-//
-//		g_size.width = mode->width;
-//		g_size.height = mode->height;
-//	}
-//	else
-//	{
-//		glfwWindowHint(GLFW_RESIZABLE, true);
-//
-//		// TODO(bill): Set to previous window size
-//		// Initial Window Size
-//		g_size = size;
-//	}
-//
-//	GLFWwindow* w{glfwCreateWindow(
-//	    g_size.width, g_size.height, "Dunjun", monitor, getHandle())};
-//
-//	// Set GLFW specific callbacks
-//	glfwSetFramebufferSizeCallback(w, framebufferSizeCallback);
-//	glfwSetWindowSizeCallback(w, resizeCallback);
-//	glfwSetWindowRefreshCallback(w, windowRefreshCallback);
-//
-//	glfwGetWindowSize(w, &g_size.width, &g_size.height);
-//
-//	return w;
-//}
-//
-//void destroyWindow() { glfwDestroyWindow(getHandle()); }
-//
-//void makeContextCurrent() { glfwMakeContextCurrent(getHandle()); }
-//
-//void swapInterval(int i) { glfwSwapInterval(i); }
-//
-//bool shouldClose() { return glfwWindowShouldClose(getHandle()) == 1; }
-//
-//void swapBuffers() { glfwSwapBuffers(getHandle()); }
-//
-//void pollEvents() { glfwPollEvents(); }
-//
-//void setTitle(const std::string& title)
-//{
-//	glfwSetWindowTitle(getHandle(), title.c_str());
-//}
-//
-//bool isFullscreen()
-//{
-//	return g_isFullscreen;
-//}
-//
-//void setFullscreen(bool fullscreen)
-//{
-//	g_isFullscreen = fullscreen;
-//}
-//
-//Dimensions getWindowSize()
-//{
-//	return g_size;
-//}
-//
-//Dimensions getFramebufferSize()
-//{
-//	int x;
-//	int y;
-//
-//	glfwGetFramebufferSize(getHandle(), &x, &y);
-//
-//	return Dimensions{x, y};
-//}
-//
-//bool isInFocus()
-//{
-//	return glfwGetWindowAttrib(getHandle(), GLFW_FOCUSED) == 1;
-//}
-//
-//bool isIconified()
-//{
-//	return glfwGetWindowAttrib(getHandle(), GLFW_ICONIFIED) == 1;
-//}
-//
-//// GLFW Specific Callbacks
-//INTERNAL void resizeCallback(GLFWwindow* window, int width, int height)
-//{
-//	g_size.width = width;
-//	g_size.height = height;
-//}
-//
-//INTERNAL void framebufferSizeCallback(GLFWwindow* window, int width, int height)
-//{
-//	glViewport(0, 0, width, height);
-//}
-//
-//INTERNAL void errorCallback(int error, const char* description)
-//{
-//	std::cerr << "[ERROR]";
-//	std::cerr << "GLFW: " << description;
-//	std::cerr << std::endl;
-//}
-//
-//INTERNAL void windowRefreshCallback(GLFWwindow* window)
-//{
-//	glfwMakeContextCurrent(window);
-//	glClearColor(0, 0, 0, 0);
-//	glClear(GL_COLOR_BUFFER_BIT);
-//
-//	glfwSwapBuffers(window);
-//}
-//} // namespace Window
-//} // namespace Dunjun
