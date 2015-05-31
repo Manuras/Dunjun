@@ -14,20 +14,20 @@ enum class AtrribLocation : u32
 {
 	Position = 0,
 	TexCoord = 1,
-	Color = 2,
-	Normal = 3,
+	Color    = 2,
+	Normal   = 3,
 };
 
-enum class DrawType : GLenum
+enum class DrawType : s32
 {
-	Points = GL_POINTS,
-	Lines = GL_LINES,
-	LineStrip = GL_LINE_STRIP,
-	LineLoop = GL_LINE_LOOP,
-	Triangles = GL_TRIANGLES,
+	Points        = GL_POINTS,
+	Lines         = GL_LINES,
+	LineStrip     = GL_LINE_STRIP,
+	LineLoop      = GL_LINE_LOOP,
+	Triangles     = GL_TRIANGLES,
 	TriangleStrip = GL_TRIANGLE_STRIP,
-	TriangleFan = GL_TRIANGLE_FAN,
-	// Quads = GL_QUADS, // Disabled by default
+	TriangleFan   = GL_TRIANGLE_FAN,
+	// Quads      = GL_QUADS, // Disabled by default
 };
 
 class Mesh

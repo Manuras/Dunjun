@@ -19,32 +19,6 @@
 #define INTERNAL      static // internal linkage
 #define LOCAL_PERSIST static // local persisting variables
 
-// namespace
-// {
-// template <typename F>
-// struct Defer
-// {
-// 	Defer(F f)
-// 	: f{f}
-// 	{
-// 	}
-
-// 	~Defer() { f(); }
-
-// 	F f;
-// };
-
-// template <typename F>
-// inline Defer<F> makeDefer(F f)
-// {
-// 	return Defer<F>(f);
-// }
-// } // namespace (anonymous)
-
-// #define STRING_JOIN2(arg1, arg2) DO_STRING_JOIN2(arg1, arg2)
-// #define DO_STRING_JOIN2(arg1, arg2) arg1 ## arg2
-// #define DEFER(code) auto STRING_JOIN2(defer_, __LINE__) = makeDefer([=](){code;})
-
 namespace Dunjun
 {
 namespace
@@ -98,11 +72,11 @@ inline std::string stringFormat(const char* fmt, ...)
 	LOCAL_PERSIST char s_buf[1024];
 	va_list v;
 	va_start(v, fmt);
-	#if defined(DUNJUN_COMPILER_MSVC) // "Fix" MSVC's idea of "standards"
-		_vsnprintf(s_buf, 1024, fmt, v);
-	#else
-		vsnprintf(s_buf, 1024, fmt, v);
-	#endif
+#if defined(DUNJUN_COMPILER_MSVC) // "Fix" MSVC's idea of "standards"
+	_vsnprintf(s_buf, 1024, fmt, v);
+#else
+	vsnprintf(s_buf, 1024, fmt, v);
+#endif
 	va_end(v);
 	s_buf[1023] = '\0';
 

@@ -2,6 +2,11 @@
 
 ## Big
 
+### ReadOnly
+
+* Removed `ReadOnly`
+	- Placed with get/set methods
+
 ### Miscellany
 
 * C++11 Uniform Initializer Syntax
@@ -9,11 +14,6 @@
 * `var.begin()` -> `std::begin(var)`
 * `var.end()` -> `std::end(var)`
 * OpenGL Type `object` -> `getNativeHandle() return m_handle`
-
-### ReadOnly
-
-* Removed `ReadOnly`
-	- Placed with get/set methods
 
 ### Time
 

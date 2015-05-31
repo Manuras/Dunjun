@@ -71,6 +71,9 @@
 #elif defined(__GNUC__) || defined(__GNUG__) && !(defined(__clang__) || defined(__INTEL_COMPILER))
 	// GNU GCC/G++ Compiler
 	#define DUNJUN_COMPILER_GNU_GCC
+#elif defined(__INTEL_COMPILER)
+	// Intel C++ Compiler
+	#define DUNJUN_COMPILER_INTEL
 #endif
 
 
