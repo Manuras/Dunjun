@@ -28,7 +28,7 @@ struct ModelInstance
 namespace
 {
 GLOBAL const Time TimeStep{seconds(1.0f / 60.0f)};
-GLOBAL const Time MaxFrameTime{seconds(1.0f / (288.0f + 1.0f))};
+GLOBAL const Time MaxFrameTime{seconds(1.0f / (60.0f + 1.0f))};
 
 GLOBAL bool g_running{true};
 } // namespace (anonymous)
@@ -49,6 +49,7 @@ GLOBAL Level* g_level{nullptr};
 
 GLOBAL std::vector<PointLight> g_pointLights;
 GLOBAL std::vector<DirectionalLight> g_directionalLights;
+GLOBAL std::vector<SpotLight> g_spotLights;
 
 namespace Game
 {
@@ -98,6 +99,13 @@ INTERNAL void loadShaders()
 	g_shaderHolder.insertFromFile("deferredDirectionalLight",
 	                              "deferredLightPass.vert.glsl",
 	                              "deferredDirectionalLight.frag.glsl");
+	g_shaderHolder.insertFromFile("deferredSpotLight",
+	                              "deferredLightPass.vert.glsl",
+	                              "deferredSpotLight.frag.glsl");
+
+	g_shaderHolder.insertFromFile("deferredOut",
+	                              "deferredLightPass.vert.glsl",
+	                              "deferredOut.frag.glsl");
 }
 INTERNAL void loadMaterials()
 {
@@ -227,6 +235,17 @@ INTERNAL void loadInstances()
 		light.intensity = 0.1f;
 
 		g_directionalLights.emplace_back(light);
+	}
+
+	{
+		SpotLight light;
+		light.color = Color{255, 255, 250};
+		light.direction = {0, -1, 0};
+		light.position = {4, 1.5f, 4};
+		light.intensity = 2.0f;
+		light.coneAngle = Degree{50};
+
+		g_spotLights.emplace_back(light);
 	}
 
 	// Init Camera
@@ -469,6 +488,8 @@ INTERNAL void render()
 		g_renderer.addPointLight(&light);
 	for (const auto& light : g_directionalLights)
 		g_renderer.addDirectionalLight(&light);
+	for (const auto& light : g_spotLights)
+		g_renderer.addSpotLight(&light);
 
 	g_renderer.camera = g_currentCamera;
 
@@ -476,6 +497,7 @@ INTERNAL void render()
 
 	g_renderer.geometryPass();
 	g_renderer.lightPass();
+	g_renderer.outPass();
 
 	// g_materialHolder.get("cat").diffuseMap =
 	//     &g_renderer.lightingTexture.colorTexture;
@@ -489,7 +511,9 @@ INTERNAL void render()
 
 		shaders.setUniform("u_scale", Vector3{1.0f});
 		shaders.setUniform("u_tex", 0);
-		Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
+		Texture::bind(&g_renderer.outTexture.colorTexture, 0);
+		// Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
+
 
 		g_renderer.draw(&g_meshHolder.get("quad"));
 

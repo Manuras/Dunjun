@@ -45,6 +45,12 @@ struct PointLight : BaseLight
 		range = r;
 	}
 };
+
+struct SpotLight : PointLight
+{
+	Radian coneAngle{0.35f};
+	Vector3 direction{0, 0, -1};
+};
 } // namespace Dunjun
 
 #endif

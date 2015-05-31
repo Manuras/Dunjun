@@ -32,6 +32,7 @@ void SceneRenderer::clearAll()
 	m_modelInstances.clear();
 	m_directionalLights.clear();
 	m_pointsLights.clear();
+	m_spotLights.clear();
 }
 
 void SceneRenderer::addSceneGraph(const SceneNode& node, Transform t)
@@ -55,6 +56,12 @@ void SceneRenderer::addModelInstance(const MeshRenderer& meshRenderer,
 void SceneRenderer::addPointLight(const PointLight* light)
 {
 	m_pointsLights.emplace_back(light);
+}
+
+
+void SceneRenderer::addSpotLight(const SpotLight* light)
+{
+	m_spotLights.emplace_back(light);
 }
 
 void SceneRenderer::addDirectionalLight(const DirectionalLight* light)
@@ -141,9 +148,36 @@ void SceneRenderer::lightPass()
 		renderAmbientLight();
 		renderDirectionLights();
 		renderPointLights();
+		renderSpotLights();
 
 		glDisable(GL_BLEND);
 		glDepthMask(true);
+	}
+	RenderTexture::bind(nullptr);
+}
+
+void SceneRenderer::outPass()
+{
+	outTexture.create(gBuffer.getWidth(), gBuffer.getHeight(), RenderTexture::Color);
+
+	Texture::bind(&gBuffer.diffuse, 0);
+	Texture::bind(&lightingTexture.colorTexture, 1);
+
+	RenderTexture::bind(&outTexture);
+	{
+		glClearColor(1, 1, 1, 1);
+		glViewport(0, 0, outTexture.getWidth(), outTexture.getHeight());
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		auto& shaders = g_shaderHolder.get("deferredOut");
+
+		shaders.use();
+		shaders.setUniform("u_diffuse", 0);
+		shaders.setUniform("u_lighting", 1);
+
+		draw(&g_meshHolder.get("quad"));
+
+		shaders.stopUsing();
 	}
 	RenderTexture::bind(nullptr);
 }
@@ -220,6 +254,50 @@ void SceneRenderer::renderPointLights()
 						   light->attenuation.quadratic);
 
 		shaders.setUniform("u_light.range", light->range);
+
+		draw(&g_meshHolder.get("quad"));
+	}
+
+	shaders.stopUsing();
+}
+
+void SceneRenderer::renderSpotLights()
+{
+	auto& shaders = g_shaderHolder.get("deferredSpotLight");
+
+	shaders.use();
+	shaders.setUniform("u_diffuse", 0);
+	shaders.setUniform("u_specular", 1);
+	shaders.setUniform("u_normal", 2);
+	shaders.setUniform("u_depth", 3);
+
+	shaders.setUniform("u_cameraInverse", inverse(camera->getMatrix()));
+
+	for (const SpotLight* light : m_spotLights)
+	{
+		light->calculateRange();
+
+		Vector3 lightIntensities;
+
+		lightIntensities.r = light->color.r / 255.0f;
+		lightIntensities.g = light->color.g / 255.0f;
+		lightIntensities.b = light->color.b / 255.0f;
+		lightIntensities *= light->intensity;
+
+		shaders.setUniform("u_light.point.base.intensities", lightIntensities);
+		shaders.setUniform("u_light.point.position", light->position);
+
+		shaders.setUniform("u_light.point.attenuation.constant",
+						   light->attenuation.constant);
+		shaders.setUniform("u_light.point.attenuation.linear",
+						   light->attenuation.linear);
+		shaders.setUniform("u_light.point.attenuation.quadratic",
+						   light->attenuation.quadratic);
+
+		shaders.setUniform("u_light.point.range", light->range);
+
+		shaders.setUniform("u_light.direction", light->direction);
+		shaders.setUniform("u_light.coneAngle", static_cast<f32>(light->coneAngle));
 
 		draw(&g_meshHolder.get("quad"));
 	}

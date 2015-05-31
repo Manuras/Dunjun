@@ -48,23 +48,26 @@ public:
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
 	void addPointLight(const PointLight* light);
+	void addSpotLight(const SpotLight* light);
 	void addDirectionalLight(const DirectionalLight* light);
 
 	void geometryPass();
 	void lightPass();
+	void outPass();
 
 	void setCamera(const Camera& camera);
 
 	const Camera* camera{nullptr};
 
-	RenderTexture lightingTexture;
 	GBuffer gBuffer;
-
+	RenderTexture lightingTexture;
+	RenderTexture outTexture;
 
 private:
 	void renderAmbientLight();
 	void renderDirectionLights();
 	void renderPointLights();
+	void renderSpotLights();
 
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, u32 position);
@@ -75,6 +78,7 @@ private:
 
 	std::deque<const DirectionalLight*> m_directionalLights;
 	std::deque<const PointLight*> m_pointsLights;
+	std::deque<const SpotLight*> m_spotLights;
 
 	std::deque<ModelInstance> m_modelInstances;
 };
