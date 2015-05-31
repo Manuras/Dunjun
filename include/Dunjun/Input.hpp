@@ -4,7 +4,7 @@
 #include <Dunjun/Common.hpp>
 
 #include <Dunjun/OpenGL.hpp>
-#include <GLFW/glfw3.h>
+#include <Dunjun/Window.hpp>
 
 #include <Dunjun/Math.hpp>
 #include <Dunjun/Time.hpp>
@@ -129,14 +129,14 @@ enum class Key
 
 enum class Mouse
 {
-	Button1 = 0,
-	Button2 = 1,
-	Button3 = 2,
-	Button4 = 3,
-	Button5 = 4,
-	Button6 = 5,
-	Button7 = 6,
-	Button8 = 7,
+	Button1 = 1,
+	Button2 = 2,
+	Button3 = 3,
+	Button4 = 4,
+	Button5 = 5,
+	Button6 = 6,
+	Button7 = 7,
+	Button8 = 8,
 
 	ButtonLeft = Button1,
 	ButtonRight = Button2,
@@ -204,7 +204,9 @@ void setStickyMouseButtons(bool sticky);
 bool isKeyPressed(Key key);
 
 Vector2 getCursorPosition();
-void setCursorPosition(const Vector2& pos);
+Vector2 getCursorPosition(const Window& relativeTo);
+
+void setCursorPosition(const Window& relativeTo, const Vector2& pos);
 
 bool isMouseButtonPressed(Mouse button);
 

@@ -57,15 +57,15 @@ class Window
 public:
 	Window();
 
-	explicit Window(const Dimensions& dimensions,
+	explicit Window(const Dimensions& size,
 					const std::string& title,
-					u32 style);
+					u32 style = Style::Default);
 
 	virtual ~Window();
 
 	void create(const Dimensions& dimensions,
 				const std::string& title,
-				u32 style);
+				u32 style = Style::Default);
 
 	void close();
 	bool isOpen() const;
@@ -74,7 +74,7 @@ public:
 	Window& setPosition(const Vector2& position);
 
 	Dimensions getSize() const;
-	Window& setSize();
+	Window& setSize(const Dimensions& size);
 
 	Window& setTitle(const std::string& title);
 	Window& setVisible(bool visible);
@@ -82,6 +82,8 @@ public:
 	Window& setFramerateLimit(u32 limit);
 
 	void display();
+
+	SDL_Window* getNativeHandle() const { return m_impl; }
 
 private:
 	void init();

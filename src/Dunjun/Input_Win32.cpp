@@ -2,7 +2,6 @@
 #ifdef DUNJUN_SYSTEM_WINDOWS
 #include <Dunjun/Input.hpp>
 
-//#include <Dunjun/Window.hpp>
 #include <Dunjun/Game.hpp>
 
 #define VC_EXTRALEAN
@@ -11,6 +10,8 @@
 #include <Windows.h>
 
 #include <Xinput.h>
+
+#include <SDL/SDL.h>
 
 #include <array>
 #include <chrono>
@@ -23,8 +24,6 @@ GLOBAL std::array<XINPUT_STATE, Gamepad_Count> g_gamepadStates;
 
 void setup()
 {
-	// glfwSetScrollCallback(Game::getGlfwWindow(), scrollCallback);
-
 	for (int i{0}; i < Gamepad_Count; i++)
 	{
 		memset(&g_gamepadStates[i], 0, sizeof(XINPUT_STATE));
@@ -76,357 +75,352 @@ bool isKeyPressed(Key key)
 		code = 0;
 		break;
 	case Key::A:
-		code = GLFW_KEY_A;
+		code = SDL_SCANCODE_A;
 		break;
 	case Key::B:
-		code = GLFW_KEY_B;
+		code = SDL_SCANCODE_B;
 		break;
 	case Key::C:
-		code = GLFW_KEY_C;
+		code = SDL_SCANCODE_C;
 		break;
 	case Key::D:
-		code = GLFW_KEY_D;
+		code = SDL_SCANCODE_D;
 		break;
 	case Key::E:
-		code = GLFW_KEY_E;
+		code = SDL_SCANCODE_E;
 		break;
 	case Key::F:
-		code = GLFW_KEY_F;
+		code = SDL_SCANCODE_F;
 		break;
 	case Key::G:
-		code = GLFW_KEY_G;
+		code = SDL_SCANCODE_G;
 		break;
 	case Key::H:
-		code = GLFW_KEY_H;
+		code = SDL_SCANCODE_H;
 		break;
 	case Key::I:
-		code = GLFW_KEY_I;
+		code = SDL_SCANCODE_I;
 		break;
 	case Key::J:
-		code = GLFW_KEY_J;
+		code = SDL_SCANCODE_J;
 		break;
 	case Key::K:
-		code = GLFW_KEY_K;
+		code = SDL_SCANCODE_K;
 		break;
 	case Key::L:
-		code = GLFW_KEY_L;
+		code = SDL_SCANCODE_L;
 		break;
 	case Key::M:
-		code = GLFW_KEY_M;
+		code = SDL_SCANCODE_M;
 		break;
 	case Key::N:
-		code = GLFW_KEY_N;
+		code = SDL_SCANCODE_N;
 		break;
 	case Key::O:
-		code = GLFW_KEY_O;
+		code = SDL_SCANCODE_O;
 		break;
 	case Key::P:
-		code = GLFW_KEY_P;
+		code = SDL_SCANCODE_P;
 		break;
 	case Key::Q:
-		code = GLFW_KEY_Q;
+		code = SDL_SCANCODE_Q;
 		break;
 	case Key::R:
-		code = GLFW_KEY_R;
+		code = SDL_SCANCODE_R;
 		break;
 	case Key::S:
-		code = GLFW_KEY_S;
+		code = SDL_SCANCODE_S;
 		break;
 	case Key::T:
-		code = GLFW_KEY_T;
+		code = SDL_SCANCODE_T;
 		break;
 	case Key::U:
-		code = GLFW_KEY_U;
+		code = SDL_SCANCODE_U;
 		break;
 	case Key::V:
-		code = GLFW_KEY_V;
+		code = SDL_SCANCODE_V;
 		break;
 	case Key::W:
-		code = GLFW_KEY_W;
+		code = SDL_SCANCODE_W;
 		break;
 	case Key::X:
-		code = GLFW_KEY_X;
+		code = SDL_SCANCODE_X;
 		break;
 	case Key::Y:
-		code = GLFW_KEY_Y;
+		code = SDL_SCANCODE_Y;
 		break;
 	case Key::Z:
-		code = GLFW_KEY_Z;
+		code = SDL_SCANCODE_Z;
 		break;
 	case Key::Num0:
-		code = GLFW_KEY_0;
+		code = SDL_SCANCODE_0;
 		break;
 	case Key::Num1:
-		code = GLFW_KEY_1;
+		code = SDL_SCANCODE_1;
 		break;
 	case Key::Num2:
-		code = GLFW_KEY_2;
+		code = SDL_SCANCODE_2;
 		break;
 	case Key::Num3:
-		code = GLFW_KEY_3;
+		code = SDL_SCANCODE_3;
 		break;
 	case Key::Num4:
-		code = GLFW_KEY_4;
+		code = SDL_SCANCODE_4;
 		break;
 	case Key::Num5:
-		code = GLFW_KEY_5;
+		code = SDL_SCANCODE_5;
 		break;
 	case Key::Num6:
-		code = GLFW_KEY_6;
+		code = SDL_SCANCODE_6;
 		break;
 	case Key::Num7:
-		code = GLFW_KEY_7;
+		code = SDL_SCANCODE_7;
 		break;
 	case Key::Num8:
-		code = GLFW_KEY_8;
+		code = SDL_SCANCODE_8;
 		break;
 	case Key::Num9:
-		code = GLFW_KEY_9;
+		code = SDL_SCANCODE_9;
 		break;
 	case Key::Escape:
-		code = GLFW_KEY_ESCAPE;
+		code = SDL_SCANCODE_ESCAPE;
 		break;
 	case Key::LControl:
-		code = GLFW_KEY_LEFT_CONTROL;
+		code = SDL_SCANCODE_LCTRL;
 		break;
 	case Key::LShift:
-		code = GLFW_KEY_LEFT_SHIFT;
+		code = SDL_SCANCODE_LSHIFT;
 		break;
 	case Key::LAlt:
-		code = GLFW_KEY_LEFT_ALT;
+		code = SDL_SCANCODE_LALT;
 		break;
 	case Key::LSystem:
-		code = GLFW_KEY_LEFT_SUPER;
+		code = SDL_SCANCODE_LGUI;
 		break;
 	case Key::RControl:
-		code = GLFW_KEY_RIGHT_CONTROL;
+		code = SDL_SCANCODE_RCTRL;
 		break;
 	case Key::RShift:
-		code = GLFW_KEY_RIGHT_SHIFT;
+		code = SDL_SCANCODE_RSHIFT;
 		break;
 	case Key::RAlt:
-		code = GLFW_KEY_RIGHT_ALT;
+		code = SDL_SCANCODE_RALT;
 		break;
 	case Key::RSystem:
-		code = GLFW_KEY_RIGHT_SUPER;
+		code = SDL_SCANCODE_RGUI;
 		break;
 	case Key::Menu:
-		code = GLFW_KEY_MENU;
+		code = SDL_SCANCODE_MENU;
 		break;
 	case Key::LBracket:
-		code = GLFW_KEY_LEFT_BRACKET;
+		code = SDL_SCANCODE_LEFTBRACKET;
 		break;
 	case Key::RBracket:
-		code = GLFW_KEY_RIGHT_BRACKET;
+		code = SDL_SCANCODE_RIGHTBRACKET;
 		break;
 	case Key::SemiColon:
-		code = GLFW_KEY_SEMICOLON;
+		code = SDL_SCANCODE_SEMICOLON;
 		break;
 	case Key::Comma:
-		code = GLFW_KEY_COMMA;
+		code = SDL_SCANCODE_COMMA;
 		break;
 	case Key::Period:
-		code = GLFW_KEY_PERIOD;
+		code = SDL_SCANCODE_PERIOD;
 		break;
 	case Key::Apostrophe:
-		code = GLFW_KEY_APOSTROPHE;
+		code = SDL_SCANCODE_APOSTROPHE;
 		break;
 	case Key::Slash:
-		code = GLFW_KEY_SLASH;
+		code = SDL_SCANCODE_SLASH;
 		break;
 	case Key::BackSlash:
-		code = GLFW_KEY_BACKSLASH;
+		code = SDL_SCANCODE_BACKSLASH;
 		break;
 	case Key::Equal:
-		code = GLFW_KEY_EQUAL;
+		code = SDL_SCANCODE_EQUALS;
 		break;
 	case Key::Minus:
-		code = GLFW_KEY_MINUS;
+		code = SDL_SCANCODE_MINUS;
 		break;
 	case Key::Space:
-		code = GLFW_KEY_SPACE;
+		code = SDL_SCANCODE_SPACE;
 		break;
 	case Key::Return:
-		code = GLFW_KEY_ENTER;
+		code = SDL_SCANCODE_RETURN;
 		break;
 	case Key::BackSpace:
-		code = GLFW_KEY_BACKSPACE;
+		code = SDL_SCANCODE_BACKSPACE;
 		break;
 	case Key::Tab:
-		code = GLFW_KEY_TAB;
+		code = SDL_SCANCODE_TAB;
 		break;
 	case Key::GraveAccent:
-		code = GLFW_KEY_GRAVE_ACCENT;
+		code = SDL_SCANCODE_GRAVE;
 		break;
 	case Key::World1:
-		code = GLFW_KEY_WORLD_1;
+		code = 0; // TODO(bill):
 		break;
 	case Key::World2:
-		code = GLFW_KEY_WORLD_2;
+		code = 0; // TODO(bill):
 		break;
 	case Key::PageUp:
-		code = GLFW_KEY_PAGE_UP;
+		code = SDL_SCANCODE_PAGEUP;
 		break;
 	case Key::PageDown:
-		code = GLFW_KEY_PAGE_DOWN;
+		code = SDL_SCANCODE_PAGEDOWN;
 		break;
 	case Key::End:
-		code = GLFW_KEY_END;
+		code = SDL_SCANCODE_END;
 		break;
 	case Key::Home:
-		code = GLFW_KEY_HOME;
+		code = SDL_SCANCODE_HOME;
 		break;
 	case Key::Insert:
-		code = GLFW_KEY_INSERT;
+		code = SDL_SCANCODE_INSERT;
 		break;
 	case Key::Delete:
-		code = GLFW_KEY_DELETE;
+		code = SDL_SCANCODE_DELETE;
 		break;
 	case Key::Add:
-		code = GLFW_KEY_KP_ADD;
+		code = SDL_SCANCODE_KP_PLUS;
 		break;
 	case Key::Subtract:
-		code = GLFW_KEY_KP_SUBTRACT;
+		code = SDL_SCANCODE_KP_MINUS;
 		break;
 	case Key::Multiply:
-		code = GLFW_KEY_KP_MULTIPLY;
+		code = SDL_SCANCODE_KP_MULTIPLY;
 		break;
 	case Key::Divide:
-		code = GLFW_KEY_KP_DIVIDE;
+		code = SDL_SCANCODE_KP_DIVIDE;
 		break;
 	case Key::Left:
-		code = GLFW_KEY_LEFT;
+		code = SDL_SCANCODE_LEFT;
 		break;
 	case Key::Right:
-		code = GLFW_KEY_RIGHT;
+		code = SDL_SCANCODE_RIGHT;
 		break;
 	case Key::Up:
-		code = GLFW_KEY_UP;
+		code = SDL_SCANCODE_UP;
 		break;
 	case Key::Down:
-		code = GLFW_KEY_DOWN;
+		code = SDL_SCANCODE_DOWN;
 		break;
 	case Key::Numpad0:
-		code = GLFW_KEY_KP_0;
+		code = SDL_SCANCODE_KP_0;
 		break;
 	case Key::Numpad1:
-		code = GLFW_KEY_KP_1;
+		code = SDL_SCANCODE_KP_1;
 		break;
 	case Key::Numpad2:
-		code = GLFW_KEY_KP_2;
+		code = SDL_SCANCODE_KP_2;
 		break;
 	case Key::Numpad3:
-		code = GLFW_KEY_KP_3;
+		code = SDL_SCANCODE_KP_3;
 		break;
 	case Key::Numpad4:
-		code = GLFW_KEY_KP_4;
+		code = SDL_SCANCODE_KP_4;
 		break;
 	case Key::Numpad5:
-		code = GLFW_KEY_KP_5;
+		code = SDL_SCANCODE_KP_5;
 		break;
 	case Key::Numpad6:
-		code = GLFW_KEY_KP_6;
+		code = SDL_SCANCODE_KP_6;
 		break;
 	case Key::Numpad7:
-		code = GLFW_KEY_KP_7;
+		code = SDL_SCANCODE_KP_7;
 		break;
 	case Key::Numpad8:
-		code = GLFW_KEY_KP_8;
+		code = SDL_SCANCODE_KP_8;
 		break;
 	case Key::Numpad9:
-		code = GLFW_KEY_KP_9;
+		code = SDL_SCANCODE_KP_9;
 		break;
 	case Key::F1:
-		code = GLFW_KEY_F1;
+		code = SDL_SCANCODE_F1;
 		break;
 	case Key::F2:
-		code = GLFW_KEY_F2;
+		code = SDL_SCANCODE_F2;
 		break;
 	case Key::F3:
-		code = GLFW_KEY_F3;
+		code = SDL_SCANCODE_F3;
 		break;
 	case Key::F4:
-		code = GLFW_KEY_F4;
+		code = SDL_SCANCODE_F4;
 		break;
 	case Key::F5:
-		code = GLFW_KEY_F5;
+		code = SDL_SCANCODE_F5;
 		break;
 	case Key::F6:
-		code = GLFW_KEY_F6;
+		code = SDL_SCANCODE_F6;
 		break;
 	case Key::F7:
-		code = GLFW_KEY_F7;
+		code = SDL_SCANCODE_F7;
 		break;
 	case Key::F8:
-		code = GLFW_KEY_F8;
+		code = SDL_SCANCODE_F8;
 		break;
 	case Key::F9:
-		code = GLFW_KEY_F9;
+		code = SDL_SCANCODE_F9;
 		break;
 	case Key::F10:
-		code = GLFW_KEY_F10;
+		code = SDL_SCANCODE_F10;
 		break;
 	case Key::F11:
-		code = GLFW_KEY_F11;
+		code = SDL_SCANCODE_F11;
 		break;
 	case Key::F12:
-		code = GLFW_KEY_F12;
+		code = SDL_SCANCODE_F12;
 		break;
 	case Key::F13:
-		code = GLFW_KEY_F13;
+		code = SDL_SCANCODE_F13;
 		break;
 	case Key::F14:
-		code = GLFW_KEY_F14;
+		code = SDL_SCANCODE_F14;
 		break;
 	case Key::F15:
-		code = GLFW_KEY_F15;
+		code = SDL_SCANCODE_F15;
 		break;
 	case Key::Pause:
-		code = GLFW_KEY_PAUSE;
+		code = SDL_SCANCODE_PAUSE;
 		break;
-
-		// TODO(bill): Implement Extra Keys
-		// 		case Key::Tilde:
-		// 		{
-		// #if defined(_WIN32) // Windows
-
-		// #elif defined(__APPLE__) && defined(__MACH__) // Mac OS X
-
-		// #else // UNIX/POSIX
-
-		// #endif
-		// 		}
-		// 		break;
 	}
 
 	if (code == 0)
 		return false;
 
-	return false;
-	//return glfwGetKey(Window::getHandle(), code) == 1;
+	const u8* state{SDL_GetKeyboardState(nullptr)};
+	
+	return state[code] != 0;
 }
 
 // Cursor
+
 Vector2 getCursorPosition()
 {
-	return {0, 0};
-	//f64 x, y;
-	//glfwGetCursorPos(Window::getHandle(), &x, &y);
+	// TODO(bill): get global cursor position
+	int x, y;
+	SDL_GetMouseState(&x, &y);
 
-	//return Vector2{static_cast<f32>(x), static_cast<f32>(y)};
+	return{(f32)x, (f32)y};
 }
 
-void setCursorPosition(const Vector2& pos)
+Vector2 getCursorPosition(const Window& relativeTo)
 {
-	//glfwSetCursorPos(
-	    //Window::getHandle(), static_cast<f64>(pos.x), static_cast<f64>(pos.y));
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+
+	return Vector2{(f32)x, (f32)y};
+}
+
+void setCursorPosition(const Window& relativeTo, const Vector2& pos)
+{
+	SDL_WarpMouseInWindow(relativeTo.getNativeHandle(), pos.x, pos.y);
 }
 
 // Mouse
 bool isMouseButtonPressed(Mouse button)
 {
-	return false;
-	//return glfwGetMouseButton(Window::getHandle(), (int)button) == 1;
+	return (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON((int)button)) != 0;
 }
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
@@ -523,7 +517,7 @@ bool isGamepadButtonPressed(GamepadId gamepadId, XboxButton button)
 
 std::string getGamepadName(GamepadId gamepadId)
 {
-	return glfwGetJoystickName(gamepadId);
+	return {}; //glfwGetJoystickName(gamepadId);
 }
 
 void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor)

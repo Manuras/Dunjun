@@ -8,8 +8,7 @@ GLOBAL const Window* fullscreenWindow{nullptr};
 
 INTERNAL u32 generateFlags(u32 style)
 {
-	u32 flags;
-	flags |= SDL_WINDOW_OPENGL;
+	u32 flags = SDL_WINDOW_OPENGL;
 
 	if (style & Style::Borderless)
 		flags |= SDL_WINDOW_BORDERLESS;
@@ -23,6 +22,8 @@ INTERNAL u32 generateFlags(u32 style)
 		flags |= SDL_WINDOW_MINIMIZED;
 	if (style & Style::Maximized)
 		flags |= SDL_WINDOW_MAXIMIZED;
+	if (style & Style::Resizable)
+		flags |= SDL_WINDOW_RESIZABLE;
 
 	return flags;
 }
@@ -37,7 +38,7 @@ Window::Window()
 
 }
 
-Window::Window(const Dimensions& dimensions,
+Window::Window(const Dimensions& size,
 			   const std::string& title,
 			   u32 style)
 : m_impl{nullptr}
@@ -45,7 +46,7 @@ Window::Window(const Dimensions& dimensions,
 , m_frameTimeLimit{Time::Zero}
 , m_size{0, 0}
 {
-	create(dimensions, title, style);
+	create(size, title, style);
 }
 
 Window::~Window()
@@ -55,7 +56,7 @@ Window::~Window()
 
 
 
-void Window::create(const Dimensions& dimensions,
+void Window::create(const Dimensions& size,
 					const std::string& title,
 					u32 style)
 {
@@ -80,19 +81,20 @@ void Window::create(const Dimensions& dimensions,
 	u32 windowFlags{generateFlags(style)};
 	m_impl = SDL_CreateWindow(title.c_str(),
 							  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							  dimensions.width, dimensions.height,
+							  size.width, size.height,
 							  windowFlags);
 
 	m_context = SDL_GL_CreateContext(m_impl);
-
-	m_size = dimensions;
 
 	init();
 }
 
 void Window::init()
 {
+	setVisible(true);
+	setFramerateLimit(0);
 
+	SDL_GetWindowSize(m_impl, &m_size.width, &m_size.height);
 }
 
 void Window::close()
@@ -113,7 +115,10 @@ Vector2 Window::getPosition() const
 {
 	if (m_impl)
 	{
+		int x, y;
+		SDL_GetWindowPosition(m_impl, &x, &y);
 
+		return Vector2{(f32)x, (f32)y};
 	}
 
 	return {0, 0};
@@ -121,41 +126,63 @@ Vector2 Window::getPosition() const
 
 Window& Window::setPosition(const Vector2& position)
 {
+	SDL_SetWindowPosition(m_impl, position.x, position.y);
+
 	return *this;
 }
 
 Dimensions Window::getSize() const
 {
-	return {0, 0};
+	return m_size;
 }
 
-Window& Window::setSize()
+Window& Window::setSize(const Dimensions& size)
 {
+	SDL_SetWindowSize(m_impl, size.width, size.height);
+	SDL_GetWindowSize(m_impl, &m_size.width, &m_size.height);
+	
 	return *this;
 }
 
 Window& Window::setTitle(const std::string& title)
 {
+	SDL_SetWindowTitle(m_impl, title.c_str());
+
 	return *this;
 }
 
 Window& Window::setVisible(bool visible)
 {
+	// TODO(bill):
 	return *this;
 }
 
 Window& Window::setVerticalSyncEnabled(bool enabled)
 {
+	// TODO(bill):
+
 	return *this;
 }
 
 Window& Window::setFramerateLimit(u32 limit)
 {
+	if (limit > 0)
+		m_frameTimeLimit = seconds(1.0f / (f32)limit);
+	else
+		m_frameTimeLimit = Time::Zero;
+
 	return *this;
 }
 
 void Window::display()
 {
+	SDL_GL_SwapWindow(m_impl);
+
+	if (m_frameTimeLimit != Time::Zero)
+	{
+		Time::sleep(m_frameTimeLimit - m_clock.getElapsedTime());
+		m_clock.restart();
+	}
 
 }
 } // namespace Dunjun
