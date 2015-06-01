@@ -3,6 +3,7 @@
 
 #include <Dunjun/Config.hpp>
 #include <Dunjun/Types.hpp>
+#include <Dunjun/FileSystem.hpp>
 
 #include <cassert>
 #include <cstdarg>
@@ -82,10 +83,6 @@ inline std::string stringFormat(const char* fmt, ...)
 
 	return {s_buf, strlen(s_buf)};
 }
-
-// TODO(bill): Place these functions in their own place `FileSystem::` or `fs::`
-std::string resourcePath();
-std::string getFileDirectory(const std::string& filepath);
 
 // TODO(bill): Remove throwRuntimeError(...) from code eventually and use a log
 // This is similar to an assert but not exactly. At the moment, it exit's the

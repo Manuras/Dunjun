@@ -41,7 +41,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 	file.open(std::string{BaseDirectory::Shaders + filename.c_str()},
 	          std::ios::in | std::ios::binary);
 
-	std::string fileDirectory{getFileDirectory(filename) + "/"};
+	std::string fileDirectory{FileSystem::getFileDirectory(filename) + "/"};
 
 	std::string output;
 	std::string line;

@@ -86,6 +86,10 @@ void Window::create(const Dimensions& size,
 
 	m_context = SDL_GL_CreateContext(m_impl);
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+
 	init();
 }
 
@@ -97,6 +101,8 @@ void Window::init()
 
 void Window::close()
 {
+	SDL_GL_DeleteContext(m_context);
+
 	SDL_DestroyWindow(m_impl);
 	m_impl = nullptr;
 
@@ -177,6 +183,26 @@ Window& Window::setFramerateLimit(u32 limit)
 		m_frameTimeLimit = Time::Zero;
 
 	return *this;
+}
+
+Window& Window::setFullscreen(bool fullscreen)
+{
+	if (fullscreen)
+		SDL_SetWindowFullscreen(m_impl, SDL_WINDOW_FULLSCREEN);
+	else
+		SDL_SetWindowFullscreen(m_impl, 0);
+
+	return *this;
+}
+
+bool Window::isFullscreen() const
+{
+	u32 flags = SDL_GetWindowFlags(m_impl);
+
+	if (flags & SDL_WINDOW_FULLSCREEN)
+		return true;
+
+	return false;
 }
 
 void Window::display()

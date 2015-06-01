@@ -1,15 +1,7 @@
 #include <Dunjun/Config.hpp>
-#ifdef DUNJUN_SYSTEM_WINDOWS
 #include <Dunjun/Input.hpp>
 
 #include <Dunjun/Game.hpp>
-
-#define VC_EXTRALEAN
-#define WIN32_LEAN_AND_MEAN
-#define WIN32_MEAN_AND_LEAN
-#include <Windows.h>
-
-#include <Xinput.h>
 
 #include <SDL/SDL.h>
 
@@ -20,15 +12,22 @@ namespace Dunjun
 {
 namespace Input
 {
-GLOBAL std::array<XINPUT_STATE, Gamepad_Count> g_gamepadStates;
+GLOBAL const usize MaximumControllers{4};
+
+GLOBAL std::array<SDL_GameController*, MaximumControllers> g_controllerHandles;
 
 void setup()
 {
-	for (int i{0}; i < Gamepad_Count; i++)
+	int maxJoysticks{SDL_NumJoysticks()};
+	int controllerIndex{0};
+	for (int joystickIndex{0}; joystickIndex < maxJoysticks; joystickIndex++)
 	{
-		memset(&g_gamepadStates[i], 0, sizeof(XINPUT_STATE));
-		if (isGamepadPresent((GamepadId)i))
-			setGamepadVibration((GamepadId)i, 0, 0);
+		if (!SDL_IsGameController(joystickIndex))
+			continue;
+		if (controllerIndex >= MaximumControllers)
+			break;
+		g_controllerHandles[controllerIndex] = SDL_GameControllerOpen(joystickIndex);
+		controllerIndex++;
 	}
 
 	setStickyKeys(true);
@@ -37,10 +36,16 @@ void setup()
 
 void cleanup()
 {
-	for (int i{0}; i < Gamepad_Count; i++)
+	for (int i{0}; i < MaximumControllers; i++)
 	{
-		if (isGamepadPresent((GamepadId)i))
-			setGamepadVibration((GamepadId)i, 0, 0);
+		if (isControllerPresent(i))
+			setControllerVibration(i, 0, 0);
+	}
+
+	for (SDL_GameController* gamepad : g_controllerHandles)
+	{
+		if (gamepad)
+			SDL_GameControllerClose(gamepad);
 	}
 }
 
@@ -389,7 +394,7 @@ bool isKeyPressed(Key key)
 		return false;
 
 	const u8* state{SDL_GetKeyboardState(nullptr)};
-	
+
 	return state[code] != 0;
 }
 
@@ -425,109 +430,44 @@ bool isMouseButtonPressed(Mouse button)
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
 
-// Gamepads
-void updateGamepads()
-{
-	for (usize i{0}; i < Gamepad_Count; i++)
-		isGamepadPresent((GamepadId)i);
-}
 
-bool isGamepadPresent(GamepadId gamepadId)
+bool isControllerPresent(u32 controllerIndex)
 {
-	if (gamepadId < Gamepad_Count)
-		return XInputGetState(gamepadId, &g_gamepadStates[gamepadId]) == 0;
+	// TODO(bill);
 	return false;
 }
 
-GamepadAxes getGamepadAxes(GamepadId gamepadId)
+
+bool isControllerButtonPressed(u32 controllerIndex, ControllerButton button)
 {
-	GamepadAxes axes;
+	SDL_GameController* gc{g_controllerHandles[controllerIndex]};
+	if (gc && SDL_GameControllerGetAttached(gc))
+		return SDL_GameControllerGetButton(gc, (SDL_GameControllerButton)button) != 0;
 
-	axes.leftTrigger = g_gamepadStates[gamepadId].Gamepad.bLeftTrigger / 255.0f;
-	axes.rightTrigger =
-	    g_gamepadStates[gamepadId].Gamepad.bRightTrigger / 255.0f;
-
-	axes.leftThumbstick.x =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbLX / 32767.0f;
-	axes.leftThumbstick.y =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbLY / 32767.0f;
-
-	axes.rightThumbstick.x =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbRX / 32767.0f;
-	axes.rightThumbstick.y =
-	    g_gamepadStates[gamepadId].Gamepad.sThumbRY / 32767.0f;
-
-	return axes;
+	return false;
 }
 
-GamepadButtons getGamepadButtons(GamepadId gamepadId)
+f32 getControllerAxis(u32 controllerIndex, ControllerAxis axis)
 {
-	GamepadButtons buttons((usize)XboxButton::Count);
+	SDL_GameController* gc{g_controllerHandles[controllerIndex]};
+	if (gc && SDL_GameControllerGetAttached(gc))
+	{
+		s16 value{SDL_GameControllerGetAxis(gc, (SDL_GameControllerAxis)axis)};
+		
+		return static_cast<f32>(value) / 32767.0f;
+	}
 
-	buttons[(int)XboxButton::DpadUp] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_UP) != 0;
-	buttons[(int)XboxButton::DpadDown] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_DOWN) != 0;
-	buttons[(int)XboxButton::DpadLeft] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_LEFT) != 0;
-	buttons[(int)XboxButton::DpadRight] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
-
-	buttons[(int)XboxButton::Start] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_START) !=
-	    0;
-	buttons[(int)XboxButton::Back] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_BACK) !=
-	    0;
-
-	buttons[(int)XboxButton::LeftThumb] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_LEFT_THUMB) != 0;
-	buttons[(int)XboxButton::RightThumb] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_RIGHT_THUMB) != 0;
-
-	buttons[(int)XboxButton::LeftShoulder] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_LEFT_SHOULDER) != 0;
-	buttons[(int)XboxButton::RightShoulder] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons &
-	     XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
-
-	buttons[(int)XboxButton::A] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_A) != 0;
-	buttons[(int)XboxButton::B] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_B) != 0;
-	buttons[(int)XboxButton::X] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_X) != 0;
-	buttons[(int)XboxButton::Y] =
-	    (g_gamepadStates[gamepadId].Gamepad.wButtons & XINPUT_GAMEPAD_Y) != 0;
-
-	return buttons;
+	return 0.0f;
 }
 
-bool isGamepadButtonPressed(GamepadId gamepadId, XboxButton button)
+std::string getControllerName(u32 controllerIndex)
 {
-	return getGamepadButtons(gamepadId)[(usize)button];
+	return {SDL_GameControllerName(g_controllerHandles[controllerIndex])};
 }
 
-std::string getGamepadName(GamepadId gamepadId)
+void setControllerVibration(u32 controllerIndex, f32 leftMotor, f32 rightMotor)
 {
-	return {}; //glfwGetJoystickName(gamepadId);
-}
-
-void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor)
-{
-	XINPUT_VIBRATION vibration;
-
-	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotor * 0xFFFF);
-	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotor * 0xFFFF);
-
-	XInputSetState((u32)gamepadId, &vibration);
+	
 }
 
 // Clipboard
@@ -543,5 +483,3 @@ void setClipboardString(const std::string& str)
 
 } // namespace Input
 } // namespace Dunjun
-
-#endif

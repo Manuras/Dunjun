@@ -143,49 +143,45 @@ enum class Mouse
 	ButtonMiddle = Button3,
 };
 
-struct GamepadAxes
+
+enum class ControllerButton : u32
 {
-	Vector2 leftThumbstick;
-	Vector2 rightThumbstick;
-	f32     leftTrigger;
-	f32     rightTrigger;
+	A = 0,
+	B,
+	X,
+	Y,
+
+	Back,
+	Guide,
+	Start,
+
+	LeftStick,
+	RightStick,
+
+	LeftShoulder,
+	RightShoulder,
+
+	DpadUp,
+	DpadDown,
+	DpadLeft,
+	DpadRight,
+
+	Count,
 };
 
-enum class XboxButton
+enum class ControllerAxis
 {
-	DpadUp    = 0,
-	DpadDown  = 1,
-	DpadLeft  = 2,
-	DpadRight = 3,
+	LeftX = 0,
+	LeftY,
 
-	Start = 4,
-	Back  = 5,
+	RightX,
+	RightY,
 
-	LeftThumb  = 6,
-	RightThumb = 7,
+	TriggerLeft,
+	TriggerRight,
 
-	LeftShoulder  = 8,
-	RightShoulder = 9,
-
-	A = 10,
-	B = 11,
-	X = 12,
-	Y = 13,
-
-	Count = 14,
+	Count,
 };
-
-enum GamepadId
-{
-	Gamepad_1 = 0,
-	Gamepad_2 = 1,
-	Gamepad_3 = 2,
-	Gamepad_4 = 3,
-
-	Gamepad_Count = 4,
-};
-
-using GamepadButtons = std::vector<bool>;
 
 enum class CursorMode
 {
@@ -212,18 +208,16 @@ bool isMouseButtonPressed(Mouse button);
 
 // Vector2 getScrollOffset();
 
-// TODO(bill) IMPORTANT(bill): Handle other platforms rather than just
-//                             Windows. I.e. not XInput
-void updateGamepads();
+bool isControllerPresent(u32 controllerIndex);
+bool isControllerButtonPressed(u32 controllerIndex,
+							   ControllerButton button);
+f32 getControllerAxis(u32 controllerIndex, ControllerAxis axis);
 
-bool isGamepadPresent(GamepadId gamepadId);
-GamepadAxes getGamepadAxes(GamepadId gamepadId);
-GamepadButtons getGamepadButtons(GamepadId gamepadId);
-bool isGamepadButtonPressed(GamepadId gamepadId, XboxButton button);
+
 // TODO(bill): Get type of gamepad rather than name
 // NOTE(bill): Strings are UTF-8
-std::string getGamepadName(GamepadId gamepadId);
-void setGamepadVibration(GamepadId gamepadId, f32 leftMotor, f32 rightMotor);
+std::string getControllerName(u32 controllerIndex);
+void setControllerVibration(u32 controllerIndex, f32 leftMotor, f32 rightMotor);
 
 // NOTE(bill): Strings are UTF-8
 std::string getClipboardString();

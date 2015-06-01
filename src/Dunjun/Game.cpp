@@ -29,7 +29,7 @@ struct ModelInstance
 namespace
 {
 GLOBAL const Time TimeStep{seconds(1.0f / 60.0f)};
-GLOBAL const u32 FrameLimit{60};
+GLOBAL const u32 FrameLimit{288};
 
 GLOBAL bool g_running{true};
 } // namespace (anonymous)
@@ -58,8 +58,6 @@ namespace Game
 {
 INTERNAL void handleInput()
 {
-	Input::updateGamepads();
-
 	Event event;
 	while (g_window.pollEvent(event))
 	{
@@ -273,14 +271,21 @@ INTERNAL void update(Time dt)
 
 	f32 camVel{10.0f};
 	{
-		if (Input::isGamepadPresent(Input::Gamepad_1))
+		if (Input::isControllerPresent(0))
 		{
-			Input::GamepadAxes axes = Input::getGamepadAxes(Input::Gamepad_1);
+			f32 ltsX{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
+			f32 ltsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
+
+			f32 rtsX{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
+			f32 rtsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
+
+
+
 
 			const f32 lookSensitivity{2.0f};
 			const f32 deadZone{0.21f};
 
-			Vector2 rts{axes.rightThumbstick};
+			Vector2 rts{rtsX, rtsY};
 			if (Math::abs(rts.x) < deadZone)
 				rts.x = 0;
 			if (Math::abs(rts.y) < deadZone)
@@ -290,7 +295,7 @@ INTERNAL void update(Time dt)
 			    -lookSensitivity * Radian{rts.x * dt.asSeconds()},
 			    +lookSensitivity * Radian{rts.y * dt.asSeconds()});
 
-			Vector2 lts{axes.leftThumbstick};
+			Vector2 lts{ltsX, ltsY};
 
 			if (Math::abs(lts.x) < deadZone)
 				lts.x = 0;
@@ -308,22 +313,19 @@ INTERNAL void update(Time dt)
 			velDir += lts.x * g_cameraWorld.right();
 			velDir += lts.y * forward;
 
-			Input::GamepadButtons buttons{
-			    Input::getGamepadButtons(Input::Gamepad_1)};
-
-			if (buttons[(usize)Input::XboxButton::RightShoulder])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::RightShoulder))
 				velDir.y += 1;
-			if (buttons[(usize)Input::XboxButton::LeftShoulder])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::LeftShoulder))
 				velDir.y -= 1;
 
-			if (buttons[(usize)Input::XboxButton::DpadUp])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadUp))
 			{
 				Vector3 f{g_cameraWorld.forward()};
 				f.y = 0;
 				f = normalize(f);
 				velDir += f;
 			}
-			if (buttons[(usize)Input::XboxButton::DpadDown])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadDown))
 			{
 				Vector3 b{g_cameraWorld.backward()};
 				b.y = 0;
@@ -331,14 +333,14 @@ INTERNAL void update(Time dt)
 				velDir += b;
 			}
 
-			if (buttons[(usize)Input::XboxButton::DpadLeft])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadLeft))
 			{
 				Vector3 l{g_cameraWorld.left()};
 				l.y = 0;
 				l = normalize(l);
 				velDir += l;
 			}
-			if (buttons[(usize)Input::XboxButton::DpadRight])
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadRight))
 			{
 				Vector3 r{g_cameraWorld.right()};
 				r.y = 0;
@@ -353,14 +355,13 @@ INTERNAL void update(Time dt)
 			    camVel * velDir * dt.asSeconds();
 
 			// Vibrate
-			if (Input::isGamepadButtonPressed(Input::Gamepad_1,
-			                                  Input::XboxButton::A))
+			if (Input::isControllerButtonPressed(0, Input::ControllerButton::A))
 			{
-				Input::setGamepadVibration(Input::Gamepad_1, 0.5f, 0.5f);
+				Input::setControllerVibration(0, 0.5f, 0.5f);
 			}
 			else
 			{
-				Input::setGamepadVibration(Input::Gamepad_1, 0.0f, 0.0f);
+				Input::setControllerVibration(0, 0.0f, 0.0f);
 			}
 		}
 	}
@@ -521,12 +522,19 @@ INTERNAL void render()
 
 		shaders.stopUsing();
 	}
-	g_window.display();
 }
 
 void init()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_JOYSTICK) != 0)
+	u32 sdlFlags{
+		SDL_INIT_VIDEO          |
+		SDL_INIT_EVENTS         |
+		SDL_INIT_JOYSTICK       |
+		SDL_INIT_GAMECONTROLLER |
+		SDL_INIT_HAPTIC         |
+		0
+	};
+	if (SDL_Init(sdlFlags) != 0)
 	{
 		std::cerr << "SDL Failed to initialize. Error: ";
 		std::cerr << SDL_GetError();
@@ -586,12 +594,18 @@ void run()
 		}
 
 		render();
+
+		g_window.display();
 	}
 }
 
 void cleanup()
 {
 	Input::cleanup();
+	g_window.close();
+	SDL_Quit();
+
+	std::exit(EXIT_SUCCESS);
 }
 
 void glInit()

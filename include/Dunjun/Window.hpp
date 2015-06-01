@@ -82,6 +82,10 @@ public:
 	Window& setVerticalSyncEnabled(bool enabled);
 	Window& setFramerateLimit(u32 limit);
 
+	Window& setFullscreen(bool fullscreen);
+	bool isFullscreen() const;
+
+
 	bool pollEvent(Event& event);
 	bool waitEvent(Event& event);
 
@@ -96,6 +100,7 @@ private:
 	SDL_GLContext m_context;
 	Clock m_clock;
 	Time m_frameTimeLimit;
+	// Dimensions m_size;
 };
 } // namespace Dunjun
 #endif
