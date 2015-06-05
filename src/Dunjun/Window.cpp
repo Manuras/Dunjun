@@ -39,14 +39,15 @@ Window::Window()
 
 }
 
-Window::Window(const Dimensions& size,
+Window::Window(VideoMode mode,
 			   const std::string& title,
-			   u32 style)
+			   u32 style,
+			   const ContextSettings& settings)
 : m_impl{nullptr}
 , m_context{}
 , m_frameTimeLimit{Time::Zero}
 {
-	create(size, title, style);
+	create(mode, title, style, settings);
 }
 
 Window::~Window()
@@ -56,9 +57,10 @@ Window::~Window()
 
 
 
-void Window::create(const Dimensions& size,
+void Window::create(VideoMode mode,
 					const std::string& title,
-					u32 style)
+					u32 style,
+					const ContextSettings& settings)
 {
 	// Destroy the original window
 	close();
@@ -73,6 +75,14 @@ void Window::create(const Dimensions& size,
 		else
 		{
 			// TODO(bill): Check if fullscreen dimensions is valid
+			if (!mode.isValid())
+			{
+				std::cerr << mode.width << "x" << mode.height << "x" << mode.bitsPerPixel << "\n";
+				std::cerr << "The video mode is not available, switching to a valid mode\n";
+
+
+				mode = VideoMode::getFullscreenModes()[0];
+			}
 
 			fullscreenWindow = this;
 		}
@@ -81,7 +91,7 @@ void Window::create(const Dimensions& size,
 	u32 windowFlags{generateFlags(style)};
 	m_impl = SDL_CreateWindow(title.c_str(),
 							  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-							  size.width, size.height,
+							  mode.width, mode.height,
 							  windowFlags);
 
 	m_context = SDL_GL_CreateContext(m_impl);

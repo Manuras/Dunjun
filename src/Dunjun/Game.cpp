@@ -555,7 +555,7 @@ void init()
 		std::exit(EXIT_FAILURE);
 	}
 
-	g_window.create({1280, 720}, "Dunjun");
+	g_window.create({1920, 1080}, "Dunjun");
 	//g_window.setFramerateLimit(FrameLimit);
 
 	glewInit();

@@ -111,6 +111,9 @@
     <ClCompile Include="src\Dunjun\FileSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\VideoMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\ShaderProgram.hpp">
@@ -315,6 +318,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Dunjun\FileSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\VideoMode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

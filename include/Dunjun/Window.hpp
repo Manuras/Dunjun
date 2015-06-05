@@ -2,10 +2,10 @@
 #define DUNJUN_WINDOW_HPP
 
 #include <Dunjun/Math.hpp>
-
 #include <Dunjun/OpenGL.hpp>
-
 #include <Dunjun/Clock.hpp>
+#include <Dunjun/VideoMode.hpp>
+#include <Dunjun/ContextSettings.hpp>
 
 #include <SDL/SDL.h>
 
@@ -58,15 +58,17 @@ public:
 
 	Window();
 
-	explicit Window(const Dimensions& size,
+	explicit Window(VideoMode mode,
 					const std::string& title,
-					u32 style = Style::Default);
+					u32 style = Style::Default,
+					const ContextSettings& settings = ContextSettings{});
 
 	virtual ~Window();
 
-	void create(const Dimensions& dimensions,
+	void create(VideoMode mode,
 				const std::string& title,
-				u32 style = Style::Default);
+				u32 style = Style::Default,
+				const ContextSettings& settings = ContextSettings{});
 
 	void close();
 	bool isOpen() const;
