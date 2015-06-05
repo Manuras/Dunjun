@@ -1,7 +1,7 @@
 #ifndef DUNJUN_MATH_RECT_HPP
 #define DUNJUN_MATH_RECT_HPP
 
-#include <Dunjun/Types.hpp>
+#include <Dunjun/System/Types.hpp>
 #include <Dunjun/Math/Vector2.hpp>
 
 namespace Dunjun

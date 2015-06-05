@@ -2,10 +2,7 @@
 #define DUNJUN_RESOURCEHOLDERS_HPP
 
 #include <Dunjun/ResourceHolder.hpp>
-#include <Dunjun/Texture.hpp>
-#include <Dunjun/ShaderProgram.hpp>
-#include <Dunjun/Mesh.hpp>
-#include <Dunjun/Material.hpp>
+#include <Dunjun/Graphics.hpp>
 
 namespace Dunjun
 {

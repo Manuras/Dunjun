@@ -1,5 +1,5 @@
-#ifndef DUNJUN_CONTEXTSETTINGS_HPP
-#define DUNJUN_CONTEXTSETTINGS_HPP
+#ifndef DUNJUN_WINDOW_CONTEXTSETTINGS_HPP
+#define DUNJUN_WINDOW_CONTEXTSETTINGS_HPP
 
 #include <Dunjun/Common.hpp>
 
@@ -11,7 +11,7 @@ struct ContextSettings
 	                         u32 stencilBits = 0,
 	                         u32 antialiasingLevel = 0,
 	                         u32 majorVersion = 2,
-	                         u32 majorVersion = 1)
+	                         u32 minorVersion = 1)
 	: depthBits{depthBits}
 	, stencilBits{stencilBits}
 	, antialiasingLevel{antialiasingLevel}

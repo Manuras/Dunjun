@@ -2,8 +2,8 @@
 #define DUNJUN_COMMON_HPP
 
 #include <Dunjun/Config.hpp>
-#include <Dunjun/Types.hpp>
-#include <Dunjun/FileSystem.hpp>
+#include <Dunjun/System/Types.hpp>
+#include <Dunjun/System/FileSystem.hpp>
 
 #include <cassert>
 #include <cstdarg>

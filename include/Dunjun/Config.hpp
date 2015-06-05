@@ -77,6 +77,6 @@
 #endif
 
 
-#include <Dunjun/Types.hpp>
+#include <Dunjun/System/Types.hpp>
 
 #endif

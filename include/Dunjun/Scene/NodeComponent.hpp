@@ -1,11 +1,11 @@
 #ifndef DUNJUN_SCENE_NODECOMPONENT_HPP
 #define DUNJUN_SCENE_NODECOMPONENT_HPP
 
-#include <Dunjun/NonCopyable.hpp>
-#include <Dunjun/Types.hpp>
+#include <Dunjun/System/NonCopyable.hpp>
+#include <Dunjun/System/Types.hpp>
 #include <Dunjun/Common.hpp>
-#include <Dunjun/Transform.hpp>
-#include <Dunjun/Time.hpp>
+#include <Dunjun/Graphics/Transform.hpp>
+#include <Dunjun/System/Time.hpp>
 #include <Dunjun/Scene/SceneRenderer.hpp>
 
 namespace Dunjun

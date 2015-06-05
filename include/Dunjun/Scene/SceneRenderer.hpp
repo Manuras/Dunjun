@@ -1,12 +1,12 @@
 #ifndef DUNJUN_SCENE_SCENERENDERER_HPP
 #define DUNJUN_SCENE_SCENERENDERER_HPP
 
-#include <Dunjun/Material.hpp>
-#include <Dunjun/Camera.hpp>
-#include <Dunjun/ModelAsset.hpp>
+#include <Dunjun/Graphics/Material.hpp>
+#include <Dunjun/Graphics/Camera.hpp>
+#include <Dunjun/Graphics/ModelAsset.hpp>
 #include <Dunjun/Scene/Lighting.hpp>
-#include <Dunjun/RenderTexture.hpp>
-#include <Dunjun/GBuffer.hpp>
+#include <Dunjun/Graphics/RenderTexture.hpp>
+#include <Dunjun/Graphics/GBuffer.hpp>
 
 #include <deque>
 

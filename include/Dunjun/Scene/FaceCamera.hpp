@@ -2,7 +2,7 @@
 #define DUNJUN_SCENE_FACECAMERA_HPP
 
 #include <Dunjun/Scene/NodeComponent.hpp>
-#include <Dunjun/Camera.hpp>
+#include <Dunjun/Graphics/Camera.hpp>
 
 namespace Dunjun
 {

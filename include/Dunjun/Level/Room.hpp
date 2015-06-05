@@ -2,8 +2,8 @@
 #define DUNJUN_LEVEL_ROOM_HPP
 
 #include <Dunjun/Scene/SceneNode.hpp>
-#include <Dunjun/Mesh.hpp>
-#include <Dunjun/Material.hpp>
+#include <Dunjun/Graphics/Mesh.hpp>
+#include <Dunjun/Graphics/Material.hpp>
 
 #include <Dunjun/Math/Random.hpp>
 

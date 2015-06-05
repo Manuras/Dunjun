@@ -1,7 +1,7 @@
 #ifndef DUNJUN_MATH_VECTOR2_HPP
 #define DUNJUN_MATH_VECTOR2_HPP
 
-#include <Dunjun/Types.hpp>
+#include <Dunjun/System/Types.hpp>
 #include <iostream>
 
 namespace Dunjun

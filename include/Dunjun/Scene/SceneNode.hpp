@@ -2,9 +2,9 @@
 #define DUNJUN_SCENE_SCENENODE_HPP
 
 #include <Dunjun/Common.hpp>
-#include <Dunjun/Transform.hpp>
-#include <Dunjun/NonCopyable.hpp>
-#include <Dunjun/Time.hpp>
+#include <Dunjun/Graphics/Transform.hpp>
+#include <Dunjun/System/NonCopyable.hpp>
+#include <Dunjun/System/Time.hpp>
 
 #include <Dunjun/Scene/SceneRenderer.hpp>
 

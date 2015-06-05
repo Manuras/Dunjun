@@ -3,9 +3,9 @@
 
 #include <Dunjun/Scene/NodeComponent.hpp>
 #include <Dunjun/Scene/SceneRenderer.hpp>
-#include <Dunjun/Material.hpp>
-#include <Dunjun/Mesh.hpp>
-#include <Dunjun/ModelAsset.hpp>
+#include <Dunjun/Graphics/Material.hpp>
+#include <Dunjun/Graphics/Mesh.hpp>
+#include <Dunjun/Graphics/ModelAsset.hpp>
 
 namespace Dunjun
 {

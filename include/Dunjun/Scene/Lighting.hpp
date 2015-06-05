@@ -2,7 +2,7 @@
 #define DUNJUN_SCENE_LIGHTING_HPP
 
 #include <Dunjun/Math.hpp>
-#include <Dunjun/Color.hpp>
+#include <Dunjun/Graphics/Color.hpp>
 
 namespace Dunjun
 {

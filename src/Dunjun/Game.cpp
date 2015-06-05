@@ -1,14 +1,11 @@
 #include <Dunjun/Config.hpp>
 #include <Dunjun/Game.hpp>
 
-#include <Dunjun/Clock.hpp>
-#include <Dunjun/Input.hpp>
+#include <Dunjun/System.hpp>
+#include <Dunjun/Window.hpp>
 #include <Dunjun/Level/Level.hpp>
 #include <Dunjun/ResourceHolders.hpp>
 #include <Dunjun/Scene.hpp>
-#include <Dunjun/TickCounter.hpp>
-#include <Dunjun/Window.hpp>
-#include <Dunjun/Event.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -555,7 +552,7 @@ void init()
 		std::exit(EXIT_FAILURE);
 	}
 
-	g_window.create({1920, 1080}, "Dunjun");
+	g_window.create({854, 480}, "Dunjun");
 	//g_window.setFramerateLimit(FrameLimit);
 
 	glewInit();
