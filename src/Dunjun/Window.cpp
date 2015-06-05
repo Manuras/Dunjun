@@ -555,13 +555,73 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 
 	// TODO(bill): handle Joystick events
 
+	if (e.type == SDL_CONTROLLERBUTTONDOWN)
+	{
+		event.type = Event::ControllerButtonPressed;
+		event.controllerButton.index = e.cbutton.which;
+		event.controllerButton.button = (Input::ControllerButton)e.cbutton.button;
+
+		return true;
+	}
+
+	if (e.type == SDL_CONTROLLERBUTTONUP)
+	{
+		event.type = Event::ControllerButtonReleased;
+		event.controllerButton.index = e.cbutton.which;
+		event.controllerButton.button = (Input::ControllerButton)e.cbutton.button;
+
+		return true;
+	}
+
+	if (e.type == SDL_CONTROLLERDEVICEADDED)
+	{
+		event.type = Event::ControllerConnected;
+		event.controller.index = e.cdevice.which;
+
+		return true;
+	}
+
+
+	if (e.type == SDL_CONTROLLERDEVICEREMOVED)
+	{
+		event.type = Event::ControllerDisconnected;
+		event.controller.index = e.cdevice.which;
+
+		return true;
+	}
+
+
+	if (e.type == SDL_CONTROLLERDEVICEREMAPPED)
+	{
+		event.type = Event::ControllerRemapped;
+		event.controller.index = e.cdevice.which;
+
+		return true;
+	}
+
+	if (e.type == SDL_CONTROLLERAXISMOTION)
+	{
+		event.type = Event::ControllerAxisMoved;
+		event.controllerAxis.index = e.caxis.which;
+		event.controllerAxis.axis = (Input::ControllerAxis)e.caxis.axis;
+
+		s16 value{e.caxis.value};
+		if (event.controllerAxis.axis == Input::ControllerAxis::LeftY)
+			value = -value;
+
+		if (value >= 0)
+			event.controllerAxis.value = static_cast<f32>(value) / 32767.0f;
+
+		event.controllerAxis.value = static_cast<f32>(value) / 32768.0f;
+	}
+
 	return false;
 }
 
 bool Window::pollEvent(Event& event)
 {
 	SDL_Event e;
-	if (!SDL_PollEvent(&e))
+	if (SDL_PollEvent(&e) != 0)
 		return false;
 
 	return convertEvent(e, event);
@@ -570,7 +630,7 @@ bool Window::pollEvent(Event& event)
 bool Window::waitEvent(Event& event)
 {
 	SDL_Event e;
-	if (!SDL_WaitEvent(&e))
+	if (SDL_WaitEvent(&e) != 0)
 		return false;
 
 	return convertEvent(e, event);

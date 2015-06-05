@@ -57,6 +57,24 @@ struct Event
 	// TODO(bill): Drag and Drop Events
 	// TODO(bill): Clipboard Events
 
+	struct ControllerButtonEvent
+	{
+		u32 index;
+		Input::ControllerButton button;
+	};
+
+	struct ControllerConnectEvent
+	{
+		u32 index;
+	};
+
+	struct ControllerAxisEvent
+	{
+		u32 index;
+		Input::ControllerAxis axis;
+		f32 value;
+	};
+
 	enum EventType
 	{
 		Closed,
@@ -78,6 +96,16 @@ struct Event
 		// TODO(bill): EventTypes:
 		// Joystick/Controllers
 
+		ControllerButtonPressed,
+		ControllerButtonReleased,
+
+		ControllerConnected,
+		ControllerDisconnected,
+		ControllerRemapped,
+
+		ControllerAxisMoved,
+
+
 		Count // Keep last - total number of event types
 	};
 
@@ -91,8 +119,12 @@ struct Event
 		MouseMoveEvent        mouseMove;
 		MouseButtonEvent      mouseButton;
 		MouseWheelScrollEvent mouseWheelScroll;
-		
+
 		// TODO(bill): Joystick event types
+		ControllerConnectEvent controller;
+		ControllerButtonEvent controllerButton;
+		ControllerAxisEvent   controllerAxis;
+
 	};
 };
 } // namespace Dunjun

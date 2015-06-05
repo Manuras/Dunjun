@@ -15,7 +15,7 @@ vec3 quaternionRotate(vec4 q, vec3 v)
 }
 
 
-float square(float x) { return x; }
+float square(float x) { return x * x; }
 
 vec3 calculatePositionFromDepth(vec2 st, float w, float depth, mat4 inverseMatrix)
 {

@@ -56,20 +56,37 @@ GLOBAL std::vector<SpotLight> g_spotLights;
 
 namespace Game
 {
-INTERNAL void handleInput()
+INTERNAL void handleEvents()
 {
 	Event event;
 	while (g_window.pollEvent(event))
 	{
 		if (event.type == Event::Closed)
+		{
+			// TODO(bill) IMPORTANT(bill): Does not always reach!
 			g_window.close();
+			std::exit(EXIT_SUCCESS); // TODO(bill): Remove this exit
+		}
 
 		if (event.type == Event::Resized)
 		{
 			glViewport(0, 0, event.size.width, event.size.height);
 		}
-	}
 
+		if (event.type == Event::ControllerConnected)
+		{
+			printf("Controller removed\n");
+		}
+
+		if (event.type == Event::ControllerDisconnected)
+		{
+			printf("Controller added\n");
+		}
+	}
+}
+
+INTERNAL void handleInput()
+{
 	if (!g_window.isOpen() || Input::isKeyPressed(Input::Key::Escape))
 		g_running = false;
 
@@ -274,13 +291,10 @@ INTERNAL void update(Time dt)
 		if (Input::isControllerPresent(0))
 		{
 			f32 ltsX{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
-			f32 ltsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
+			f32 ltsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftY)};
 
-			f32 rtsX{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
-			f32 rtsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
-
-
-
+			f32 rtsX{Input::getControllerAxis(0, Input::ControllerAxis::RightX)};
+			f32 rtsY{Input::getControllerAxis(0, Input::ControllerAxis::RightY)};
 
 			const f32 lookSensitivity{2.0f};
 			const f32 deadZone{0.21f};
@@ -292,8 +306,8 @@ INTERNAL void update(Time dt)
 				rts.y = 0;
 
 			g_cameraWorld.offsetOrientation(
-			    -lookSensitivity * Radian{rts.x * dt.asSeconds()},
-			    +lookSensitivity * Radian{rts.y * dt.asSeconds()});
+			     lookSensitivity * Radian{-rts.x * dt.asSeconds()},
+			     lookSensitivity * Radian{-rts.y * dt.asSeconds()});
 
 			Vector2 lts{ltsX, ltsY};
 
@@ -304,7 +318,6 @@ INTERNAL void update(Time dt)
 
 			if (length(lts) > 1.0f)
 				lts = normalize(lts);
-
 			Vector3 velDir{0, 0, 0};
 
 			Vector3 forward{g_cameraWorld.forward()};
@@ -577,9 +590,12 @@ void run()
 		if (accumulator > milliseconds(1200)) // remove loop of death
 			accumulator = milliseconds(1200);
 
+		handleEvents();
+
 		while (accumulator >= TimeStep)
 		{
 			accumulator -= TimeStep;
+			handleEvents();
 			handleInput();
 			update(TimeStep);
 		}

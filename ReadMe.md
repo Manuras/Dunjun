@@ -7,7 +7,7 @@ YouTube Channel: [GingerGames](https://youtube.com/c/GingerGames)
 
 GitHub: [Dunjun GitHub](https://github.com/gingerBill/Dunjun)
 
-<sup>1</sup>*With minimal libraries such as GLFW, GLEW, and the STB libraries.*
+<sup>1</sup>*With minimal libraries such as GLEW, GLFW (Pre Day 73), SDL2 (Post Day 73), and the STB libraries.*
 
 ## YouTube Playlists ##
 
@@ -174,16 +174,16 @@ Before we can begin, you need to make sure you have all the things you will need
 	- DirectX 9 Equivalent Cards
 * Text Editor and C++11 Compiler, or IDE (MSVC 12 compiler capabilities at least)
 * The initial libraries:
-	- GLFW - For creating the context, window, and handling input
+	- GLFW - For creating the context, window, and handling input (Pre Day 73)
 	- GLEW - To use new OpenGL functions
+	- SDL2 - For creating the context, window, and handling input (Post Day 73)
 
 ## Building ##
 
 At the moment, only Windows is supported through the Visual Studio solution. Mac OS X and Linux will implemented later when needed/wanted.
 
-Most of the code should compile on Mac OS X and Linux with probably only a few minor changes<sup>1</sup>.
+Most of the code should compile on Mac OS X and Linux with probably only a few minor changes.
 
-<sup>1</sup>_XInput is required (at the moment) for gamepad control however, GLFW does support joystick so that could be used a workaround for the moment._
 
 ## Supported Platforms ##
 

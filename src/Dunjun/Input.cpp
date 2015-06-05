@@ -433,8 +433,9 @@ bool isMouseButtonPressed(Mouse button)
 
 bool isControllerPresent(u32 controllerIndex)
 {
-	// TODO(bill);
-	return false;
+	SDL_GameController* gc{g_controllerHandles[controllerIndex]};
+
+	return (gc && SDL_GameControllerGetAttached(gc));
 }
 
 
@@ -450,11 +451,17 @@ bool isControllerButtonPressed(u32 controllerIndex, ControllerButton button)
 f32 getControllerAxis(u32 controllerIndex, ControllerAxis axis)
 {
 	SDL_GameController* gc{g_controllerHandles[controllerIndex]};
+
 	if (gc && SDL_GameControllerGetAttached(gc))
 	{
 		s16 value{SDL_GameControllerGetAxis(gc, (SDL_GameControllerAxis)axis)};
-		
-		return static_cast<f32>(value) / 32767.0f;
+		if (axis == ControllerAxis::LeftY)
+			value = -value;
+
+		if (value >= 0)
+			return static_cast<f32>(value) / 32767.0f;
+
+		return static_cast<f32>(value) / 32768.0f;
 	}
 
 	return 0.0f;
@@ -467,7 +474,7 @@ std::string getControllerName(u32 controllerIndex)
 
 void setControllerVibration(u32 controllerIndex, f32 leftMotor, f32 rightMotor)
 {
-	
+
 }
 
 // Clipboard
