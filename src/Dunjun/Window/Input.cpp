@@ -13,6 +13,7 @@ namespace Input
 GLOBAL const usize MaximumControllers{4};
 
 GLOBAL std::array<SDL_GameController*, MaximumControllers> g_controllerHandles;
+GLOBAL std::array<SDL_Haptic*, MaximumControllers> g_rumbleHandles;
 
 void setup()
 {
@@ -37,7 +38,7 @@ void cleanup()
 	for (int i{0}; i < MaximumControllers; i++)
 	{
 		if (isControllerPresent(i))
-			setControllerVibration(i, 0, 0);
+			setControllerVibration(i, 0);
 	}
 
 	for (SDL_GameController* gamepad : g_controllerHandles)
@@ -45,26 +46,33 @@ void cleanup()
 		if (gamepad)
 			SDL_GameControllerClose(gamepad);
 	}
+
+	for (SDL_Haptic* rumble : g_rumbleHandles)
+	{
+		if (rumble)
+			SDL_HapticClose(rumble);
+	}
 }
 
 void setCursorMode(CursorMode mode)
 {
 	/*if (mode == CursorMode::Normal)
-		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	    glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	if (mode == CursorMode::Hidden)
-		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	    glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	if (mode == CursorMode::Disabled)
-		glfwSetInputMode(Window::getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);*/
+	    glfwSetInputMode(Window::getHandle(), GLFW_CURSOR,
+	GLFW_CURSOR_DISABLED);*/
 }
 
 void setStickyKeys(bool sticky)
 {
-	//glfwSetInputMode(Window::getHandle(), GLFW_STICKY_KEYS, sticky);
+	// glfwSetInputMode(Window::getHandle(), GLFW_STICKY_KEYS, sticky);
 }
 
 void setStickyMouseButtons(bool sticky)
 {
-	//glfwSetInputMode(Window::getHandle(), GLFW_STICKY_MOUSE_BUTTONS, sticky);
+	// glfwSetInputMode(Window::getHandle(), GLFW_STICKY_MOUSE_BUTTONS, sticky);
 }
 
 // Keyboard
@@ -404,7 +412,7 @@ Vector2 getCursorPosition()
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 
-	return{(f32)x, (f32)y};
+	return {(f32)x, (f32)y};
 }
 
 Vector2 getCursorPosition(const Window& relativeTo)
@@ -428,14 +436,12 @@ bool isMouseButtonPressed(Mouse button)
 
 // Vector2 getScrollOffset() { return Vector2(g_scrollX, g_scrollY); }
 
-
 bool isControllerPresent(u32 controllerIndex)
 {
 	SDL_GameController* gc{g_controllerHandles[controllerIndex]};
 
 	return (gc && SDL_GameControllerGetAttached(gc));
 }
-
 
 bool isControllerButtonPressed(u32 controllerIndex, ControllerButton button)
 {
@@ -470,20 +476,35 @@ std::string getControllerName(u32 controllerIndex)
 	return {SDL_GameControllerName(g_controllerHandles[controllerIndex])};
 }
 
-void setControllerVibration(u32 controllerIndex, f32 leftMotor, f32 rightMotor)
+void setControllerVibration(u32 controllerIndex, f32 amount)
 {
+	amount = Math::clamp<f32>(amount, 0, 1);
+	if (g_rumbleHandles[controllerIndex])
+	{
+		SDL_HapticRumblePlay(g_rumbleHandles[controllerIndex],
+		                     amount, SDL_HAPTIC_INFINITY);
+	}
+}
 
+void setControllerVibration(u32 controllerIndex, f32 amount, Time duration)
+{
+	amount = Math::clamp<f32>(amount, 0, 1);
+	if (g_rumbleHandles[controllerIndex])
+	{
+		SDL_HapticRumblePlay(g_rumbleHandles[controllerIndex],
+		                     amount, duration.asMilliseconds());
+	}
 }
 
 // Clipboard
 std::string getClipboardString()
 {
-	return{};// return glfwGetClipboardString(Window::getHandle());
+	return {}; // return glfwGetClipboardString(Window::getHandle());
 }
 
 void setClipboardString(const std::string& str)
 {
-	//glfwSetClipboardString(Window::getHandle(), str.c_str());
+	// glfwSetClipboardString(Window::getHandle(), str.c_str());
 }
 
 } // namespace Input

@@ -2,8 +2,7 @@
 
 #include <Dunjun/Scene/SceneNode.hpp>
 #include <Dunjun/Scene/MeshRenderer.hpp>
-
-#include <Dunjun/ResourceHolders.hpp>
+#include <Dunjun/World.hpp>
 
 #include <string>
 
@@ -13,7 +12,10 @@
 namespace Dunjun
 {
 
-SceneRenderer::SceneRenderer() {}
+SceneRenderer::SceneRenderer(World& world)
+: m_world{world}
+{
+}
 
 void SceneRenderer::reset()
 {
@@ -30,9 +32,6 @@ void SceneRenderer::reset()
 void SceneRenderer::clearAll()
 {
 	m_modelInstances.clear();
-	m_directionalLights.clear();
-	m_pointsLights.clear();
-	m_spotLights.clear();
 }
 
 void SceneRenderer::addSceneGraph(const SceneNode& node, Transform t)
@@ -51,22 +50,6 @@ void SceneRenderer::addModelInstance(const MeshRenderer& meshRenderer,
 {
 	if (meshRenderer.getParent()->visible) // Just in case
 		m_modelInstances.emplace_back(meshRenderer, t);
-}
-
-void SceneRenderer::addPointLight(const PointLight* light)
-{
-	m_pointsLights.emplace_back(light);
-}
-
-
-void SceneRenderer::addSpotLight(const SpotLight* light)
-{
-	m_spotLights.emplace_back(light);
-}
-
-void SceneRenderer::addDirectionalLight(const DirectionalLight* light)
-{
-	m_directionalLights.emplace_back(light);
 }
 
 void SceneRenderer::geometryPass()
@@ -203,17 +186,17 @@ void SceneRenderer::renderDirectionLights()
 	shaders.setUniform("u_specular", 1);
 	shaders.setUniform("u_normal", 2);
 
-	for (const auto& light : m_directionalLights)
+	for (const auto& light : m_world.m_directionalLights)
 	{
 		Vector3 lightIntensities;
 
-		lightIntensities.r = light->color.r / 255.0f;
-		lightIntensities.g = light->color.g / 255.0f;
-		lightIntensities.b = light->color.b / 255.0f;
-		lightIntensities *= light->intensity;
+		lightIntensities.r = light.color.r / 255.0f;
+		lightIntensities.g = light.color.g / 255.0f;
+		lightIntensities.b = light.color.b / 255.0f;
+		lightIntensities *= light.intensity;
 
 		shaders.setUniform("u_light.base.intensities", lightIntensities);
-		shaders.setUniform("u_light.direction", normalize(light->direction));
+		shaders.setUniform("u_light.direction", normalize(light.direction));
 
 		draw(&g_meshHolder.get("quad"));
 	}
@@ -232,28 +215,28 @@ void SceneRenderer::renderPointLights()
 
 	shaders.setUniform("u_cameraInverse", inverse(camera->getMatrix()));
 
-	for (const PointLight* light : m_pointsLights)
+	for (const PointLight& light : m_world.m_pointLights)
 	{
-		light->calculateRange();
+		light.calculateRange();
 
 		Vector3 lightIntensities;
 
-		lightIntensities.r = light->color.r / 255.0f;
-		lightIntensities.g = light->color.g / 255.0f;
-		lightIntensities.b = light->color.b / 255.0f;
-		lightIntensities *= light->intensity;
+		lightIntensities.r = light.color.r / 255.0f;
+		lightIntensities.g = light.color.g / 255.0f;
+		lightIntensities.b = light.color.b / 255.0f;
+		lightIntensities *= light.intensity;
 
 		shaders.setUniform("u_light.base.intensities", lightIntensities);
-		shaders.setUniform("u_light.position", light->position);
+		shaders.setUniform("u_light.position", light.position);
 
 		shaders.setUniform("u_light.attenuation.constant",
-						   light->attenuation.constant);
+						   light.attenuation.constant);
 		shaders.setUniform("u_light.attenuation.linear",
-						   light->attenuation.linear);
+						   light.attenuation.linear);
 		shaders.setUniform("u_light.attenuation.quadratic",
-						   light->attenuation.quadratic);
+						   light.attenuation.quadratic);
 
-		shaders.setUniform("u_light.range", light->range);
+		shaders.setUniform("u_light.range", light.range);
 
 		draw(&g_meshHolder.get("quad"));
 	}
@@ -273,31 +256,31 @@ void SceneRenderer::renderSpotLights()
 
 	shaders.setUniform("u_cameraInverse", inverse(camera->getMatrix()));
 
-	for (const SpotLight* light : m_spotLights)
+	for (const SpotLight& light : m_world.m_spotLights)
 	{
-		light->calculateRange();
+		light.calculateRange();
 
 		Vector3 lightIntensities;
 
-		lightIntensities.r = light->color.r / 255.0f;
-		lightIntensities.g = light->color.g / 255.0f;
-		lightIntensities.b = light->color.b / 255.0f;
-		lightIntensities *= light->intensity;
+		lightIntensities.r = light.color.r / 255.0f;
+		lightIntensities.g =light.color.g / 255.0f;
+		lightIntensities.b =light.color.b / 255.0f;
+		lightIntensities *= light.intensity;
 
 		shaders.setUniform("u_light.point.base.intensities", lightIntensities);
-		shaders.setUniform("u_light.point.position", light->position);
+		shaders.setUniform("u_light.point.position",light.position);
 
 		shaders.setUniform("u_light.point.attenuation.constant",
-						   light->attenuation.constant);
+						  light.attenuation.constant);
 		shaders.setUniform("u_light.point.attenuation.linear",
-						   light->attenuation.linear);
+						  light.attenuation.linear);
 		shaders.setUniform("u_light.point.attenuation.quadratic",
-						   light->attenuation.quadratic);
+						  light.attenuation.quadratic);
 
-		shaders.setUniform("u_light.point.range", light->range);
+		shaders.setUniform("u_light.point.range",light.range);
 
-		shaders.setUniform("u_light.direction", light->direction);
-		shaders.setUniform("u_light.coneAngle", static_cast<f32>(light->coneAngle));
+		shaders.setUniform("u_light.direction",light.direction);
+		shaders.setUniform("u_light.coneAngle", static_cast<f32>(light.coneAngle));
 
 		draw(&g_meshHolder.get("quad"));
 	}

@@ -9,7 +9,11 @@
 
 namespace Dunjun
 {
-World::World() {}
+World::World()
+: m_renderer{*this}
+{
+
+}
 
 World::~World() {}
 
@@ -23,11 +27,11 @@ void World::init(Context context)
 		player->name = "player";
 		player->transform.position = {2, 0.5, 2};
 		player->transform.orientation = angleAxis(Degree{45}, {0, 1, 0});
+		//player->addComponent<FaceCamera>(m_mainCamera);
 		player->addComponent<MeshRenderer>(
 		    &m_context.meshHolder->get("sprite"),
 		    &m_context.materialHolder->get("cat"));
 
-		// player->addComponent<FaceCamera>(m_mainCamera);
 
 		m_player = player.get();
 
@@ -199,11 +203,12 @@ void World::update(Time dt)
 			// Vibrate
 			if (Input::isControllerButtonPressed(0, Input::ControllerButton::A))
 			{
-				Input::setControllerVibration(0, 0.5f, 0.5f);
+				printf("HERE\n");
+				Input::setControllerVibration(0, 0.5f);
 			}
 			else
 			{
-				Input::setControllerVibration(0, 0.0f, 0.0f);
+				Input::setControllerVibration(0, 0.0f);
 			}
 		}
 	}
@@ -230,34 +235,7 @@ void World::update(Time dt)
 		if (length(velDir) > 0)
 			velDir = normalize(velDir);
 
-		{
-			m_player->transform.position += playerVel * velDir * dt.asSeconds();
-
-#if 0   // Billboard
-			Quaternion pRot{conjugate(quaternionLookAt(player.transform.position,
-				g_camera.transform.position,
-				{0, 1, 0}))};
-
-
-			player.transform.orientation = pRot;
-#elif 0 // Billboard fixed y-axis
-			Vector3 f{player.transform.position - g_camera.transform.position};
-			f.y = 0;
-			if (f.x == 0 && f.z == 0)
-			{
-				player.transform.orientation = Quaternion();
-			}
-			else
-			{
-				Radian a{-Math::atan(f.z / f.x)};
-				a += Radian(Constants::Tau / 4);
-				if (f.x >= 0)
-					a -= Radian(Constants::Tau / 2);
-
-				player.transform.orientation = angleAxis(a, {0, 1, 0});
-			}
-#endif
-		}
+		m_player->transform.position += playerVel * velDir * dt.asSeconds();
 	}
 
 	m_playerCamera.transform.position.x =
@@ -335,13 +313,6 @@ void World::render()
 	m_renderer.reset();
 	m_renderer.clearAll();
 	m_renderer.addSceneGraph(m_sceneGraph);
-
-	for (const auto& light : m_pointLights)
-		m_renderer.addPointLight(&light);
-	for (const auto& light : m_directionalLights)
-		m_renderer.addDirectionalLight(&light);
-	for (const auto& light : m_spotLights)
-		m_renderer.addSpotLight(&light);
 
 	m_renderer.camera = m_currentCamera;
 

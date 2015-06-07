@@ -156,7 +156,7 @@ INTERNAL void update(Time dt)
 INTERNAL void handleEvents()
 {
 	Event event;
-	while (g_window.pollEvent(event) && false)
+	while (g_window.pollEvent(event))
 	{
 		switch (event.type)
 		{
@@ -176,13 +176,13 @@ INTERNAL void handleEvents()
 
 		case Event::ControllerConnected:
 		{
-			printf("Controller removed\n");
+			printf("Controller %d added\n", event.controller.index);
 			break;
 		}
 
 		case Event::ControllerDisconnected:
 		{
-			printf("Controller added\n");
+			printf("Controller %d removed\n", event.controller.index);
 			break;
 		}
 
@@ -221,7 +221,7 @@ void init()
 	}
 
 	g_window.create({854, 480}, "Dunjun");
-	// g_window.setFramerateLimit(FrameLimit);
+	g_window.setFramerateLimit(FrameLimit);
 
 	glewInit();
 

@@ -15,28 +15,29 @@
 #include <deque>
 #include <memory>
 #include <string>
+#include <typeinfo>
 
 namespace Dunjun
 {
-using ComponentID = usize;
+using ComponentId = usize;
 
 namespace
 {
-inline ComponentID getUniqueComponentID()
+inline ComponentId getUniqueComponentId()
 {
-	LOCAL_PERSIST ComponentID s_lastID{0};
-	return s_lastID++;
+	LOCAL_PERSIST ComponentId s_lastId{0};
+	return s_lastId++;
 }
 } // namespace (anonymous)
 
 template <typename ComponentType>
-inline ComponentID getComponentTypeID()
+inline ComponentId getComponentTypeId()
 {
 	static_assert(std::is_base_of<NodeComponent, ComponentType>::value,
 	              "ComponentType must inherit from NodeComponent.");
 
-	LOCAL_PERSIST ComponentID s_typeID{getUniqueComponentID()};
-	return s_typeID;
+	LOCAL_PERSIST ComponentId s_typeId{getUniqueComponentId()};
+	return s_typeId;
 }
 
 class SceneNode : private NonCopyable
@@ -78,8 +79,8 @@ public:
 		component->m_parent = this;
 		m_components.emplace_back(std::unique_ptr<NodeComponent>{component});
 
-		m_componentArray[getComponentTypeID<ComponentType>()] = component;
-		m_componentBitset[getComponentTypeID<ComponentType>()] = true;
+		m_componentArray[getComponentTypeId<ComponentType>()] = component;
+		m_componentBitset[getComponentTypeId<ComponentType>()] = true;
 
 		return *component;
 	}
@@ -89,7 +90,7 @@ public:
 	{
 		static_assert(std::is_base_of<NodeComponent, ComponentType>::value,
 		              "ComponentType must inherit from NodeComponent.");
-		return m_componentBitset[getComponentTypeID<ComponentType>()];
+		return m_componentBitset[getComponentTypeId<ComponentType>()];
 	}
 
 	template <typename ComponentType>
@@ -98,9 +99,11 @@ public:
 		static_assert(std::is_base_of<NodeComponent, ComponentType>::value,
 		              "ComponentType must inherit from NodeComponent.");
 
+		std::string message{"SceneNode::getComponent component not in this SceneNode." + typeid(ComponentType).name()};
+
 		assert(hasComponent<ComponentType>() &&
-		       "SceneNode::getComponent component not in this SceneNode.");
-		auto ptr = m_componentArray[getComponentTypeID<ComponentType>()];
+		       message.c_str());
+		auto ptr = m_componentArray[getComponentTypeId<ComponentType>()];
 		return *reinterpret_cast<ComponentType*>(ptr);
 	}
 

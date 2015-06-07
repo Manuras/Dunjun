@@ -7,15 +7,17 @@
 #include <Dunjun/Scene/Lighting.hpp>
 #include <Dunjun/Graphics/RenderTexture.hpp>
 #include <Dunjun/Graphics/GBuffer.hpp>
+#include <Dunjun/Window.hpp>
 
 #include <deque>
 
-#include <Dunjun/Window.hpp>
+
 
 namespace Dunjun
 {
 class SceneNode;
 class MeshRenderer;
+class World;
 
 class SceneRenderer : private NonCopyable
 {
@@ -34,7 +36,7 @@ public:
 		Transform transform;
 	};
 
-	SceneRenderer();
+	SceneRenderer(World& world);
 
 	virtual ~SceneRenderer()
 	{
@@ -47,9 +49,6 @@ public:
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
-	void addPointLight(const PointLight* light);
-	void addSpotLight(const SpotLight* light);
-	void addDirectionalLight(const DirectionalLight* light);
 
 	void geometryPass();
 	void lightPass();
@@ -72,13 +71,11 @@ private:
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, u32 position);
 
+	World& m_world;
+
 	const Material* m_currentMaterial{nullptr};
 	const ShaderProgram* m_currentShaders{nullptr};
 	const Texture* m_currentTexture{nullptr};
-
-	std::deque<const DirectionalLight*> m_directionalLights;
-	std::deque<const PointLight*> m_pointsLights;
-	std::deque<const SpotLight*> m_spotLights;
 
 	std::deque<ModelInstance> m_modelInstances;
 };

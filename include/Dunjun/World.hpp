@@ -38,6 +38,8 @@ public:
 	const Level* getLevel() const;
 
 private:
+	friend class SceneRenderer;
+
 	Context m_context;
 
 	SceneNode m_sceneGraph;

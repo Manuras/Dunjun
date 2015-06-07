@@ -217,7 +217,9 @@ f32 getControllerAxis(u32 controllerIndex, ControllerAxis axis);
 // TODO(bill): Get type of gamepad rather than name
 // NOTE(bill): Strings are UTF-8
 std::string getControllerName(u32 controllerIndex);
-void setControllerVibration(u32 controllerIndex, f32 leftMotor, f32 rightMotor);
+void setControllerVibration(u32 controllerIndex, f32 amount);
+void setControllerVibration(u32 controllerIndex, f32 amount, Time duration);
+
 
 // NOTE(bill): Strings are UTF-8
 std::string getClipboardString();
