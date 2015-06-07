@@ -12,7 +12,7 @@ std::vector<std::string> split(const std::string& s, char delim)
 	std::vector<std::string> elems;
 
 	const char* cstr{s.c_str()};
-	usize strLength{s.length()};
+	usize strLength{len(s)};
 	usize start{0};
 	usize end{0};
 
@@ -67,7 +67,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 				if (includeFilename[0] == '<') // Absolute Path (library path)
 				{
 					usize closingBracketPos{0};
-					for (usize i{1}; i < includeFilename.length(); i++)
+					for (usize i{1}; i < len(includeFilename); i++)
 					{
 						if (includeFilename[i] == '>')
 						{
@@ -89,7 +89,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 				else if (includeFilename[0] == '\"') // Relative Path (folder path)
 				{
 					usize closingSpeechMark{0};
-					for (usize i{1}; i < includeFilename.length(); i++)
+					for (usize i{1}; i < len(includeFilename); i++)
 					{
 						if (includeFilename[i] == '\"')
 						{
@@ -106,7 +106,7 @@ INTERNAL std::string stringFromFile(const std::string& filename)
 
 				// std::cout << includeFilename << '\n';
 
-				if (includeFilename.length() > 0)
+				if (len(includeFilename) > 0)
 					output.append(stringFromFile(includeFilename) + "\n");
 			}
 		}

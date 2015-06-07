@@ -11,8 +11,6 @@
 
 #include <deque>
 
-
-
 namespace Dunjun
 {
 class SceneNode;
@@ -42,37 +40,45 @@ public:
 	{
 	}
 
-	void reset(); // Reset all pointers
-	void clearAll(); // clear all containers
+	SceneRenderer& reset(); // Reset all pointers
+	SceneRenderer& clearAll(); // clear all containers
 
-	void addSceneGraph(const SceneNode& node, Transform t = Transform{});
+	SceneRenderer& addSceneGraph(const SceneNode& node, Transform t = Transform{});
 	void draw(const Mesh* mesh) const;
 
 	void addModelInstance(const MeshRenderer& meshRenderer, Transform t);
 
-	void geometryPass();
-	void lightPass();
-	void outPass();
+	void render();
 
-	void setCamera(const Camera& camera);
+	SceneRenderer& geometryPass();
+	SceneRenderer& lightPass();
+	SceneRenderer& outPass();
 
-	const Camera* camera{nullptr};
+	SceneRenderer& setFramebufferSize(u32 width, u32 height);
+	SceneRenderer& setCamera(const Camera& camera);
+	SceneRenderer& setAmbientLight(const Color& color, f32 intensity);
 
-	GBuffer gBuffer;
-	RenderTexture lightingTexture;
-	RenderTexture outTexture;
+	const GBuffer& getGBuffer() const { return m_gBuffer; }
+	const Texture& getFinalTexture() const { return m_outTexture.colorTexture; }	
 
 private:
-	void renderAmbientLight();
-	void renderDirectionLights();
-	void renderPointLights();
-	void renderSpotLights();
-
 	bool setShaders(const ShaderProgram* shaders);
 	bool setTexture(const Texture* texture, u32 position);
 
 	World& m_world;
 
+	u32 m_fbWidth{512};
+	u32 m_fbHeight{512};
+
+	GBuffer m_gBuffer;
+
+	RenderTexture m_lightingTexture;
+	RenderTexture m_outTexture;
+
+	Color m_ambientColor{222, 227, 234};
+	f32   m_ambientIntensity{0.02f};
+
+	const Camera* m_camera{nullptr};
 	const Material* m_currentMaterial{nullptr};
 	const ShaderProgram* m_currentShaders{nullptr};
 	const Texture* m_currentTexture{nullptr};

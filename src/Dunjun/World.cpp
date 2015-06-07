@@ -12,7 +12,6 @@ namespace Dunjun
 World::World()
 : m_renderer{*this}
 {
-
 }
 
 World::~World() {}
@@ -301,29 +300,15 @@ void World::update(Time dt)
 
 void World::handleEvent(const Event& event)
 {
-	// m_sceneGraph.handleEvent(event);
+	m_sceneGraph.handleEvent(event);
 }
 
 void World::render()
 {
-	// TODO(bill):
-
 	Window::Dimensions fbSize{m_context.window->getSize()};
 
-	m_renderer.reset();
-	m_renderer.clearAll();
-	m_renderer.addSceneGraph(m_sceneGraph);
-
-	m_renderer.camera = m_currentCamera;
-
-	m_renderer.gBuffer.create(fbSize.width, fbSize.height);
-
-	m_renderer.geometryPass();
-	m_renderer.lightPass();
-	m_renderer.outPass();
-
-	// m_context.materialHolder->get("cat").diffuseMap =
-	//     &m_renderer.lightingTexture.colorTexture;
+	m_renderer.setFramebufferSize(fbSize.width, fbSize.height);
+	m_renderer.render();
 
 	glViewport(0, 0, fbSize.width, fbSize.height);
 	glClearColor(0, 0, 0, 1);
@@ -334,7 +319,7 @@ void World::render()
 
 		shaders.setUniform("u_scale", Vector3{1.0f});
 		shaders.setUniform("u_tex", 0);
-		Texture::bind(&m_renderer.outTexture.colorTexture, 0);
+		Texture::bind(&m_renderer.getFinalTexture(), 0);
 		// Texture::bind(&m_renderer.lightingTexture.colorTexture, 0);
 
 		m_renderer.draw(&m_context.meshHolder->get("quad"));

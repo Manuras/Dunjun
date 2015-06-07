@@ -212,11 +212,12 @@ void init()
 		SDL_INIT_HAPTIC         |
 		0
 	};
+
 	if (SDL_Init(sdlFlags) != 0)
 	{
-		std::cerr << "SDL Failed to initialize. Error: ";
-		std::cerr << SDL_GetError();
-		std::cerr << std::endl;
+		fprintf(stderr,
+		        "SDL Failed to initialize. Error: %s\n",
+		        SDL_GetError());
 		std::exit(EXIT_FAILURE);
 	}
 

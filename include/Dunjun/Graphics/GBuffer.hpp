@@ -10,6 +10,16 @@ namespace Dunjun
 class GBuffer
 {
 public:
+	enum TextureType
+	{
+		Diffuse, // TODO(bill): Rename to albedo? (PBR Shaders...)
+ 		Specular,
+		Normal,
+		Depth,
+		// TODO(bill): Emission,
+		Count,
+	};
+
 	GBuffer();
 	virtual ~GBuffer();
 
@@ -22,20 +32,15 @@ public:
 
 	u32 getNativeHandle() const;
 
-	// TODO(bill): Specific Method(s) for texture retrieval ???
-
-	Texture diffuse;  // diffuse color (rgb)
-	Texture specular; // specular color (rgb), smootness (a)
-	Texture normal;   // world normal (rgb)
-	// TODO(bill): emission RT
-	// Texture emission;
-	Texture depth;
+	const Texture& getTexture(TextureType type) const;
 
 private:
 	u32 m_width;
 	u32 m_height;
 
 	u32 m_fbo;
+
+	Texture m_textures[TextureType::Count];
 };
 } // namespace Dunjun
 

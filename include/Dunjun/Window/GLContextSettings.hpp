@@ -1,13 +1,13 @@
-#ifndef DUNJUN_WINDOW_CONTEXTSETTINGS_HPP
-#define DUNJUN_WINDOW_CONTEXTSETTINGS_HPP
+#ifndef DUNJUN_WINDOW_GLCONTEXTSETTINGS_HPP
+#define DUNJUN_WINDOW_GLCONTEXTSETTINGS_HPP
 
 #include <Dunjun/Common.hpp>
 
 namespace Dunjun
 {
-struct ContextSettings
+struct GLContextSettings
 {
-	explicit ContextSettings(u32 depthBits = 0,
+	explicit GLContextSettings(u32 depthBits = 0,
 	                         u32 stencilBits = 0,
 	                         u32 antialiasingLevel = 0,
 	                         u32 majorVersion = 2,

@@ -87,6 +87,19 @@ inline std::string stringFormat(const char* fmt, ...)
 	return {s_buf, strlen(s_buf)};
 }
 
+// TODO(bill): Change name of len(...)???
+template <typename T>
+inline usize len(const T& t)
+{
+	return t.size();
+}
+
+template <typename T, usize N>
+inline usize len(const T(&array)[N])
+{
+	return N;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // TODO(bill): Remove throwRuntimeError(...) from code eventually and use a log
@@ -97,6 +110,18 @@ inline void throwRuntimeError(const std::string& str)
 	std::cerr << str.c_str() << std::endl;
 	std::exit(EXIT_FAILURE);
 }
+
+enum class MessageBoxType
+{
+	Error,
+	Warning,
+	Information,
+};
+
+// Use this function to display a simple modal message box
+bool showSimpleMessageBox(MessageBoxType type,
+                          const std::string& title,
+                          const std::string& message);
 
 ////////////////////////////////////////////////////////////////////////////////
 

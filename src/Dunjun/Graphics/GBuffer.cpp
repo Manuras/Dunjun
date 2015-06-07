@@ -12,6 +12,12 @@ GBuffer::~GBuffer()
 		glDeleteFramebuffersEXT(1, &m_fbo);
 }
 
+const Texture& GBuffer::getTexture(TextureType type) const
+{
+	// TODO(bill): Test for out of bounds?
+	return m_textures[type];
+}
+
 bool GBuffer::create(u32 w, u32 h)
 {
 	if (w == m_width && h == m_height) // GBuffer already exists
@@ -60,28 +66,28 @@ bool GBuffer::create(u32 w, u32 h)
 			drawBuffers.emplace_back(attachment);
 	};
 
-	addRT(diffuse,
+	addRT(m_textures[Diffuse],
 	      GL_COLOR_ATTACHMENT0_EXT,
 	      GL_RGB8,
 	      GL_RGB,
 	      GL_UNSIGNED_BYTE);
-	addRT(specular,
+	addRT(m_textures[Specular],
 	      GL_COLOR_ATTACHMENT1_EXT,
 	      GL_RGBA8,
 	      GL_RGBA,
 	      GL_UNSIGNED_BYTE);
-	addRT(normal,
+	addRT(m_textures[Normal],
 	      GL_COLOR_ATTACHMENT2_EXT,
 	      GL_RGB10_A2,
 	      GL_RGBA,
 	      GL_FLOAT);
-	addRT(depth,
+	addRT(m_textures[Depth],
 	      GL_DEPTH_ATTACHMENT_EXT,
 	      GL_DEPTH_COMPONENT24,
 	      GL_DEPTH_COMPONENT,
 	      GL_FLOAT);
 
-	glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
+	glDrawBuffers(len(drawBuffers), &drawBuffers[0]);
 
 	if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) !=
 	    GL_FRAMEBUFFER_COMPLETE_EXT)

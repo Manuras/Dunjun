@@ -156,7 +156,7 @@
     <ClInclude Include="include\Dunjun\Common.hpp" />
     <ClInclude Include="include\Dunjun\Config.hpp" />
     <ClInclude Include="include\Dunjun\Window.hpp" />
-    <ClInclude Include="include\Dunjun\Window\ContextSettings.hpp" />
+    <ClInclude Include="include\Dunjun\Window\GLContextSettings.hpp" />
     <ClInclude Include="include\Dunjun\Window\Event.hpp" />
     <ClInclude Include="include\Dunjun\System\FileSystem.hpp" />
     <ClInclude Include="include\Dunjun\Game.hpp" />

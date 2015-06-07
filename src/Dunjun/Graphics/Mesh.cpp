@@ -4,7 +4,7 @@ namespace Dunjun
 {
 void Mesh::Data::generateNormals()
 {
-	for (u32 i{0}; i < indices.size(); i += 3)
+	for (u32 i{0}; i < len(indices); i += 3)
 	{
 		Vertex& v0{vertices[indices[i + 0]]};
 		Vertex& v1{vertices[indices[i + 1]]};
@@ -20,7 +20,7 @@ void Mesh::Data::generateNormals()
 		v2.normal += normal;
 	}
 
-	for (usize i{0}; i < vertices.size(); i++)
+	for (usize i{0}; i < len(vertices); i++)
 		vertices[i].normal = normalize(vertices[i].normal);
 }
 
@@ -40,7 +40,7 @@ Mesh::Mesh(const Data& data)
 , m_vbo{0}
 , m_ibo{0}
 , m_drawType{data.drawType}
-, m_drawCount{(s32)data.indices.size()}
+, m_drawCount{(s32)len(data.indices)}
 {
 	generate();
 }
@@ -49,7 +49,7 @@ void Mesh::addData(const Data& data)
 {
 	m_data = data;
 	m_drawType = data.drawType;
-	m_drawCount = data.indices.size();
+	m_drawCount = len(data.indices);
 	m_generated = false;
 }
 
@@ -65,13 +65,13 @@ void Mesh::generate() const
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER,
-	             sizeof(Vertex) * m_data.vertices.size(),
+	             sizeof(Vertex) * len(m_data.vertices),
 	             &m_data.vertices[0],
 	             GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-	             sizeof(u32) * m_data.indices.size(),
+	             sizeof(u32) * len(m_data.indices),
 	             &m_data.indices[0],
 	             GL_STATIC_DRAW);
 

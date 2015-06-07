@@ -260,9 +260,6 @@
     <ClInclude Include="include\Dunjun\Window\VideoMode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Dunjun\Window\ContextSettings.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Dunjun\Window\Event.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -342,6 +339,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Dunjun\Context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\Window\GLContextSettings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

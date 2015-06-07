@@ -5,7 +5,7 @@
 #include <Dunjun/System/OpenGL.hpp>
 #include <Dunjun/System/Clock.hpp>
 #include <Dunjun/Window/VideoMode.hpp>
-#include <Dunjun/Window/ContextSettings.hpp>
+#include <Dunjun/Window/GLContextSettings.hpp>
 
 #include <SDL/SDL.h>
 
@@ -61,14 +61,14 @@ public:
 	explicit Window(VideoMode mode,
 					const std::string& title,
 					u32 style = Style::Default,
-					const ContextSettings& settings = ContextSettings{});
+					const GLContextSettings& settings = GLContextSettings{});
 
 	virtual ~Window();
 
 	void create(VideoMode mode,
 				const std::string& title,
 				u32 style = Style::Default,
-				const ContextSettings& settings = ContextSettings{});
+				const GLContextSettings& settings = GLContextSettings{});
 
 	void close();
 	bool isOpen() const;
@@ -79,7 +79,9 @@ public:
 	Dimensions getSize() const;
 	Window& setSize(const Dimensions& size);
 
+	const std::string& getTitle() const;
 	Window& setTitle(const std::string& title);
+
 	Window& setVisible(bool visible);
 	Window& setVerticalSyncEnabled(bool enabled);
 	Window& setFramerateLimit(u32 limit);
@@ -87,19 +89,20 @@ public:
 	Window& setFullscreen(bool fullscreen);
 	bool isFullscreen() const;
 
-
 	bool pollEvent(Event& event);
 	bool waitEvent(Event& event);
 
 	void display();
 
-	SDL_Window* getNativeHandle() const { return m_impl; }
+	void makeGLContextCurrent() const;
+
+	SDL_Window* getSDLHandle() const { return m_impl; }
 
 private:
 	void init();
 
 	SDL_Window* m_impl;
-	SDL_GLContext m_context;
+	SDL_GLContext m_glContext;
 	Clock m_clock;
 	Time m_frameTimeLimit;
 	// Dimensions m_size;
