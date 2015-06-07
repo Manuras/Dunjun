@@ -126,6 +126,7 @@
     <ClCompile Include="src\Dunjun\Graphics\Transform.cpp" />
     <ClCompile Include="src\Dunjun\Window\VideoMode.cpp" />
     <ClCompile Include="src\Dunjun\Window\Window.cpp" />
+    <ClCompile Include="src\Dunjun\World.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +147,7 @@
     <ClInclude Include="external\stb-master\include\stb\stb_truetype.h" />
     <ClInclude Include="external\stb-master\include\stb\stb_voxel_render.h" />
     <ClInclude Include="external\stb-master\include\stb\stretchy_buffer.h" />
+    <ClInclude Include="include\Dunjun\Context.hpp" />
     <ClInclude Include="include\Dunjun\Graphics.hpp" />
     <ClInclude Include="include\Dunjun\Graphics\Camera.hpp" />
     <ClInclude Include="include\Dunjun\System.hpp" />
@@ -202,6 +204,7 @@
     <ClInclude Include="include\Dunjun\Graphics\Vertex.hpp" />
     <ClInclude Include="include\Dunjun\Window\VideoMode.hpp" />
     <ClInclude Include="include\Dunjun\Window\Window.hpp" />
+    <ClInclude Include="include\Dunjun\World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

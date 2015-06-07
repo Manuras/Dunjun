@@ -77,6 +77,8 @@ struct Event
 
 	enum EventType
 	{
+		Unknown, // A type that is not supported yet
+
 		Closed,
 		Resized,
 		LostFocus,
@@ -93,9 +95,6 @@ struct Event
 		MouseEntered,
 		MouseLeft,
 
-		// TODO(bill): EventTypes:
-		// Joystick/Controllers
-
 		ControllerButtonPressed,
 		ControllerButtonReleased,
 
@@ -105,6 +104,7 @@ struct Event
 
 		ControllerAxisMoved,
 
+		// TODO(bill): Implement all the event types possible
 
 		Count // Keep last - total number of event types
 	};

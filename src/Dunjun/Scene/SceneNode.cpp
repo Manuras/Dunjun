@@ -54,7 +54,7 @@ SceneNode::UPtr SceneNode::detachChild(const SceneNode& node)
 SceneNode* SceneNode::findChildById(usize id) const
 {
 	for (const UPtr& child : m_children)
-	{
+{
 		if (child->id == id)
 			return child.get();
 		// If not found, check its children
@@ -92,12 +92,12 @@ Transform SceneNode::getGlobalTransform() const
 	return result;
 }
 
-void SceneNode::onStart()
+void SceneNode::init()
 {
-	onStartCurrent();
-	onStartChildren();
+	initCurrent();
+	initChildren();
 	for (auto& component : m_components)
-		component->onStart();
+		component->init();
 }
 
 void SceneNode::update(Time dt)
@@ -107,6 +107,15 @@ void SceneNode::update(Time dt)
 	for (auto& component : m_components)
 		component->update(dt);
 }
+
+void SceneNode::handleEvent(const Event& event)
+{
+	handleEventCurrent(event);
+	handleEventChildren(event);
+	for (auto& component : m_components)
+		component->handleEvent(event);
+}
+
 
 void SceneNode::draw(SceneRenderer& renderer, Transform t) const
 {
@@ -121,15 +130,15 @@ void SceneNode::draw(SceneRenderer& renderer, Transform t) const
 		component->draw(renderer, t);
 }
 
-void SceneNode::onStartCurrent()
+void SceneNode::initCurrent()
 {
 	// Do nothing by default
 }
 
-void SceneNode::onStartChildren()
+void SceneNode::initChildren()
 {
 	for (UPtr& child : m_children)
-		child->onStart();
+		child->init();
 }
 
 void SceneNode::updateCurrent(Time dt)
@@ -141,6 +150,18 @@ void SceneNode::updateChildren(Time dt)
 {
 	for (UPtr& child : m_children)
 		child->update(dt);
+}
+
+
+void SceneNode::handleEventCurrent(const Event& event)
+{
+	// Do nothing by default
+}
+
+void SceneNode::handleEventChildren(const Event& event)
+{
+	for (UPtr& child : m_children)
+		child->handleEvent(event);
 }
 
 void SceneNode::drawCurrent(SceneRenderer& renderer, Transform t) const

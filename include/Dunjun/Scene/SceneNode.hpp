@@ -3,12 +3,11 @@
 
 #include <Dunjun/Common.hpp>
 #include <Dunjun/Graphics/Transform.hpp>
+#include <Dunjun/Scene/NodeComponent.hpp>
+#include <Dunjun/Scene/SceneRenderer.hpp>
 #include <Dunjun/System/NonCopyable.hpp>
 #include <Dunjun/System/Time.hpp>
-
-#include <Dunjun/Scene/SceneRenderer.hpp>
-
-#include <Dunjun/Scene/NodeComponent.hpp>
+#include <Dunjun/Window/Event.hpp>
 
 #include <algorithm>
 #include <array>
@@ -62,8 +61,9 @@ public:
 
 	Transform getGlobalTransform() const;
 
-	void onStart();
+	void init();
 	void update(Time dt);
+	void handleEvent(const Event& event);
 
 	template <typename ComponentType, typename... Args>
 	ComponentType& addComponent(Args&&... args)
@@ -117,11 +117,14 @@ protected:
 
 	void draw(SceneRenderer& renderer, Transform t = Transform{}) const;
 
-	virtual void onStartCurrent();
-	void onStartChildren();
+	virtual void initCurrent();
+	void initChildren();
 
 	virtual void updateCurrent(Time dt);
 	void updateChildren(Time dt);
+
+	virtual void handleEventCurrent(const Event& event);
+	void handleEventChildren(const Event& event);
 
 	virtual void drawCurrent(SceneRenderer& renderer, Transform t) const;
 	void drawChildren(SceneRenderer& renderer, Transform t) const;

@@ -44,6 +44,12 @@ Transform& operator/=(Transform& ws, const Transform& ps)
 	return ws;
 }
 
+Vector3 transformPoint(const Transform& transform, const Vector3& point)
+{
+	return (conjugate(transform.orientation) * (transform.position - point)) /
+	       transform.scale;
+}
+
 Transform inverse(const Transform& t)
 {
 	const Quaternion invOrientation{conjugate(t.orientation)};
@@ -59,8 +65,8 @@ Transform inverse(const Transform& t)
 
 Matrix4 transformMatrix4(const Transform& t)
 {
-	return Math::translate(t.position) *         //
-	       quaternionToMatrix4(t.orientation) *  //
-	       Math::scale(t.scale);                 //
+	return Math::translate(t.position) *        //
+	       quaternionToMatrix4(t.orientation) * //
+	       Math::scale(t.scale);                //
 }
 } // namespace Dunjun

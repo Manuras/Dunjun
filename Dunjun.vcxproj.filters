@@ -114,6 +114,9 @@
     <ClCompile Include="src\Dunjun\Graphics\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Dunjun\World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Dunjun\Math\Vector2.hpp">
@@ -333,6 +336,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Dunjun\Graphics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\World.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Dunjun\Context.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

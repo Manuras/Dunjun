@@ -4,6 +4,7 @@
 #include <Dunjun/Config.hpp>
 #include <Dunjun/System/Types.hpp>
 #include <Dunjun/System/FileSystem.hpp>
+#include <Dunjun/System/NonCopyable.hpp>
 
 #include <cassert>
 #include <cstdarg>
@@ -65,6 +66,8 @@ inline T pseudo_cast(const U& x)
 	return to;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // Cross-platform version of sprintf that uses a local persist buffer
 // If more than 1024 characters are needed, a std::stringstream may be needed
 // instead.
@@ -84,6 +87,8 @@ inline std::string stringFormat(const char* fmt, ...)
 	return {s_buf, strlen(s_buf)};
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 // TODO(bill): Remove throwRuntimeError(...) from code eventually and use a log
 // This is similar to an assert but not exactly. At the moment, it exit's the
 // application but later, it should not.
@@ -92,6 +97,8 @@ inline void throwRuntimeError(const std::string& str)
 	std::cerr << str.c_str() << std::endl;
 	std::exit(EXIT_FAILURE);
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 namespace BaseDirectory
 {

@@ -6,6 +6,7 @@
 #include <Dunjun/Level/Level.hpp>
 #include <Dunjun/ResourceHolders.hpp>
 #include <Dunjun/Scene.hpp>
+#include <Dunjun/World.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -51,6 +52,8 @@ GLOBAL std::vector<PointLight> g_pointLights;
 GLOBAL std::vector<DirectionalLight> g_directionalLights;
 GLOBAL std::vector<SpotLight> g_spotLights;
 
+GLOBAL std::unique_ptr<World> g_world;
+
 namespace Game
 {
 INTERNAL void handleEvents()
@@ -58,27 +61,38 @@ INTERNAL void handleEvents()
 	Event event;
 	while (g_window.pollEvent(event))
 	{
-		if (event.type == Event::Closed)
+		switch (event.type)
 		{
-			// TODO(bill) IMPORTANT(bill): Does not always reach!
+		case Event::Closed:
+		{
 			g_window.close();
-			std::exit(EXIT_SUCCESS); // TODO(bill): Remove this exit
+			// std::exit(EXIT_SUCCESS); // TODO(bill): Remove this exit
+			break;
 		}
 
-		if (event.type == Event::Resized)
+		case Event::Resized:
 		{
 			glViewport(0, 0, event.size.width, event.size.height);
+			break;
 		}
 
-		if (event.type == Event::ControllerConnected)
+		case Event::ControllerConnected:
 		{
 			printf("Controller removed\n");
+			break;
 		}
 
-		if (event.type == Event::ControllerDisconnected)
+		case Event::ControllerDisconnected:
 		{
 			printf("Controller added\n");
+			break;
 		}
+
+		default:
+			break;
+		}
+
+		g_rootNode.handleEvent(event);
 	}
 }
 
@@ -197,7 +211,7 @@ INTERNAL void loadSpriteAsset()
 
 INTERNAL void loadInstances()
 {
-	g_rootNode.onStart();
+	g_rootNode.init();
 	{
 		auto player = make_unique<SceneNode>();
 
@@ -276,7 +290,7 @@ INTERNAL void loadInstances()
 
 	g_currentCamera = &g_cameraWorld;
 
-	g_rootNode.onStart();
+	g_rootNode.init();
 }
 
 INTERNAL void update(Time dt)
@@ -568,6 +582,14 @@ void init()
 	loadMaterials();
 	loadSpriteAsset();
 	loadInstances();
+
+	g_world = make_unique<World>(Context{
+		g_window,
+		g_textureHolder,
+		g_shaderHolder,
+		g_meshHolder,
+		g_materialHolder
+	});
 }
 
 void run()

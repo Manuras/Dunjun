@@ -437,7 +437,7 @@ INTERNAL Input::Key convertFromSDL_ScanCode(u32 code)
 	return Key::Unknown;
 }
 
-INTERNAL bool convertEvent(SDL_Event& e, Event& event)
+INTERNAL void convertEvent(SDL_Event& e, Event& event)
 {
 	switch (e.type)
 	{
@@ -449,25 +449,25 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 			event.size.width = e.window.data1;
 			event.size.height = e.window.data2;
 
-			return true;
+			return;
 		}
 
 		if (e.window.event == SDL_WINDOWEVENT_CLOSE)
 		{
 			event.type = Event::Closed;
-			return true;
+			return;
 		}
 
 		if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
 		{
 			event.type = Event::GainedFocus;
-			return true;
+			return;
 		}
 
 		if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
 		{
 			event.type = Event::LostFocus;
-			return true;
+			return;
 		}
 
 		if (e.window.event == SDL_WINDOWEVENT_MOVED)
@@ -476,7 +476,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 			event.move.x = e.window.data1;
 			event.move.y = e.window.data2;
 
-			return true;
+			return;
 		}
 	}
 
@@ -497,7 +497,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 			event.key.capsLock = true;
 		if (mod & KMOD_NUM)
 			event.key.numLock = true;
-		return true;
+		return;
 	}
 
 	case SDL_KEYUP:
@@ -517,7 +517,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 			event.key.capsLock = true;
 		if (mod & KMOD_NUM)
 			event.key.numLock = true;
-		return true;
+		return;
 	}
 
 	case SDL_MOUSEMOTION:
@@ -526,7 +526,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.mouseMove.x = e.motion.x;
 		event.mouseMove.y = e.motion.y;
 
-		return true;
+		return;
 	}
 
 	case SDL_MOUSEBUTTONDOWN:
@@ -538,7 +538,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.mouseMove.x = e.button.x;
 		event.mouseMove.y = e.button.y;
 
-		return true;
+		return;
 	}
 
 	case SDL_MOUSEBUTTONUP:
@@ -550,7 +550,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.mouseMove.x = e.button.x;
 		event.mouseMove.y = e.button.y;
 
-		return true;
+		return;
 	}
 
 	case SDL_MOUSEWHEEL:
@@ -559,7 +559,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.mouseWheelScroll.deltaX = e.wheel.x;
 		event.mouseWheelScroll.deltaY = e.wheel.y;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERBUTTONDOWN:
@@ -569,7 +569,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.controllerButton.button =
 		    (Input::ControllerButton)e.cbutton.button;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERBUTTONUP:
@@ -579,7 +579,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.controllerButton.button =
 		    (Input::ControllerButton)e.cbutton.button;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERDEVICEADDED:
@@ -587,7 +587,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.type = Event::ControllerConnected;
 		event.controller.index = e.cdevice.which;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERDEVICEREMOVED:
@@ -595,7 +595,7 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.type = Event::ControllerDisconnected;
 		event.controller.index = e.cdevice.which;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERDEVICEREMAPPED:
@@ -603,14 +603,14 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 		event.type = Event::ControllerRemapped;
 		event.controller.index = e.cdevice.which;
 
-		return true;
+		return;
 	}
 
 	case SDL_CONTROLLERAXISMOTION:
 	{
 		event.type = Event::ControllerAxisMoved;
 		event.controllerAxis.index = e.caxis.which;
-		event.controllerAxis.axis = (Input::ControllerAxis)e.caxis.axis;
+		event.controllerAxis.axis = static_cast<Input::ControllerAxis>(e.caxis.axis);
 
 		s16 value{e.caxis.value};
 		if (event.controllerAxis.axis == Input::ControllerAxis::LeftY)
@@ -621,10 +621,14 @@ INTERNAL bool convertEvent(SDL_Event& e, Event& event)
 
 		event.controllerAxis.value = static_cast<f32>(value) / 32768.0f;
 
-		return true;
+		return;
 	}
+
 	default:
-		return false;
+	{
+		event.type = Event::Unknown;
+		return;
+	}
 	}
 }
 
@@ -633,7 +637,8 @@ bool Window::pollEvent(Event& event)
 	SDL_Event e;
 	if (SDL_PollEvent(&e))
 	{
-		return convertEvent(e, event);
+		convertEvent(e, event);
+		return true;
 	}
 
 	return false;
@@ -644,7 +649,7 @@ bool Window::waitEvent(Event& event)
 	SDL_Event e;
 	if (SDL_WaitEvent(&e))
 	{
-		return convertEvent(e, event);
+		convertEvent(e, event);
 		return true;
 	}
 
