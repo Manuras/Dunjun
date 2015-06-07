@@ -8,8 +8,6 @@
 #include <Dunjun/Graphics.hpp>
 #include <Dunjun/Context.hpp>
 #include <Dunjun/Level/Level.hpp>
-#include <Dunjun/Level/Room.hpp>
-
 
 #include <vector>
 
@@ -18,14 +16,14 @@ namespace Dunjun
 class World : private NonCopyable
 {
 public:
-	explicit World(Context context);
+	World();
 	virtual ~World();
 
-	void init();
+	void init(Context context);
 
 	void update(Time dt);
 	void handleEvent(const Event& event);
-	void draw();
+	void render();
 
 	SceneNode& getSceneGraph();
 	const SceneNode& getSceneGraph() const;
@@ -40,7 +38,7 @@ public:
 	const Level* getLevel() const;
 
 private:
-	Context context;
+	Context m_context;
 
 	SceneNode m_sceneGraph;
 	SceneRenderer m_renderer;

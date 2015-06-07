@@ -3,9 +3,7 @@
 
 #include <Dunjun/System.hpp>
 #include <Dunjun/Window.hpp>
-#include <Dunjun/Level/Level.hpp>
 #include <Dunjun/ResourceHolders.hpp>
-#include <Dunjun/Scene.hpp>
 #include <Dunjun/World.hpp>
 
 #include <cassert>
@@ -34,82 +32,12 @@ GLOBAL bool g_running{true};
 
 GLOBAL Window g_window;
 
-GLOBAL Camera g_cameraPlayer;
-GLOBAL Camera g_cameraWorld;
-
-GLOBAL Camera* g_currentCamera{&g_cameraPlayer};
-
 GLOBAL ModelAsset g_sprite;
 
-GLOBAL SceneNode g_rootNode;
-GLOBAL SceneNode* g_player{nullptr};
-
-GLOBAL SceneRenderer g_renderer;
-
-GLOBAL Level* g_level{nullptr};
-
-GLOBAL std::vector<PointLight> g_pointLights;
-GLOBAL std::vector<DirectionalLight> g_directionalLights;
-GLOBAL std::vector<SpotLight> g_spotLights;
-
-GLOBAL std::unique_ptr<World> g_world;
+GLOBAL World g_world;
 
 namespace Game
 {
-INTERNAL void handleEvents()
-{
-	Event event;
-	while (g_window.pollEvent(event))
-	{
-		switch (event.type)
-		{
-		case Event::Closed:
-		{
-			g_window.close();
-			// std::exit(EXIT_SUCCESS); // TODO(bill): Remove this exit
-			break;
-		}
-
-		case Event::Resized:
-		{
-			glViewport(0, 0, event.size.width, event.size.height);
-			break;
-		}
-
-		case Event::ControllerConnected:
-		{
-			printf("Controller removed\n");
-			break;
-		}
-
-		case Event::ControllerDisconnected:
-		{
-			printf("Controller added\n");
-			break;
-		}
-
-		default:
-			break;
-		}
-
-		g_rootNode.handleEvent(event);
-	}
-}
-
-INTERNAL void handleInput()
-{
-	if (!g_window.isOpen() || Input::isKeyPressed(Input::Key::Escape))
-		g_running = false;
-
-	if (Input::isKeyPressed(Input::Key::F11))
-	{
-		// TODO(bill): Toggle fullscreen
-
-		// Initial OpenGL settings
-		glInit();
-	}
-}
-
 INTERNAL void loadShaders()
 {
 	g_shaderHolder.insertFromFile("texPass",           //
@@ -209,343 +137,69 @@ INTERNAL void loadSpriteAsset()
 	}
 }
 
-INTERNAL void loadInstances()
-{
-	g_rootNode.init();
-	{
-		auto player = make_unique<SceneNode>();
-
-		player->name = "player";
-		player->transform.position = {2, 0.5, 2};
-		player->transform.orientation = angleAxis(Degree{45}, {0, 1, 0});
-		player->addComponent<MeshRenderer>(g_sprite);
-		player->addComponent<FaceCamera>(g_cameraWorld);
-
-		g_player = player.get();
-
-		g_rootNode.attachChild(std::move(player));
-	}
-
-	{
-		auto level = make_unique<Level>();
-
-		level->material = &g_materialHolder.get("terrain");
-		level->generate();
-
-		g_level = level.get();
-
-		g_rootNode.attachChild(std::move(level));
-	}
-
-	Random random{1};
-	for (int i{0}; i < 20; i++)
-	{
-		PointLight light;
-		f32 radius{random.getFloat(0.1f, 16.0f)};
-		Radian angle{random.getFloat(0, Math::Tau)};
-		light.position.x = 4.0f + radius * Math::cos(angle);
-		light.position.y = random.getFloat(0.5, 2.5);
-		light.position.z = 4.0f + radius * Math::sin(angle);
-
-		light.intensity = 1.0;
-
-		light.color.r = random.getInt(50, 255);
-		light.color.g = random.getInt(50, 255);
-		light.color.b = random.getInt(50, 255);
-
-		g_pointLights.emplace_back(light);
-	}
-
-	{
-		DirectionalLight light;
-		light.color = Color{255, 255, 250};
-		light.direction = Vector3{-1, -1, 0.5};
-		light.intensity = 0.1f;
-
-		g_directionalLights.emplace_back(light);
-	}
-
-	{
-		SpotLight light;
-		light.color = Color{255, 255, 250};
-		light.direction = {0, -1, 0};
-		light.position = {4, 1.5f, 4};
-		light.intensity = 2.0f;
-		light.coneAngle = Degree{50};
-
-		g_spotLights.emplace_back(light);
-	}
-
-	// Init Camera
-	g_cameraPlayer.transform.position = {5, 2, 5};
-	g_cameraPlayer.transform.orientation =
-	    angleAxis(Degree{45}, {0, 1, 0}) * angleAxis(Degree{-30}, {1, 0, 0});
-
-	g_cameraPlayer.fieldOfView = Degree{50.0f};
-	g_cameraPlayer.orthoScale = 8;
-
-	g_cameraWorld = g_cameraPlayer;
-
-	g_cameraPlayer.projectionType = ProjectionType::Orthographic;
-
-	g_currentCamera = &g_cameraWorld;
-
-	g_rootNode.init();
-}
-
 INTERNAL void update(Time dt)
 {
-	g_rootNode.update(dt);
+	g_world.update(dt);
 
-	f32 camVel{10.0f};
+	if (!g_window.isOpen() || Input::isKeyPressed(Input::Key::Escape))
+		g_running = false;
+
+	if (Input::isKeyPressed(Input::Key::F11))
 	{
-		if (Input::isControllerPresent(0))
-		{
-			f32 ltsX{Input::getControllerAxis(0, Input::ControllerAxis::LeftX)};
-			f32 ltsY{Input::getControllerAxis(0, Input::ControllerAxis::LeftY)};
+		// TODO(bill): Toggle fullscreen
 
-			f32 rtsX{Input::getControllerAxis(0, Input::ControllerAxis::RightX)};
-			f32 rtsY{Input::getControllerAxis(0, Input::ControllerAxis::RightY)};
-
-			const f32 lookSensitivity{2.0f};
-			const f32 deadZone{0.21f};
-
-			Vector2 rts{rtsX, rtsY};
-			if (Math::abs(rts.x) < deadZone)
-				rts.x = 0;
-			if (Math::abs(rts.y) < deadZone)
-				rts.y = 0;
-
-			g_cameraWorld.offsetOrientation(
-			     lookSensitivity * Radian{-rts.x * dt.asSeconds()},
-			     lookSensitivity * Radian{-rts.y * dt.asSeconds()});
-
-			Vector2 lts{ltsX, ltsY};
-
-			if (Math::abs(lts.x) < deadZone)
-				lts.x = 0;
-			if (Math::abs(lts.y) < deadZone)
-				lts.y = 0;
-
-			if (length(lts) > 1.0f)
-				lts = normalize(lts);
-			Vector3 velDir{0, 0, 0};
-
-			Vector3 forward{g_cameraWorld.forward()};
-			forward.y = 0;
-			forward = normalize(forward);
-			velDir += lts.x * g_cameraWorld.right();
-			velDir += lts.y * forward;
-
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::RightShoulder))
-				velDir.y += 1;
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::LeftShoulder))
-				velDir.y -= 1;
-
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadUp))
-			{
-				Vector3 f{g_cameraWorld.forward()};
-				f.y = 0;
-				f = normalize(f);
-				velDir += f;
-			}
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadDown))
-			{
-				Vector3 b{g_cameraWorld.backward()};
-				b.y = 0;
-				b = normalize(b);
-				velDir += b;
-			}
-
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadLeft))
-			{
-				Vector3 l{g_cameraWorld.left()};
-				l.y = 0;
-				l = normalize(l);
-				velDir += l;
-			}
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::DpadRight))
-			{
-				Vector3 r{g_cameraWorld.right()};
-				r.y = 0;
-				r = normalize(r);
-				velDir += r;
-			}
-
-			if (length(velDir) > 1.0f)
-				velDir = normalize(velDir);
-
-			g_cameraWorld.transform.position +=
-			    camVel * velDir * dt.asSeconds();
-
-			// Vibrate
-			if (Input::isControllerButtonPressed(0, Input::ControllerButton::A))
-			{
-				Input::setControllerVibration(0, 0.5f, 0.5f);
-			}
-			else
-			{
-				Input::setControllerVibration(0, 0.0f, 0.0f);
-			}
-		}
+		// Initial OpenGL settings
+		glInit();
 	}
-
-	f32 playerVel{4.0f};
-	{
-		Vector3 velDir{0, 0, 0};
-
-		if (Input::isKeyPressed(Input::Key::Up))
-			velDir += {0, 0, -1};
-		if (Input::isKeyPressed(Input::Key::Down))
-			velDir += {0, 0, +1};
-
-		if (Input::isKeyPressed(Input::Key::Left))
-			velDir += {-1, 0, 0};
-		if (Input::isKeyPressed(Input::Key::Right))
-			velDir += {+1, 0, 0};
-
-		if (Input::isKeyPressed(Input::Key::RShift))
-			velDir += {0, +1, 0};
-		if (Input::isKeyPressed(Input::Key::RControl))
-			velDir += {0, -1, 0};
-
-		if (length(velDir) > 0)
-			velDir = normalize(velDir);
-
-		{
-			g_player->transform.position += playerVel * velDir * dt.asSeconds();
-
-#if 0   // Billboard
-			Quaternion pRot{conjugate(quaternionLookAt(player.transform.position,
-				g_camera.transform.position,
-				{0, 1, 0}))};
-
-
-			player.transform.orientation = pRot;
-#elif 0 // Billboard fixed y-axis
-			Vector3 f{player.transform.position - g_camera.transform.position};
-			f.y = 0;
-			if (f.x == 0 && f.z == 0)
-			{
-				player.transform.orientation = Quaternion();
-			}
-			else
-			{
-				Radian a{-Math::atan(f.z / f.x)};
-				a += Radian(Constants::Tau / 4);
-				if (f.x >= 0)
-					a -= Radian(Constants::Tau / 2);
-
-				player.transform.orientation = angleAxis(a, {0, 1, 0});
-			}
-#endif
-		}
-	}
-
-	g_cameraPlayer.transform.position.x =
-	    Math::lerp(g_cameraPlayer.transform.position.x,
-	               g_player->transform.position.x,
-	               10.0f * dt.asSeconds());
-	g_cameraPlayer.transform.position.z =
-	    Math::lerp(g_cameraPlayer.transform.position.z,
-	               g_player->transform.position.z,
-	               10.0f * dt.asSeconds());
-
-	// g_camera.transform.position.x = player.transform.position.x;
-	f32 aspectRatio{g_window.getSize().aspectRatio()};
-	if (aspectRatio && g_window.getSize().height > 0)
-	{
-		g_cameraPlayer.viewportAspectRatio = aspectRatio;
-		g_cameraWorld.viewportAspectRatio = aspectRatio;
-	}
-
-	if (Input::isKeyPressed(Input::Key::Num1))
-		g_currentCamera = &g_cameraPlayer;
-	else if (Input::isKeyPressed(Input::Key::Num2))
-	{
-		g_cameraWorld.transform = g_cameraPlayer.transform;
-		g_currentCamera = &g_cameraWorld;
-	}
-
-#if 1
-	// TODO(bill): Make bounding boxes for SceneNodes and implement this
-	// in SceneRenderer
-	for (auto& room : g_level->rooms)
-	{
-		Vector3 roomPos{room->transform.position};
-		roomPos.x += room->size.x / 2;
-		roomPos.z += room->size.y / 2;
-		const Vector3 playerPos{g_cameraWorld.transform.position};
-
-		const Vector3 dp{roomPos - playerPos};
-
-		const f32 dist{length(dp)};
-
-		// Distance Culling
-		if (dist < g_cameraWorld.farPlane)
-		{
-			const Vector3 f{g_cameraWorld.forward()};
-
-			f32 cosTheta{dot(f, normalize(dp))};
-
-			Radian theta{Math::acos(cosTheta)};
-
-			// Cone/(bad) Frustum Culling
-			if (Math::abs(theta) <= 2.0f * g_cameraWorld.fieldOfView ||
-			    dist < 10)
-				room->visible = true;
-			else
-				room->visible = false;
-		}
-		else
-			room->visible = false;
-	}
-#endif
 }
+
+INTERNAL void handleEvents()
+{
+	Event event;
+	while (g_window.pollEvent(event) && false)
+	{
+		switch (event.type)
+		{
+		case Event::Closed:
+		{
+
+			g_window.close();
+			std::exit(EXIT_SUCCESS); // TODO(bill): Remove this exit
+			break;
+		}
+
+		case Event::Resized:
+		{
+			glViewport(0, 0, event.size.width, event.size.height);
+			break;
+		}
+
+		case Event::ControllerConnected:
+		{
+			printf("Controller removed\n");
+			break;
+		}
+
+		case Event::ControllerDisconnected:
+		{
+			printf("Controller added\n");
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
+		}
+
+		g_world.handleEvent(event);
+	}
+}
+
 
 INTERNAL void render()
 {
-	Window::Dimensions fbSize{g_window.getSize()};
-
-	g_renderer.reset();
-	g_renderer.clearAll();
-	g_renderer.addSceneGraph(g_rootNode);
-
-	for (const auto& light : g_pointLights)
-		g_renderer.addPointLight(&light);
-	for (const auto& light : g_directionalLights)
-		g_renderer.addDirectionalLight(&light);
-	for (const auto& light : g_spotLights)
-		g_renderer.addSpotLight(&light);
-
-	g_renderer.camera = g_currentCamera;
-
-	g_renderer.gBuffer.create(fbSize.width, fbSize.height);
-
-	g_renderer.geometryPass();
-	g_renderer.lightPass();
-	g_renderer.outPass();
-
-	// g_materialHolder.get("cat").diffuseMap =
-	//     &g_renderer.lightingTexture.colorTexture;
-
-	glViewport(0, 0, fbSize.width, fbSize.height);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	{
-		ShaderProgram& shaders = g_shaderHolder.get("texPass");
-		shaders.use();
-
-		shaders.setUniform("u_scale", Vector3{1.0f});
-		shaders.setUniform("u_tex", 0);
-		Texture::bind(&g_renderer.outTexture.colorTexture, 0);
-		// Texture::bind(&g_renderer.lightingTexture.colorTexture, 0);
-
-
-		g_renderer.draw(&g_meshHolder.get("quad"));
-
-		shaders.stopUsing();
-	}
+	g_world.render();
 }
 
 void init()
@@ -567,7 +221,7 @@ void init()
 	}
 
 	g_window.create({854, 480}, "Dunjun");
-	//g_window.setFramerateLimit(FrameLimit);
+	// g_window.setFramerateLimit(FrameLimit);
 
 	glewInit();
 
@@ -576,14 +230,12 @@ void init()
 
 	Input::setup();
 	Input::setCursorPosition(g_window, {0, 0});
-	// Input::setCursorMode(Input::CursorMode::Disabled);
 
 	loadShaders();
 	loadMaterials();
 	loadSpriteAsset();
-	loadInstances();
 
-	g_world = make_unique<World>(Context{
+	g_world.init(Context{
 		g_window,
 		g_textureHolder,
 		g_shaderHolder,
@@ -598,6 +250,8 @@ void run()
 
 	Time accumulator;
 	Time prevTime{Time::now()};
+
+	usize frames{0};
 
 	while (g_running)
 	{
@@ -614,8 +268,8 @@ void run()
 		while (accumulator >= TimeStep)
 		{
 			accumulator -= TimeStep;
+
 			handleEvents();
-			handleInput();
 			update(TimeStep);
 		}
 

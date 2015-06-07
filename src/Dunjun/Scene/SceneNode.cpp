@@ -16,6 +16,7 @@ INTERNAL inline SceneNode::Id getUniqueSceneNodeId()
 
 SceneNode::SceneNode()
 : id{getUniqueSceneNodeId()}
+, m_componentBitset{}
 {
 	name = stringFormat("node_%llu", id);
 }

@@ -22,10 +22,10 @@ using ComponentID = usize;
 
 namespace
 {
-INTERNAL inline ComponentID getUniqueComponentID()
+inline ComponentID getUniqueComponentID()
 {
-	LOCAL_PERSIST ComponentID lastID{0};
-	return lastID++;
+	LOCAL_PERSIST ComponentID s_lastID{0};
+	return s_lastID++;
 }
 } // namespace (anonymous)
 
@@ -35,8 +35,8 @@ inline ComponentID getComponentTypeID()
 	static_assert(std::is_base_of<NodeComponent, ComponentType>::value,
 	              "ComponentType must inherit from NodeComponent.");
 
-	LOCAL_PERSIST ComponentID typeID{getUniqueComponentID()};
-	return typeID;
+	LOCAL_PERSIST ComponentID s_typeID{getUniqueComponentID()};
+	return s_typeID;
 }
 
 class SceneNode : private NonCopyable
@@ -89,7 +89,6 @@ public:
 	{
 		static_assert(std::is_base_of<NodeComponent, ComponentType>::value,
 		              "ComponentType must inherit from NodeComponent.");
-
 		return m_componentBitset[getComponentTypeID<ComponentType>()];
 	}
 

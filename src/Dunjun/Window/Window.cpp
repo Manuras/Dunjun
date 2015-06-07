@@ -185,10 +185,13 @@ Window& Window::setVerticalSyncEnabled(bool enabled)
 
 Window& Window::setFramerateLimit(u32 limit)
 {
+	m_frameTimeLimit = Time::Zero;
+
 	if (limit > 0)
+	{
 		m_frameTimeLimit = seconds(1.0f / (f32)limit);
-	else
-		m_frameTimeLimit = Time::Zero;
+		printf("%f\n", m_frameTimeLimit.asSeconds());
+	}
 
 	return *this;
 }
@@ -219,8 +222,10 @@ void Window::display()
 
 	if (m_frameTimeLimit != Time::Zero)
 	{
+#if 0
 		Time::sleep(m_frameTimeLimit - m_clock.getElapsedTime());
 		m_clock.restart();
+#endif
 	}
 }
 
